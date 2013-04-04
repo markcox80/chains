@@ -1,0 +1,8 @@
+#+TITLE: Experiment Chains
+#+AUTHOR: Mark Cox
+
+~CHAINS~ is a common lisp system for making it easy to construct an
+experiment chain in which a number of links are assembled to produce a
+result. Its main purpose is to accommodate scenarios where the line
+between a scientific experiment and algorithmic experimentation is
+blurred.
