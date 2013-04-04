@@ -47,10 +47,24 @@
 (defgeneric find-link-if (predicate chain)
   (:documentation "Find a link in CHAIN that satisfies the given PREDICATE."))
 
-(defgeneric write-chain (directory chain &key if-link-exists)
-  (:documentation "Write CHAIN to the DIRECTORY pathname."))
+(defvar *database-pathname*)
+
+(defgeneric write-chain (chain &key if-link-exists)
+  (:documentation "Write CHAIN to disk."))
 
 (defclass chain ()
   ((links
     :initarg :links
     :reader links)))
+
+(defun make-chain (&rest links)
+  (make-instance 'chain :links (let ((rv nil))
+				 (reduce #'(lambda (parent link)
+					     (let ((new-link (copy-link link parent)))
+					       (push new-link rv)))
+					 links
+					 :initial-value nil)
+				 (nreverse rv))))
+
+(defmethod find-link-if (predicate (chain chain))
+  (find-if predicate (links chain)))

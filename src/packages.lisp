@@ -2,11 +2,14 @@
   (:use "COMMON-LISP")
   ;; Links
   (:export #:link
-	   #:output-name)
+	   #:output-name
+	   #:copy-link)
 
   ;; Chains
   (:export #:chain
 	   #:make-chain
+
+	   #:*database-pathname*
 	   #:write-chain)
 
   ;; Tasks

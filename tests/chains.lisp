@@ -2,7 +2,8 @@
 
 (defvar *chain-temporary-directory* #P "/tmp/chains/")
 (defun chain-temporary-directory ()
-  (cl-fad:delete-directory-and-files *chain-temporary-directory*)
+  (when (cl-fad:directory-exists-p *chain-temporary-directory*)
+    (cl-fad:delete-directory-and-files *chain-temporary-directory*))
   (ensure-directories-exist *chain-temporary-directory*))
 
 (define-step noise-model)
@@ -36,7 +37,8 @@
     (assert-true (typep (algorithm chain) 'platypus))))
 
 (define-test serialisation
-  (let ((chain-1 (make-chain (make-instance 'gaussian :sigma 0.1)))
+  (let ((*database-pathname* (chain-temporary-directory))
+	(chain-1 (make-chain (make-instance 'gaussian :sigma 0.1)))
 	(chain-2 (make-chain (make-instance 'salt-and-pepper)))
 	(chain-3 (make-chain (make-instance 'gaussian :sigma 0.2))))
     (write-chain chain-1)
