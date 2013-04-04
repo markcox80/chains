@@ -19,4 +19,4 @@
   
   ;; Macros
   (:export #:define-step
-	   #:define-link))
+	   #:define-operation))

@@ -8,18 +8,20 @@
 
 (define-step noise-model)
 
-(define-link gaussian (noise-model)
+(define-operation gaussian (noise-model)
   ((sigma
     :initarg :sigma
-    :reader sigma)))
+    :reader sigma))
+  (:default-initargs
+   :sigma 1))
 
-(define-link salt-and-pepper (noise-model)
+(define-operation salt-and-pepper (noise-model)
     ())
 
 (define-step algorithm)
-(define-link platypus (algorithm)
+(define-operation platypus (algorithm)
     ())
-(define-link kangaroo (algortihm)
+(define-operation kangaroo (algortihm)
     ())
 
 (define-test output-name
@@ -35,6 +37,9 @@
 	 (chain (make-chain noise-model algorithm)))
     (assert-true (typep (noise-model chain) 'gaussian))
     (assert-true (typep (algorithm chain) 'platypus))))
+
+(defun pf (pathname)
+  (probe-file (merge-pathnames pathname *database-pathname*)))
 
 (define-test serialisation
   (let ((*database-pathname* (chain-temporary-directory))

@@ -1,9 +1,10 @@
 (in-package "CHAINS")
 
-(defun find-link-if/class (class chain)
+(defun find-object-with-class (class list)
+  (declare (type list list))
   (labels ((test (a)
 	     (typep a class)))
-    (find-link-if #'test chain)))
+    (find-if #'test list)))
 
 (defun body-values (body keyword)
   (rest (find keyword body :key #'first)))
@@ -18,59 +19,47 @@
 			 (when v
 			   (list (list :documentation v))))))
     `(progn
-       (defclass ,name (link)
+       (defclass ,name ()
 	 ()
 	 ,@documentation)
 
-       (defgeneric ,name (object))
+       (defun ,name (chain)
+	 (find-object-with-class ',name chain)))))
 
-       (defmethod ,name ((object chain))
-	 (find-link-if/class ',name object)))))
+;;; DEFINE OPERATION
+;;; - Utilities
+(defun operation/interesting-slots (class-name)
+  (closer-mop:compute-slots (find-class class-name)))
 
-(defun link-slots/to-class-slots (link-slots)
-  link-slots)
-
-(defun link-slots/initarg (link-slots slot-name)
-  (let ((v (rest (find slot-name link-slots :key #'first))))
-    (when v
-      (getf v :initarg))))
-
-(defun link-slots/slot-names (link-slots)
-  (mapcar #'first link-slots))
-
-(defun link/interesting-slots (class-name)
-  (assert (subtypep class-name 'link))
-  (let* ((class      (find-class class-name))
-	 (link-class (find-class 'link)))
-    (loop
-       :for class :in (closer-mop:compute-class-precedence-list class)
-       :until (equal class link-class)
-       :append
-       (closer-mop:class-direct-slots class))))
-
+;;; - Print object
 (defun print-object/helper (class-name object)
-  (loop
-     :for slot :in (link/interesting-slots class-name)
-     :when (closer-mop:slot-definition-initargs slot)
-     :append
-     (list (first (closer-mop:slot-definition-initargs slot))
-	   (slot-value object (closer-mop:slot-definition-name slot)))))
+  (let ((class (find-class class-name)))
+    (loop
+       :for slot :in (operation/interesting-slots class-name)
+       :when (closer-mop:slot-definition-initargs slot)
+       :append
+       (list (first (closer-mop:slot-definition-initargs slot))
+	     (closer-mop:slot-value-using-class class object slot)))))
 
-(defun define-link/defmethod/print-object (class-name)
+(defun print-object/operation (class-name object stream)
+  (let ((arguments (print-object/helper class-name object)))
+    (cond
+      (*print-readably*
+       (write-string "#." stream)
+       (write (append (list 'make-instance `',class-name)
+		      arguments)
+	      :stream stream))
+      (t
+       (print-unreadable-object (object stream :type t :identity t)
+	 (format stream "~{~A~^ ~}" arguments))))))
+
+(defun define-operation/defmethod/print-object (class-name)
   `(defmethod print-object ((object ,class-name) stream)
-     (let ((arguments (print-object/helper ',class-name object)))
-       (cond
-	 (*print-readably*
-	  (write-string "#." stream)
-	  (write (append (list 'make-instance '',class-name)
-			 arguments)
-		 :stream stream))
-	 (t
-	  (print-unreadable-object (object stream :type t :identity t)
-	    (format stream "~{~A~^ ~}" arguments)))))))
+     (print-object/operation ',class-name object stream)))
 
+;;; - Output name
 (defun output-name/helper (class-name object)
-  (let ((slots (link/interesting-slots class-name)))	   
+  (let ((slots (operation/interesting-slots class-name)))	   
     (if slots
 	(format nil "~A-~{~A~^-~}"
 		(string-downcase (symbol-name class-name))
@@ -79,25 +68,19 @@
 			slots))
 	(string-downcase (symbol-name class-name)))))
 
-(defun define-link/defmethod/output-name (class-name)
+(defun define-operation/defmethod/output-name (class-name)
   `(defmethod output-name ((object ,class-name))
      (output-name/helper ',class-name object)))
 
-(defun copy-link/helper (class-name object)
-  (print-object/helper class-name object))
+;;; - MACRO
+(defun operation-slots-to-class-slots (link-slots)
+  link-slots)
 
-(defun define-link/defmethod/copy-link (class-name)
-  `(defmethod copy-link ((object ,class-name) &optional parent)
-     (apply #'make-instance ',class-name
-	    :parent-link parent
-	    (copy-link/helper ',class-name object))))
-
-(defmacro define-link (name super-classes slots &body body)
-  (declare (ignore body))
+(defmacro define-operation (name super-classes slots &body body)
   `(progn
      (defclass ,name ,super-classes
-       ,(link-slots/to-class-slots slots))
+       ,(operation-slots-to-class-slots slots)
+       ,@body)
 
      ,(define-link/defmethod/print-object name)
-     ,(define-link/defmethod/output-name name)
-     ,(define-link/defmethod/copy-link name)))
+     ,(define-link/defmethod/output-name name)))

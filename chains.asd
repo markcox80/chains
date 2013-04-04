@@ -6,6 +6,5 @@
   :components ((:module "src"
 			:serial t
 			:components ((:file "packages")
-				     (:file "chains")
 				     (:file "language"))))
   :in-order-to ((test-op (test-op "chains-tests"))))
