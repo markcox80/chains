@@ -82,5 +82,5 @@
        ,(operation-slots-to-class-slots slots)
        ,@body)
 
-     ,(define-link/defmethod/print-object name)
-     ,(define-link/defmethod/output-name name)))
+     ,(define-operation/defmethod/print-object name)
+     ,(define-operation/defmethod/output-name name)))
