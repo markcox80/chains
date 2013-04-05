@@ -1,9 +1,8 @@
 (defpackage "CHAINS"
   (:use "COMMON-LISP")
   ;; Links
-  (:export #:link
-	   #:output-name
-	   #:copy-link)
+  (:export #:output-name
+	   #:operation-equal)
 
   ;; Chains
   (:export #:chain

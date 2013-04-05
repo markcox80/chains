@@ -14,18 +14,6 @@
     (when v
       (first v))))
 
-(defmacro define-step (name &body body)
-  (let ((documentation (let ((v (body-value body :documentation)))
-			 (when v
-			   (list (list :documentation v))))))
-    `(progn
-       (defclass ,name ()
-	 ()
-	 ,@documentation)
-
-       (defun ,name (chain)
-	 (find-object-with-class ',name chain)))))
-
 ;;; DEFINE OPERATION
 ;;; - Utilities
 (defun operation/interesting-slots (class-name)
@@ -72,15 +60,57 @@
   `(defmethod output-name ((object ,class-name))
      (output-name/helper ',class-name object)))
 
+;;; - Operation equal
+(defun operation-equal/helper (class-name object-a object-b test-functions slot-names)
+  (and (typep object-a class-name)
+       (typep object-b class-name)
+       (every #'(lambda (test-function slot-name)
+		  (funcall test-function
+			   (slot-value object-a slot-name)
+			   (slot-value object-b slot-name)))
+	      test-functions slot-names)))
+
+(defun define-operation/defmethod/operation-equal (class-name slot-definitions)
+  (labels ((slot-definition-test-function (slot-definition)
+	     (destructuring-bind (slot-name &rest args) slot-definition
+	       (declare (ignore slot-name))
+	       (or (getf args :test)
+		   #'equal)))
+	   (slot-test-function (slot-name)
+	     (let ((v (find slot-name slot-definitions :key #'first)))
+	       (slot-definition-test-function v))))
+    (let* ((slot-names (mapcar #'first slot-definitions))
+	   (test-functions (mapcar #'slot-test-function slot-names)))
+      `(let ((test-functions (list ,@test-functions)))
+	 (defmethod operation-equal ((object-a ,class-name) (object-b ,class-name))
+	   (and (call-next-method)
+		(operation-equal/helper ',class-name object-a object-b
+					test-functions ',slot-names)))))))
+
 ;;; - MACRO
 (defun operation-slots-to-class-slots (link-slots)
-  link-slots)
+  (labels ((to-class-slot (slot)
+	     (destructuring-bind (slot-name &rest args) slot
+	       (cons slot-name (alexandria:remove-from-plist args :test)))))
+    (mapcar #'to-class-slot link-slots)))
 
 (defmacro define-operation (name super-classes slots &body body)
   `(progn
      (defclass ,name ,super-classes
        ,(operation-slots-to-class-slots slots)
        ,@body)
-
+     
      ,(define-operation/defmethod/print-object name)
-     ,(define-operation/defmethod/output-name name)))
+     ,(define-operation/defmethod/output-name name)     
+     ,(define-operation/defmethod/operation-equal name slots)))
+
+(defmacro define-step (name super-classes slots &body body)
+  `(progn
+     (defclass ,name ,super-classes
+       ,(operation-slots-to-class-slots slots)
+       ,@body)
+
+     (defun ,name (list)
+       (find-object-with-class ',name list))
+
+     ,(define-operation/defmethod/operation-equal name slots)))

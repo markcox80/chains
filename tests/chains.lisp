@@ -6,22 +6,27 @@
     (cl-fad:delete-directory-and-files *chain-temporary-directory*))
   (ensure-directories-exist *chain-temporary-directory*))
 
-(define-step noise-model)
+(define-step noise-model ()
+    ())
 
 (define-operation gaussian (noise-model)
   ((sigma
     :initarg :sigma
-    :reader sigma))
+    :reader sigma
+    :test #'=))
   (:default-initargs
    :sigma 1))
 
 (define-operation salt-and-pepper (noise-model)
     ())
 
-(define-step algorithm)
+(define-step algorithm ()
+    ())
+
 (define-operation platypus (algorithm)
     ())
-(define-operation kangaroo (algortihm)
+
+(define-operation kangaroo (algorithm)
     ())
 
 (define-test output-name
