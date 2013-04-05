@@ -10,6 +10,8 @@
 
 	   #:*database-pathname*
 	   #:write-chain
+	   #:read-chain
+	   #:discover-chains
 
 	   #:chain-link-pathname
 	   #:chain-result-pathname

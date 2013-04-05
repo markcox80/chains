@@ -135,4 +135,16 @@
     (assert-true (pf "gaussian-0.1/result.sexp"))
     (assert-true (pf "salt-and-pepper/result.sexp"))
     (assert-true (pf "salt-and-pepper/kangaroo/result.sexp"))
-    (assert-true (pf "salt-and-pepper/platypus/result.sexp"))))
+    (assert-true (pf "salt-and-pepper/platypus/result.sexp"))
+
+    (assert-error 'error (read-chain (pf "gaussian-0.1/result.sexp")))
+    (let ((read-chain (read-chain (pf "gaussian-0.1/link.sexp"))))
+      (assert-true (= 1 (length read-chain)))
+      (assert-true (operation-equal (first read-chain) (first chain-1))))
+
+    (let ((read-chain (read-chain (pf "salt-and-pepper/kangaroo/link.sexp"))))
+      (assert-true (= 2 (length read-chain)))
+      (assert-true (operation-equal (first read-chain) (first chain-2)))
+      (assert-true (operation-equal (second read-chain) (second chain-2))))
+
+    (assert-equal 3 (length (discover-chains *database-pathname*)))))

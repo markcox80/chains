@@ -119,3 +119,30 @@
 
 (defun chain-result (chain class-name)
   (read-data (chain-result-pathname chain class-name)))
+
+;; Loading a chain
+(defun read-chain (pathname)
+  (cond
+    ((eql :relative (first (pathname-directory pathname)))
+     (read-chain (truename pathname)))
+    ((cl-fad:directory-pathname-p pathname)
+     (read-chain (or (probe-file (merge-pathnames "link.sexp" pathname))
+		     (probe-file (merge-pathnames "root.sexp" pathname))
+		     (error "Unable to find link in directory ~S" pathname))))
+    ((pathname-match-p pathname "/**/root.sexp")
+     nil)
+    ((pathname-match-p pathname "/**/link.sexp")
+     (append (read-chain (merge-pathnames (make-pathname :directory '(:relative :up))
+					  (directory-namestring pathname)))
+	     (list (read-data pathname))))
+    (t
+     (error "Do not know what to do with pathname ~S" pathname))))
+
+(defun discover-chains (pathname)
+  (let ((sublinks (directory (merge-pathnames (make-pathname :name "link"
+							     :type "sexp"
+							     :directory '(:relative :wild))
+					      pathname))))
+    (if sublinks
+	(reduce #'append sublinks :key #'discover-chains)
+	(list (read-chain pathname)))))
