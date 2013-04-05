@@ -15,6 +15,8 @@
 	   #:parallel-link-data-pathnames
 	   #:write-parallel-link-data-pathnames
 
+	   #:find-object-with-class
+
 	   #:chain-link-pathname
 	   #:chain-result-pathname
 	   #:chain-result)
