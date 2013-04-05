@@ -26,4 +26,6 @@
   
   ;; Macros
   (:export #:define-step
-	   #:define-operation))
+	   #:define-operation)
+
+  (:export #:program/perform))
