@@ -17,8 +17,14 @@
   (:default-initargs
    :sigma 1))
 
+(defmethod perform ((object gaussian) &key)
+  :gaussian)
+
 (define-operation salt-and-pepper (noise-model)
     ())
+
+(defmethod perform ((object salt-and-pepper) &key)
+  :salt-and-pepper)
 
 (define-step algorithm ()
     ())
@@ -26,8 +32,14 @@
 (define-operation platypus (algorithm)
     ())
 
+(defmethod perform ((object platypus) &key)
+  :platypus)
+
 (define-operation kangaroo (algorithm)
     ())
+
+(defmethod perform ((object kangaroo) &key)
+  :kangaroo)
 
 (define-test output-name
   (let ((obj (make-instance 'gaussian :sigma 0.1)))
@@ -62,19 +74,18 @@
     (write-chain chain-2)
     (write-chain chain-3)
 
-    (assert-true (pf "root.link"))
-    (assert-true (pf "gaussian-0.1/link"))
-    (assert-true (pf "gaussian-0.2/link"))
-    (assert-true (pf "salt-and-pepper/link"))
+    (assert-true (pf "gaussian-0.1/link.sexp"))
+    (assert-true (pf "gaussian-0.2/link.sexp"))
+    (assert-true (pf "salt-and-pepper/link.sexp"))
 
     (perform chain-1)
     (perform chain-2)
     (perform chain-3)
     
-    (assert-true (pf "gaussian-0.1/data.sexp"))
-    (assert-true (pf "gaussian-0.2/data.sexp"))
-    (assert-true (pf "salt-and-pepper/data.sexp"))
+    (assert-true (pf "gaussian-0.1/result.sexp"))
+    (assert-true (pf "gaussian-0.2/result.sexp"))
+    (assert-true (pf "salt-and-pepper/result.sexp"))
 
     (assert-error 'already-performed-error (perform chain-1 :if-performed :error))
     (perform chain-1 :if-performed :supersede)
-    (assert-true (pf "gaussian-0.1/data.sexp"))))
+    (assert-true (pf "gaussian-0.1/result.sexp"))))
