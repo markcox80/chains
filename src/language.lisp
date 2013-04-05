@@ -105,12 +105,20 @@
      ,(define-operation/defmethod/operation-equal name slots)))
 
 (defmacro define-step (name super-classes slots &body body)
-  `(progn
-     (defclass ,name ,super-classes
-       ,(operation-slots-to-class-slots slots)
-       ,@body)
+  (let ((class-body (remove-if #'(lambda (x)
+				   (member x '(:value)))
+			       body :key #'first))
+	(value-function-name (body-value body :value)))
+    `(progn
+       (defclass ,name ,super-classes
+	 ,(operation-slots-to-class-slots slots)
+	 ,@class-body)
 
-     (defun ,name (list)
-       (find-object-with-class ',name list))
+       (defun ,name (list)
+	 (find-object-with-class ',name list))
 
-     ,(define-operation/defmethod/operation-equal name slots)))
+       ,(when value-function-name
+	 `(defun ,value-function-name (chain)
+	    (chain-result chain ',name)))
+
+       ,(define-operation/defmethod/operation-equal name slots))))

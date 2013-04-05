@@ -7,7 +7,8 @@
   (ensure-directories-exist *chain-temporary-directory*))
 
 (define-step noise-model ()
-    ())
+    ()
+  (:value noise-model-value))
 
 (define-operation gaussian (noise-model)
   ((sigma
@@ -23,8 +24,7 @@
 (define-operation salt-and-pepper (noise-model)
     ())
 
-(defmethod perform ((object salt-and-pepper) &key chain)
-  (assert (typep (noise-model chain) 'noise-model))
+(defmethod perform ((object salt-and-pepper) &key)
   :salt-and-pepper)
 
 (define-step algorithm ()
@@ -33,7 +33,9 @@
 (define-operation platypus (algorithm)
     ())
 
-(defmethod perform ((object platypus) &key)
+(defmethod perform ((object platypus) &key chain)
+  (assert (typep (noise-model chain) 'noise-model))
+  (assert (keywordp (noise-model-value chain)))
   :platypus)
 
 (define-operation kangaroo (algorithm)
