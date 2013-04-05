@@ -95,6 +95,12 @@
 					     :error
 					     if-exists)))))
 	     (cons link stack)))
+
+    ;; Mark that this is the top of the chain.
+    (with-open-file (out (merge-pathnames "root.sexp" *database-pathname*) :if-exists nil :direction :output)
+      ;; Do nothing
+      )
+
     (reduce #'do-action chain :initial-value nil)))
 
 (defun chain-link-pathname (chain class-name)

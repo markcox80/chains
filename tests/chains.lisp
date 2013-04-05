@@ -88,6 +88,7 @@
     (write-chain chain-2)
     (write-chain chain-3)
 
+    (assert-true (pf "root.sexp"))
     (assert-true (pf "gaussian-0.1/link.sexp"))
     (assert-true (pf "gaussian-0.2/link.sexp"))
     (assert-true (pf "salt-and-pepper/link.sexp"))
@@ -120,6 +121,7 @@
     (assert-error 'error (write-chain chain-3 :if-exists :error))
     (write-chain chain-3 :if-exists :skip)
 
+    (assert-true (pf "root.sexp"))
     (assert-true (pf "gaussian-0.1/link.sexp"))
     (assert-true (pf "gaussian-0.1/kangaroo/link.sexp"))
     (assert-true (pf "salt-and-pepper/link.sexp"))
