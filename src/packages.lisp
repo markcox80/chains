@@ -13,6 +13,7 @@
 	   #:read-chain
 	   #:discover-chains
 	   #:parallel-link-data-pathnames
+	   #:write-parallel-link-data-pathnames
 
 	   #:chain-link-pathname
 	   #:chain-result-pathname

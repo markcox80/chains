@@ -169,3 +169,14 @@
 							 (compute-link-data-pathname (car truncated-chain) (rest truncated-chain)))))
 					   chains))
 			  :test #'pathname-match-p))))
+
+(defun write-parallel-link-data-pathnames (directory chains &key (format-control "depth-~2,'0d.list") (if-exists :error))
+  (let ((all-pathnames (parallel-link-data-pathnames chains)))
+    (loop
+       :for pathnames :in all-pathnames
+       :for depth :from 1
+       :for output-pathname := (merge-pathnames (format nil format-control depth) directory)
+       :do
+       (with-open-file (out output-pathname :direction :output :if-exists if-exists)
+	 (dolist (item pathnames)
+	   (format out "~A~%" (namestring item)))))))
