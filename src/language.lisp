@@ -50,7 +50,7 @@
   (let ((slots (operation/interesting-slots class-name)))	   
     (if slots
 	(format nil "~A-~{~A~^-~}"
-		(string-downcase (symbol-name class-name))
+		(substitute #\- #\/ (string-downcase (symbol-name class-name)))
 		(mapcar #'(lambda (slot)
 			    (slot-value object (closer-mop:slot-definition-name slot)))
 			slots))
