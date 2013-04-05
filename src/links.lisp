@@ -121,6 +121,13 @@
   (read-data (chain-result-pathname chain class-name)))
 
 ;; Loading a chain
+(define-condition link-not-found-error (error)
+  ((pathname
+    :initarg :pathname
+    :reader link-not-found-error-pathname))
+  (:report (lambda (condition stream)
+	     (format stream "Unable to find link file in pathname ~S" (link-not-found-error-pathname condition)))))
+
 (defun read-chain (pathname)
   (cond
     ((eql :relative (first (pathname-directory pathname)))
@@ -128,7 +135,7 @@
     ((cl-fad:directory-pathname-p pathname)
      (read-chain (or (probe-file (merge-pathnames "link.sexp" pathname))
 		     (probe-file (merge-pathnames "root.sexp" pathname))
-		     (error "Unable to find link in directory ~S" pathname))))
+		     (error 'link-not-found-error :pathname pathname))))
     ((pathname-match-p pathname "/**/root.sexp")
      nil)
     ((pathname-match-p pathname "/**/link.sexp")
@@ -143,6 +150,10 @@
 							     :type "sexp"
 							     :directory '(:relative :wild))
 					      pathname))))
-    (if sublinks
-	(reduce #'append sublinks :key #'discover-chains)
-	(list (read-chain pathname)))))
+    (cond
+      (sublinks
+       (reduce #'append sublinks :key #'discover-chains))
+      (t
+       (handler-case (list (read-chain pathname))
+	 (link-not-found-error ()
+	   nil))))))

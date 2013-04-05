@@ -148,3 +148,7 @@
       (assert-true (operation-equal (second read-chain) (second chain-2))))
 
     (assert-equal 3 (length (discover-chains *database-pathname*)))))
+
+(define-test discover-chains/empty
+  (let ((*database-pathname* (chain-temporary-directory)))
+    (assert-equal nil (discover-chains *database-pathname*))))
