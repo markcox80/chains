@@ -157,3 +157,15 @@
        (handler-case (list (read-chain pathname))
 	 (link-not-found-error ()
 	   nil))))))
+
+(defun parallel-link-data-pathnames (chains)
+  (let ((max-depth (reduce #'max chains :key #'length)))
+    (loop
+       :for depth :from 1 :to max-depth
+       :collect
+       (remove-duplicates (remove nil (map 'list #'(lambda (chain)
+						     (when (>= (length chain) depth)
+						       (let ((truncated-chain (reverse (subseq chain 0 depth))))
+							 (compute-link-data-pathname (car truncated-chain) (rest truncated-chain)))))
+					   chains))
+			  :test #'pathname-match-p))))
