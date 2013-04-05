@@ -19,13 +19,15 @@
 
 ;; Performing a CHAIN
 (defun write-data (pathname object &key (if-exists :error))
-  (with-open-file (out pathname :if-exists if-exists :direction :output)
-    (write object :stream out :readably t)
-    (terpri out)))
+  (let ((*package* (find-package "COMMON-LISP")))
+    (with-open-file (out pathname :if-exists if-exists :direction :output)
+      (write object :stream out :readably t)
+      (terpri out))))
 
 (defun read-data (pathname)
-  (with-open-file (in pathname)
-    (read in)))
+  (let ((*package* (find-package "COMMON-LISP")))
+    (with-open-file (in pathname)
+      (read in))))
 
 (defun compute-link-data-pathname (link stack)
   (merge-pathnames (make-pathname :name "link"
@@ -137,11 +139,13 @@
 		     (probe-file (merge-pathnames "root.sexp" pathname))
 		     (error 'link-not-found-error :pathname pathname))))
     ((pathname-match-p pathname "/**/root.sexp")
-     nil)
+     (values nil (directory-namestring pathname)))
     ((pathname-match-p pathname "/**/link.sexp")
-     (append (read-chain (merge-pathnames (make-pathname :directory '(:relative :up))
-					  (directory-namestring pathname)))
-	     (list (read-data pathname))))
+     (multiple-value-bind (parent-chain root-directory) (read-chain (merge-pathnames (make-pathname :directory '(:relative :up))
+										     (directory-namestring pathname)))
+       (values (append parent-chain
+		       (list (read-data pathname)))
+	       root-directory)))
     (t
      (error "Do not know what to do with pathname ~S" pathname))))
 

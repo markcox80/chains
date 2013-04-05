@@ -142,7 +142,8 @@
       (assert-true (= 1 (length read-chain)))
       (assert-true (operation-equal (first read-chain) (first chain-1))))
 
-    (let ((read-chain (read-chain (pf "salt-and-pepper/kangaroo/link.sexp"))))
+    (multiple-value-bind (read-chain root-pathname) (read-chain (pf "salt-and-pepper/kangaroo/link.sexp"))
+      (assert-true (pathname-match-p root-pathname (truename *database-pathname*)))
       (assert-true (= 2 (length read-chain)))
       (assert-true (operation-equal (first read-chain) (first chain-2)))
       (assert-true (operation-equal (second read-chain) (second chain-2))))
