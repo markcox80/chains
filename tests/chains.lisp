@@ -23,7 +23,8 @@
 (define-operation salt-and-pepper (noise-model)
     ())
 
-(defmethod perform ((object salt-and-pepper) &key)
+(defmethod perform ((object salt-and-pepper) &key chain)
+  (assert (typep (noise-model chain) 'noise-model))
   :salt-and-pepper)
 
 (define-step algorithm ()

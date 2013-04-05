@@ -6,7 +6,7 @@
 (defgeneric operation-equal (object-a object-b)
   (:documentation "A predicate that tests for equality of two OPERATION objects."))
 
-(defgeneric perform (object &key if-performed &allow-other-keys)
+(defgeneric perform (object &key if-performed chain &allow-other-keys)
   (:documentation "Tell OBJECT to get on with it."))
 
 (defmethod operation-equal ((object-a t) (object-b t))
@@ -57,7 +57,7 @@
   (:report (lambda (condition stream)
 	     (format stream "PERFORM has already been executed on object ~A" (already-performed-error-object condition)))))
 
-(defmethod perform ((object list) &key (if-performed :skip))
+(defmethod perform ((object list) &rest args &key (if-performed :skip))
   (labels ((do-action (stack link)
 	     (cond
 	       ((performedp link stack)
@@ -70,7 +70,7 @@
 		  (:error
 		   (error 'already-performed-error :object link))))
 	       (t
-		(let ((object (perform link))
+		(let ((object (apply #'perform link :chain object args))
 		      (pathname (compute-link-result-pathname link stack)))		  
 		  (ensure-directories-exist (directory-namestring pathname))
 		  (write-data pathname object))
