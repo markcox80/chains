@@ -43,6 +43,13 @@
     (assert-true (typep (noise-model chain) 'gaussian))
     (assert-true (typep (algorithm chain) 'platypus))))
 
+(define-test operation-equal
+  (let ((a (make-instance 'gaussian :sigma 0.1))
+	(b (make-instance 'gaussian :sigma 0.1))
+	(c (make-instance 'gaussian :sigma 0.2)))
+    (assert-true (operation-equal a b))
+    (assert-false (operation-equal a c))))
+
 (defun pf (pathname)
   (probe-file (merge-pathnames pathname *database-pathname*)))
 
