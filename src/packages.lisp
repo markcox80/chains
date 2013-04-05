@@ -4,6 +4,10 @@
   (:export #:output-name
 	   #:operation-equal)
 
+  ;; Data
+  (:export #:read-data
+	   #:write-data)
+
   ;; Chains
   (:export #:chain
 	   #:make-chain
