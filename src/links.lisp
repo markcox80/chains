@@ -75,10 +75,24 @@
 		(cons link stack)))))
     (reduce #'do-action object :initial-value nil)))
 
-(defun write-chain (chain &key (if-exists :error))
+(defun write-chain (chain &key (if-exists :skip))
   (labels ((do-action (stack link)
 	     (let ((pathname (compute-link-data-pathname link stack)))
 	       (ensure-directories-exist (directory-namestring pathname))
-	       (write-data pathname link :if-exists if-exists))
+	       (cond
+		 ((probe-file pathname)
+		  (ecase if-exists
+		    (:skip
+		     (cons link stack))
+		    (:error
+		     (error "File exists at path ~A" pathname))
+		    (:supersede
+		     (delete-file pathname)
+		     (do-action stack link))))
+		 (t
+		  (write-data pathname link
+			      :if-exists (if (eql :skip if-exists)
+					     :error
+					     if-exists)))))
 	     (cons link stack)))
     (reduce #'do-action chain :initial-value nil)))

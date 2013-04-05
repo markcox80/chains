@@ -89,3 +89,31 @@
     (assert-error 'already-performed-error (perform chain-1 :if-performed :error))
     (perform chain-1 :if-performed :supersede)
     (assert-true (pf "gaussian-0.1/result.sexp"))))
+
+(define-test serialisation/multi-chain
+  (let ((*database-pathname* (chain-temporary-directory))
+	(chain-1 (make-chain (make-instance 'gaussian :sigma 0.1)
+			     (make-instance 'kangaroo)))
+	(chain-2 (make-chain (make-instance 'salt-and-pepper)
+			     (make-instance 'kangaroo)))
+	(chain-3 (make-chain (make-instance 'salt-and-pepper)
+			     (make-instance 'platypus))))
+    (write-chain chain-1)
+    (write-chain chain-2)
+    (assert-error 'error (write-chain chain-3 :if-exists :error))
+    (write-chain chain-3 :if-exists :skip)
+
+    (assert-true (pf "gaussian-0.1/link.sexp"))
+    (assert-true (pf "gaussian-0.1/kangaroo/link.sexp"))
+    (assert-true (pf "salt-and-pepper/link.sexp"))
+    (assert-true (pf "salt-and-pepper/kangaroo/link.sexp"))
+    (assert-true (pf "salt-and-pepper/platypus/link.sexp"))
+
+    (perform chain-1)
+    (perform chain-2)
+    (perform chain-3)
+    
+    (assert-true (pf "gaussian-0.1/result.sexp"))
+    (assert-true (pf "salt-and-pepper/result.sexp"))
+    (assert-true (pf "salt-and-pepper/kangaroo/result.sexp"))
+    (assert-true (pf "salt-and-pepper/platypus/result.sexp"))))
