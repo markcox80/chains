@@ -6,7 +6,7 @@
 (defgeneric operation-equal (object-a object-b)
   (:documentation "A predicate that tests for equality of two OPERATION objects."))
 
-(defgeneric perform (object &key if-performed chain &allow-other-keys)
+(defgeneric perform (object &key if-performed chain directory &allow-other-keys)
   (:documentation "Tell OBJECT to get on with it."))
 
 (defmethod operation-equal ((object-a t) (object-b t))
@@ -70,10 +70,10 @@
 		  (:error
 		   (error 'already-performed-error :object link))))
 	       (t
-		(let ((object (apply #'perform link :chain object args))
-		      (pathname (compute-link-result-pathname link stack)))		  
+		(let* ((pathname (compute-link-result-pathname link stack)))		  
 		  (ensure-directories-exist (directory-namestring pathname))
-		  (write-data pathname object))
+		  (let ((object (apply #'perform link :chain object :directory pathname args)))
+		    (write-data pathname object)))
 		(cons link stack)))))
     (reduce #'do-action object :initial-value nil)))
 
