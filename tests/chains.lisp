@@ -100,6 +100,9 @@
     (assert-true (pf "gaussian-0.2/result.sexp"))
     (assert-true (pf "salt-and-pepper/result.sexp"))
 
+    (assert-error 'error (chain-result chain-2 'algorithm))
+    (assert-equal :salt-and-pepper (chain-result chain-2 'noise-model))
+
     (assert-error 'already-performed-error (perform chain-1 :if-performed :error))
     (perform chain-1 :if-performed :supersede)
     (assert-true (pf "gaussian-0.1/result.sexp"))))

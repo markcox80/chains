@@ -107,4 +107,9 @@
   (let ((pos (position-if #'(lambda (x)
 			      (typep x class-name))
 			  chain)))
+    (unless pos
+      (error "Unable to find object with class ~A in chain ~A" class-name chain))
     (compute-link-result-pathname (elt chain pos) (reverse (subseq chain 0 pos)))))
+
+(defun chain-result (chain class-name)
+  (read-data (chain-result-pathname chain class-name)))

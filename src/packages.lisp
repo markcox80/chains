@@ -12,7 +12,8 @@
 	   #:write-chain
 
 	   #:chain-link-pathname
-	   #:chain-result-pathname)
+	   #:chain-result-pathname
+	   #:chain-result)
 
   ;; Tasks
   (:export #:perform
