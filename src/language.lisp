@@ -75,7 +75,7 @@
 	     (destructuring-bind (slot-name &rest args) slot-definition
 	       (declare (ignore slot-name))
 	       (or (getf args :test)
-		   #'equal)))
+		   '(function equal))))
 	   (slot-test-function (slot-name)
 	     (let ((v (find slot-name slot-definitions :key #'first)))
 	       (slot-definition-test-function v))))
