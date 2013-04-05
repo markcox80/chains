@@ -62,6 +62,20 @@
     (assert-true (operation-equal a b))
     (assert-false (operation-equal a c))))
 
+(define-test pathnames
+  (let ((*database-pathname* (chain-temporary-directory))
+	(chain-1 (make-chain (make-instance 'gaussian :sigma 0.1)
+			     (make-instance 'kangaroo))))
+    (assert-equal (merge-pathnames "gaussian-0.1/link.sexp" *database-pathname*)
+		  (chain-link-pathname chain-1 'noise-model))
+    (assert-equal (merge-pathnames "gaussian-0.1/kangaroo/link.sexp" *database-pathname*)
+		  (chain-link-pathname chain-1 'algorithm))
+
+    (assert-equal (merge-pathnames "gaussian-0.1/result.sexp" *database-pathname*)
+		  (chain-result-pathname chain-1 'noise-model))
+    (assert-equal (merge-pathnames "gaussian-0.1/kangaroo/result.sexp" *database-pathname*)
+		  (chain-result-pathname chain-1 'algorithm))))
+
 (defun pf (pathname)
   (probe-file (merge-pathnames pathname *database-pathname*)))
 

@@ -9,7 +9,10 @@
 	   #:make-chain
 
 	   #:*database-pathname*
-	   #:write-chain)
+	   #:write-chain
+
+	   #:chain-link-pathname
+	   #:chain-result-pathname)
 
   ;; Tasks
   (:export #:perform

@@ -96,3 +96,15 @@
 					     if-exists)))))
 	     (cons link stack)))
     (reduce #'do-action chain :initial-value nil)))
+
+(defun chain-link-pathname (chain class-name)
+  (let ((pos (position-if #'(lambda (x)
+			      (typep x class-name))
+			  chain)))
+    (compute-link-data-pathname (elt chain pos) (reverse (subseq chain 0 pos)))))
+
+(defun chain-result-pathname (chain class-name)
+  (let ((pos (position-if #'(lambda (x)
+			      (typep x class-name))
+			  chain)))
+    (compute-link-result-pathname (elt chain pos) (reverse (subseq chain 0 pos)))))
