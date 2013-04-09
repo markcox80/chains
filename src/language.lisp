@@ -27,7 +27,7 @@
        :when (closer-mop:slot-definition-initargs slot)
        :append
        (list (first (closer-mop:slot-definition-initargs slot))
-	     (closer-mop:slot-value-using-class class object slot)))))
+	     `(quote ,(closer-mop:slot-value-using-class class object slot))))))
 
 (defun print-object/operation (class-name object stream)
   (let ((arguments (print-object/helper class-name object)))
