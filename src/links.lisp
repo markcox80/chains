@@ -9,6 +9,9 @@
 (defgeneric perform (object &key if-performed chain directory &allow-other-keys)
   (:documentation "Tell OBJECT to get on with it."))
 
+(defgeneric performedp (object chain)
+  (:documentation "Has OBJECT got on with it?"))
+
 (defmethod operation-equal ((object-a t) (object-b t))
   t)
 
@@ -47,7 +50,7 @@
 			   :initial-value (make-pathname :directory (list :relative)))
 		   *database-pathname*))
 
-(defun performedp (link stack)
+(defmethod performedp ((link t) stack)
   (probe-file (compute-link-result-pathname link stack)))
 
 (define-condition already-performed-error (error)
