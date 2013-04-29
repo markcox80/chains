@@ -13,50 +13,102 @@ blurred.
 This section outlines the main use case for the ~CHAINS~ system. The
 abstraction it employs is rather strange without understanding why it
 is needed. The example presented in this section is real, and is the
-primary reason for the existence of the ~CHAINS~ system as problems
-like the one presented, occur frequently.
+primary reason for the existence of the ~CHAINS~ system.
 
-One important computer vision application in the field of computer
-vision is that of /congealing/. The task of a congealing application
-is very simple, discover the location of an object contained in an
-ensemble of images. A key trait of congealing algorithms is that they
-know nothing about the object in each image, other than it can be
-assumed that each image contains the object. An example would be,
-given an ensemble of images containing faces, find me the bounding box
-of each face.
+An important problem in the field of computer vision is that of
+/congealing/. The task of congealing is very simple, discover the
+location of an object contained in an ensemble of images. A key trait
+of congealing algorithms is that they know nothing about the object in
+each image, other than it can be assumed that each image contains the
+object. An example would be, given an ensemble of images containing
+faces, find me the bounding box of each face.
 
 When evaluating a congealing algorithm one must evaluate the algorithm
 against the following criteria
 - Level of initial misalignment :: How far away from the initial guess
      can the algorithm recover the true location of the object?
-- Lighting variation :: How does the algorithm variation in appearance
-     due to lighting variation?
+- Lighting variation :: How does the algorithm handle variation in
+     appearance due to lighting variation?
 - Image noise :: How does the algorithm handle variation in appearance
                  due to image noise?
 - Appearance variation :: How does the algorithm handle variation in
      appearance of the object? For faces, this would mean male versus
      female, beard versus non-beard, and so on.
 - Occlusion :: How does the algorithm handle cases where the object is
-               occluded by another object? i.e. a face occluded by
+               occluded by another object? e.g. a face occluded by
                hair and/or glasses.
 - Cross validation :: Another ensemble of images with the same
      statistics.
 
-As you have no doubt have discerned by know, the five variables
-mentioned above are all associated with statistics on the ensemble of
-images fed to the algorithm. The reader can assume that these
-statistics are in fact controllable. i.e. it is possible to synthesise
-an ensemble of images that satisfy a required statistic. 
+As you have probably discerned by know, the five variables mentioned
+above are all associated with statistics on the ensemble of images fed
+to the algorithm. The reader can assume that these statistics are in
+fact controllable. i.e. it is possible to synthesise an ensemble of
+images that satisfy a required statistic.
 
 In addition to variables associated with the input data, a congealing
 algorithm typically has a number of parameters that influence its own
-performance. These parameters are specified a priori. In most cases
-there is no guaranteed means of calculating the "optimal" value, which
-means iterating through a set of values which are thought to be "worth
-a shot".
+performance. These parameters typically have a range of values that
+are worth trying.
 
-A scientist also wants to know how the algorithm compares against
-another benchmark algorithm on the same data. If no benchmark
+A scientist also wants to compare the algorithm against another
+benchmark algorithm on /exactly/ the same data. If no benchmark
 algorithm exists, then a number of other algorithms are
-evaluated. Each selected algorithm has their own set of parameters
-that must be iterated through.
+evaluated. Having exactly the same data is extremely important. A
+strategically chosen change in data can have a dramatic effect on
+results for some algorithms.
+
+Congealing algorithms are typically iterative algorithms. i.e. The
+algorithm repeatedly processes the output of the previous iteration
+until some termination criteria is satisfied.
+
+Once all of the algorithms are executed, a results collation process
+begins. What results that are obtained depend on the paper. These
+results may involve performance conditioned on the statistics of the
+image ensemble, or results indicating the influence each algorithm
+parameter has on its performance.
+
+Everything up to this point is straight forward. You prepare the data
+to be fed to the algorithms, you execute the algorithms and then you
+produce results (and then write the report/paper/journal). Easy.
+
+Unfortunately, this rarely occurs in practice. 
+
+In practice, one implements an algorithm that has been published. Upon
+experimenting with the algorithm, it is discovered that there is
+something that could be improved. For example, the algorithm cannot
+handle image ensembles with certain statistics or the algorithm is
+really sensitive to a particular parameter. With this new information,
+the goal is now to design a new algorithm, that can handle these
+statistics in a better way.
+
+Immediately we see that the algorithm and the experiments are not
+concrete. One typically creates many algorithms that may "do the job",
+but one does not know whether it is an idea worth investigating
+further until it has been implemented and a preliminary set of results
+are obtained. Additionally, the type of results required may change
+depending on the point being made.
+
+What a scientist wants to work on is the algorithm. That is what is
+important. That is what is publishable. The experiment stuff validates
+the argument for the algorithm, but it is not the primary focus. 
+
+Saying it is not of primary focus is rather ironic. The experiment
+design is what lead to the discovery. The experiment design validates
+a new discovery.
+
+Furthermore, it is the experiment design where much of computer
+scientist's effort is spent. It is to easy to see why. 
+- Combinatorial explosion :: The number of experiments to execute
+     increases combinatorially with the number of experiment parameters.
+- Data parallelisation :: Running things sequentially is prohibitive
+     with respect to time. It is an embarrassingly parallel problem so
+     implement it accordingly.
+- Serialisation :: The output of all stages of the experiment need to
+                   be saved in order to compute results quickly.
+- Feature creep :: When a new part of the experiment design is
+                   introduced it must also fit in nicely with the
+                   existing implementation.
+
+What the ~CHAINS~ system tries to do, is make it easier to perform
+experimentation in order to get results.
