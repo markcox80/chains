@@ -6,3 +6,57 @@ experiment chain in which a number of links are assembled to produce a
 result. Its main purpose is to accommodate scenarios where the line
 between a scientific experiment and algorithmic experimentation is
 blurred.
+
+[TABLE-OF-CONTENTS]
+
+* A backstory
+This section outlines the main use case for the ~CHAINS~ system. The
+abstraction it employs is rather strange without understanding why it
+is needed. The example presented in this section is real, and is the
+primary reason for the existence of the ~CHAINS~ system as problems
+like the one presented, occur frequently.
+
+One important computer vision application in the field of computer
+vision is that of /congealing/. The task of a congealing application
+is very simple, discover the location of an object contained in an
+ensemble of images. A key trait of congealing algorithms is that they
+know nothing about the object in each image, other than it can be
+assumed that each image contains the object. An example would be,
+given an ensemble of images containing faces, find me the bounding box
+of each face.
+
+When evaluating a congealing algorithm one must evaluate the algorithm
+against the following criteria
+- Level of initial misalignment :: How far away from the initial guess
+     can the algorithm recover the true location of the object?
+- Lighting variation :: How does the algorithm variation in appearance
+     due to lighting variation?
+- Image noise :: How does the algorithm handle variation in appearance
+                 due to image noise?
+- Appearance variation :: How does the algorithm handle variation in
+     appearance of the object? For faces, this would mean male versus
+     female, beard versus non-beard, and so on.
+- Occlusion :: How does the algorithm handle cases where the object is
+               occluded by another object? i.e. a face occluded by
+               hair and/or glasses.
+- Cross validation :: Another ensemble of images with the same
+     statistics.
+
+As you have no doubt have discerned by know, the five variables
+mentioned above are all associated with statistics on the ensemble of
+images fed to the algorithm. The reader can assume that these
+statistics are in fact controllable. i.e. it is possible to synthesise
+an ensemble of images that satisfy a required statistic. 
+
+In addition to variables associated with the input data, a congealing
+algorithm typically has a number of parameters that influence its own
+performance. These parameters are specified a priori. In most cases
+there is no guaranteed means of calculating the "optimal" value, which
+means iterating through a set of values which are thought to be "worth
+a shot".
+
+A scientist also wants to know how the algorithm compares against
+another benchmark algorithm on the same data. If no benchmark
+algorithm exists, then a number of other algorithms are
+evaluated. Each selected algorithm has their own set of parameters
+that must be iterated through.
