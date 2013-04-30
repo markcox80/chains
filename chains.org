@@ -37,19 +37,21 @@ against the following criteria
 - Occlusion :: How does the algorithm handle cases where the object is
                occluded by another object? e.g. a face occluded by
                hair and/or glasses.
+- Ensemble size :: How does the number of images in the ensemble
+                   influence performance?
 - Cross validation :: Another ensemble of images with the same
      statistics.
 
-As you have probably discerned by know, the five variables mentioned
-above are all associated with statistics on the ensemble of images fed
-to the algorithm. The reader can assume that these statistics are in
-fact controllable. i.e. it is possible to synthesise an ensemble of
-images that satisfy a required statistic.
+As you have probably discerned by know, the variables mentioned above
+are all associated with statistics on the ensemble of images fed to
+the algorithm. The reader can assume that these statistics are in fact
+controllable. i.e. it is possible to synthesise an ensemble of images
+that satisfy a required statistic.
 
 In addition to variables associated with the input data, a congealing
 algorithm typically has a number of parameters that influence its own
 performance. These parameters typically have a range of values that
-are worth trying.
+are "worth" trying.
 
 A scientist also wants to compare the algorithm against another
 benchmark algorithm on /exactly/ the same data. If no benchmark
@@ -82,9 +84,9 @@ really sensitive to a particular parameter. With this new information,
 the goal is now to design a new algorithm, that can handle these
 statistics in a better way.
 
-Immediately we see that the algorithm and the experiments are not
-concrete. One typically creates many algorithms that may "do the job",
-but one does not know whether it is an idea worth investigating
+Immediately we see that the algorithm and the needed experiments are
+not concrete. One typically creates many algorithms that may "do the
+job", but one does not know whether it is an idea worth investigating
 further until it has been implemented and a preliminary set of results
 are obtained. Additionally, the type of results required may change
 depending on the point being made.
@@ -94,13 +96,30 @@ important. That is what is publishable. The experiment stuff validates
 the argument for the algorithm, but it is not the primary focus. 
 
 Saying it is not of primary focus is rather ironic. The experiment
-design is what lead to the discovery. The experiment design validates
-a new discovery.
+design is what lead to the discovery. The experiment design also
+validates a new discovery. Furthermore, it is the experiment design
+where much of a computer scientist's effort is spent and it is to easy
+to see why.
 
-Furthermore, it is the experiment design where much of computer
-scientist's effort is spent. It is to easy to see why. 
+The problem with experiments is that they take time to
+execute. Obviously this time is a function of the algorithm execution
+time. It is also a function of the number of experiments, or what is
+termed, the size of the experiment design. An experiment design
+defines the experiments to be executed i.e. the different types of
+input data, the different types of algorithms, and also the different
+types of information required to compute results.
+
+The size of the experiment
+is combinatorial function of the number of experiment parameters and
+the number of values for each experiment parameter. i.e. If you have a
+large number of experiment parameters and a large number of values per
+experiment parameter then you have an extremely large number of
+experiments.
+
+Fortunately, each of these experiment these can be executed in parallel. 
+
 - Combinatorial explosion :: The number of experiments to execute
-     increases combinatorially with the number of experiment parameters.
+     increases combinatorially with the number of experiment parameters. Perform
 - Data parallelisation :: Running things sequentially is prohibitive
      with respect to time. It is an embarrassingly parallel problem so
      implement it accordingly.
