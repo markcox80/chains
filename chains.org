@@ -11,24 +11,26 @@ blurred.
 
 * A backstory
 This section outlines the main use case for the ~CHAINS~ system. The
-abstraction it employs is rather strange without understanding why it
-is needed. The example presented in this section is real, and is the
-primary reason for the existence of the ~CHAINS~ system.
+abstraction the ~CHAINS~ system employs is rather strange when
+introduced on its own. Hopefully this section aids in understanding
+why. The example presented in this section is real, and is the primary
+reason for the existence of the ~CHAINS~ system.
 
 An important problem in the field of computer vision is that of
 /congealing/. The task of congealing is very simple, discover the
 location of an object contained in an ensemble of images. A key trait
 of congealing algorithms is that they know nothing about the object in
-each image, other than it can be assumed that each image contains the
-object. An example would be, given an ensemble of images containing
-faces, find me the bounding box of each face.
+each image, other than it can be assumed that the object is present in
+each image. A concrete example of congealing would be, given an
+ensemble of images containing faces, find me the bounding box of each
+face.
 
 When evaluating a congealing algorithm one must evaluate the algorithm
 against the following criteria
 - Level of initial misalignment :: How far away from the initial guess
      can the algorithm recover the true location of the object?
 - Lighting variation :: How does the algorithm handle variation in
-     appearance due to lighting variation?
+     appearance due to illumination conditions?
 - Image noise :: How does the algorithm handle variation in appearance
                  due to image noise?
 - Appearance variation :: How does the algorithm handle variation in
@@ -39,19 +41,19 @@ against the following criteria
                hair and/or glasses.
 - Ensemble size :: How does the number of images in the ensemble
                    influence performance?
-- Cross validation :: Another ensemble of images with the same
-     statistics.
+- Cross validation :: Testing performance on another ensemble of
+     images with exactly the same statistics.
 
 As you have probably discerned by know, the variables mentioned above
 are all associated with statistics on the ensemble of images fed to
-the algorithm. The reader can assume that these statistics are in fact
-controllable. i.e. it is possible to synthesise an ensemble of images
-that satisfy a required statistic.
+the congealing algorithm. The reader can assume that these statistics
+are in fact controllable. i.e. it is possible to synthesise an
+ensemble of images that satisfy the needed statistic.
 
 In addition to variables associated with the input data, a congealing
 algorithm typically has a number of parameters that influence its own
-performance. These parameters typically have a range of values that
-are "worth" trying.
+performance. These parameters have a range of values that are "worth"
+trying.
 
 A scientist also wants to compare the algorithm against another
 benchmark algorithm on /exactly/ the same data. If no benchmark
@@ -61,8 +63,8 @@ strategically chosen change in data can have a dramatic effect on
 results for some algorithms.
 
 Congealing algorithms are typically iterative algorithms. i.e. The
-algorithm repeatedly processes the output of the previous iteration
-until some termination criteria is satisfied.
+algorithm repeatedly processes its own output until some termination
+criteria is satisfied.
 
 Once all of the algorithms are executed, a results collation process
 begins. What results that are obtained depend on the paper. These
@@ -77,12 +79,13 @@ produce results (and then write the report/paper/journal). Easy.
 Unfortunately, this rarely occurs in practice. 
 
 In practice, one implements an algorithm that has been published. Upon
-experimenting with the algorithm, it is discovered that there is
-something that could be improved. For example, the algorithm cannot
-handle image ensembles with certain statistics or the algorithm is
-really sensitive to a particular parameter. With this new information,
-the goal is now to design a new algorithm, that can handle these
-statistics in a better way.
+experimenting (or implementing) with the algorithm, it is discovered
+that there is something that could be improved. For example, the
+algorithm cannot handle image ensembles with certain statistics or the
+algorithm is really sensitive to a particular parameter or the
+algorithm is theoretically flawed in some manner. With this new
+information, the goal is now to design a new algorithm, that can
+overcome the identified algorithm.
 
 Immediately we see that the algorithm and the needed experiments are
 not concrete. One typically creates many algorithms that may "do the
@@ -109,14 +112,14 @@ defines the experiments to be executed i.e. the different types of
 input data, the different types of algorithms, and also the different
 types of information required to compute results.
 
-The size of the experiment
-is combinatorial function of the number of experiment parameters and
-the number of values for each experiment parameter. i.e. If you have a
-large number of experiment parameters and a large number of values per
-experiment parameter then you have an extremely large number of
-experiments.
+Tragically, the size of the experiment design is a combinatorial
+function built from the number of values specified for each experiment
+parameter. i.e. If you have a large number of experiment parameters
+and a large number of values per experiment parameter then you have an
+extremely large number of experiments.
 
-Fortunately, each of these experiment these can be executed in parallel. 
+Fortunately, since the experiments are independent, they can be
+executed in parallel. Well sort of. 
 
 - Combinatorial explosion :: The number of experiments to execute
      increases combinatorially with the number of experiment parameters. Perform
