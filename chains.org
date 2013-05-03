@@ -41,8 +41,11 @@ against the following criteria
                hair and/or glasses.
 - Ensemble size :: How does the number of images in the ensemble
                    influence performance?
-- Cross validation :: Testing performance on another ensemble of
+- Cross validation on images :: Testing performance on another ensemble of
      images with exactly the same statistics.
+- Cross validation on geometry :: Testing performance on the same
+     collection of images, but with different initial guesses of the
+     true location of the object.
 
 As you have probably discerned by know, the variables mentioned above
 are all associated with statistics on the ensemble of images fed to
@@ -119,18 +122,42 @@ and a large number of values per experiment parameter then you have an
 extremely large number of experiments.
 
 Fortunately, since the experiments are independent, they can be
-executed in parallel. Well sort of. 
+executed in parallel. Well not quite in parallel, but there are times
+where parallelism is possible. Consider the following where a number
+of congealing algorithms need to process the given input data.
 
-- Combinatorial explosion :: The number of experiments to execute
-     increases combinatorially with the number of experiment parameters. Perform
-- Data parallelisation :: Running things sequentially is prohibitive
-     with respect to time. It is an embarrassingly parallel problem so
-     implement it accordingly.
-- Serialisation :: The output of all stages of the experiment need to
-                   be saved in order to compute results quickly.
-- Feature creep :: When a new part of the experiment design is
-                   introduced it must also fit in nicely with the
-                   existing implementation.
+#+begin_src ditaa :file parallelism.png
++--------------+     +-------------+
+| Input Data 1 |---->| Algorithm 1 |
++--------------+\    +-------------+
+                 \
+                  \  +-------------+
+                   ->| Algorithm 2 |
+                     +-------------+
 
-What the ~CHAINS~ system tries to do, is make it easier to perform
-experimentation in order to get results.
++--------------+     +-------------+
+| Input Data 2 |---->| Algorithm 1 |
++--------------+\    +-------------+
+                 \
+                  \  +-------------+
+                   ->| Algorithm 2 |
+                     +-------------+
+#+end_src
+Executing algorithms 1 and 2 can only be performed once the input data
+has been created. 
+
+Creating the input data is more complicated as there are a number of
+parameters that govern the type of input data. A visualisation of this
+process is as follows
+
+#+begin_src ditaa :file input-data.png
++----------------------------------------+   +-------------+   +------------------+
+| Images (Lighting/Occlusion/Appearance) |-->| Image Noise |-->| Cross Validation |---->
++----------------------------------------+   +-------------+   +------------------+
+
+    +----------+  +------------------+
+--->| Geometry |--| Cross validation |
+    +----------+  +------------------+
+#+end_src
+
+The first step is t
