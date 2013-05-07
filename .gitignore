@@ -1,4 +1,7 @@
-*~
 *.fasl
+*~
+/algorithm-input.png
+/input-data.png
+/parallelism.png
 bin/*
 chains.html

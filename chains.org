@@ -125,39 +125,109 @@ Fortunately, since the experiments are independent, they can be
 executed in parallel. Well not quite in parallel, but there are times
 where parallelism is possible. Consider the following where a number
 of congealing algorithms need to process the given input data.
-
 #+begin_src ditaa :file parallelism.png
 +--------------+     +-------------+
-| Input Data 1 |---->| Algorithm 1 |
-+--------------+\    +-------------+
-                 \
-                  \  +-------------+
-                   ->| Algorithm 2 |
+| Input Data 1 +-+-->| Algorithm 1 |
++--------------+ |   +-------------+
+                 |
+                 |   +-------------+
+                 +-->| Algorithm 2 |
                      +-------------+
 
 +--------------+     +-------------+
-| Input Data 2 |---->| Algorithm 1 |
-+--------------+\    +-------------+
-                 \
-                  \  +-------------+
-                   ->| Algorithm 2 |
+| Input Data 2 +-+-->| Algorithm 1 |
++--------------+ |   +-------------+
+                 |
+                 |   +-------------+
+                 +-->| Algorithm 2 |
                      +-------------+
 #+end_src
-Executing algorithms 1 and 2 can only be performed once the input data
-has been created. 
+Once input data 1 and 2 are created, all four algorithm invocations
+can be executed in parallel provided the algorithm implementation
+permits.
 
-Creating the input data is more complicated as there are a number of
-parameters that govern the type of input data. A visualisation of this
-process is as follows
-
+For congealing, creating the input data is arguably the most
+complicated component of the experimental setup as there are a number
+of parameters that govern how the input data is formed. A
+visualisation of this process is as follows
 #+begin_src ditaa :file input-data.png
-+----------------------------------------+   +-------------+   +------------------+
-| Images (Lighting/Occlusion/Appearance) |-->| Image Noise |-->| Cross Validation |---->
-+----------------------------------------+   +-------------+   +------------------+
+  +-------------------------------+
+  | Image Appearance and Lighting |
+  +------+------------------------+
+         | 
+         v
+  +------------------------+
+  | Image Cross Validation |<--=-Images selected here
+  +------+-----------------+
+         |
+         v
+  +---------------------+
+  | Synthetic Occlusion |<--=-- Occluded regions added.
+  +------+--------------+
+         | 
+         o<--=--Input data images created
+         |
+         v         
+  +---------------------------------+
+  | Distance away from ground truth |
+  +------+--------------------------+
+         |
+         v
+  +----------------------------+
+  | Geometric Cross Validation |<--=-Create initial guess
+  +----------------------------+
+#+end_src
+The term cross validation used above refers to the process of
+synthesising a set of random samples with the same statistics. Thus
+for the image cross validation, an entirely different set of images
+with same level of appearance variation and lighting conditions are
+selected. Similarly, the geometric cross validation is a new set
+initial guesses on where the object is for the same set of
+images. There should be a cross validation block for the synthetic
+occlusion component too, but we have chosen to omit it for clarity.
 
-    +----------+  +------------------+
---->| Geometry |--| Cross validation |
-    +----------+  +------------------+
+For an experiment design, there will be many different image
+appearance and lighting statistics used as well as many different
+synthetic occlusions so the above /chain/ that creates the input data
+is really a single path in a tree that defines the experiment design.
+
+To complicate matters, there may be many other ways of selecting the
+input data images. i.e. with no occlusion, with no cross validation,
+with image noise and so on. Thus the marker "Input data images
+created" really represents the input to the next stage of the
+experiment design. In this case, the initial guess of where the object
+is the image. Obviously, in order to form an initial guess, you need
+to know the ground truth location of the object in the image. Assuming
+this information is available, then synthesising an initial guess is
+trivial.
+
+Once the initial guess is created, then the algorithm can be
+executed. The algorithm also needs the input data images, thus, the
+input to the algorithm is really the input data images and the initial
+guess as depicted in the next figure.
+#+begin_src ditaa :file algorithm-input.png
+         |
+         o<--=--Input data images created
+         |
++--------+
+|        |
+|        v                                                  
+| +---------------------------------+
+| | Distance away from ground truth |
+| +------+--------------------------+
+|        | 
+|        v
+| +----------------------------+
+| | Geometric Cross Validation |
+| +------+---------------------+
+|        |
++---+    o<--=--Initial Guess
+    |    |
+    v    v
+  +-----------+
+  | Algorithm |
+  +-----------+
 #+end_src
 
-The first step is t
+What is obvious is that there are various stages along the chain that
+define the transition from one component of the experiment to another.
