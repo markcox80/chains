@@ -27,8 +27,8 @@ face.
 
 When evaluating a congealing algorithm one must evaluate the algorithm
 against the following criteria
-- Level of initial misalignment :: How far away from the initial guess
-     can the algorithm recover the true location of the object?
+- Level of initial misalignment :: How far away from the true location
+     can then algorithm correctly locate the object?
 - Lighting variation :: How does the algorithm handle variation in
      appearance due to illumination conditions?
 - Image noise :: How does the algorithm handle variation in appearance
@@ -38,64 +38,60 @@ against the following criteria
      female, beard versus non-beard, and so on.
 - Occlusion :: How does the algorithm handle cases where the object is
                occluded by another object? e.g. a face occluded by
-               hair and/or glasses.
+               hair, glasses or another object.
 - Ensemble size :: How does the number of images in the ensemble
                    influence performance?
 - Cross validation on images :: Testing performance on another ensemble of
      images with exactly the same statistics.
 - Cross validation on geometry :: Testing performance on the same
-     collection of images, but with different initial guesses of the
-     true location of the object.
+     collection of images but with different random starting
+     locations.
 
-As you have probably discerned by know, the variables mentioned above
-are all associated with statistics on the ensemble of images fed to
-the congealing algorithm. The reader can assume that these statistics
-are in fact controllable. i.e. it is possible to synthesise an
-ensemble of images that satisfy the needed statistic.
+It is fine if you do not understand all of the above. The key point is
+that they are /variables/ or statistics measured on the ensemble of
+images fed to the congealing algorithm. Congealing algorithms behave
+differently depending on the value of each variables. One should
+understand that is possible for two different image ensembles to have
+the same statistics.
 
 In addition to variables associated with the input data, a congealing
 algorithm typically has a number of parameters that influence its own
 performance. These parameters have a range of values that are "worth"
-trying.
+trying, with the best value selected at the end.
 
-A scientist also wants to compare the algorithm against another
-benchmark algorithm on /exactly/ the same data. If no benchmark
-algorithm exists, then a number of other algorithms are
-evaluated. Having exactly the same data is extremely important. A
-strategically chosen change in data can have a dramatic effect on
-results for some algorithms.
-
-Congealing algorithms are typically iterative algorithms. i.e. The
-algorithm repeatedly processes its own output until some termination
-criteria is satisfied.
+One also must compare the algorithm against another algorithm on
+/exactly/ the same image ensemble. Having exactly the ensemble is
+extremely important as a strategically chosen change can have a
+dramatic effect on results for some algorithms.
 
 Once all of the algorithms are executed, a results collation process
-begins. What results that are obtained depend on the paper. These
-results may involve performance conditioned on the statistics of the
-image ensemble, or results indicating the influence each algorithm
-parameter has on its performance.
+begins. The results obtained depend on the report or paper that is
+being written. These results may involve performance conditioned on
+the statistics of the image ensemble, or results indicating the level
+of influence that an algorithm parameter has on the overall algorithm
+performance. 
 
-Everything up to this point is straight forward. You prepare the data
-to be fed to the algorithms, you execute the algorithms and then you
-produce results (and then write the report/paper/journal). Easy.
+Everything up to this point is straight forward. You prepare the image
+ensemble or data which is fed to the congealing algorithms, you
+execute each algorithm, prepare the results and then write the
+report/paper. Easy.
 
-Unfortunately, this rarely occurs in practice. 
+Unfortunately, this rarely occurs in practice. In practice, one
+implements an algorithm that has been published. Upon experimenting
+(or implementing) with the algorithm, it is discovered that there is
+something that could be improved. For example, the algorithm cannot
+handle image ensembles with certain statistics or the algorithm is
+really sensitive to a particular parameter or the algorithm is
+theoretically flawed in some manner. With this new information, the
+goal is now to design a new algorithm, that can overcome the
+identified problem.
 
-In practice, one implements an algorithm that has been published. Upon
-experimenting (or implementing) with the algorithm, it is discovered
-that there is something that could be improved. For example, the
-algorithm cannot handle image ensembles with certain statistics or the
-algorithm is really sensitive to a particular parameter or the
-algorithm is theoretically flawed in some manner. With this new
-information, the goal is now to design a new algorithm, that can
-overcome the identified algorithm.
-
-Immediately we see that the algorithm and the needed experiments are
-not concrete. One typically creates many algorithms that may "do the
-job", but one does not know whether it is an idea worth investigating
-further until it has been implemented and a preliminary set of results
-are obtained. Additionally, the type of results required may change
-depending on the point being made.
+Immediately we see that the algorithm and the experiments to be
+performed are not concrete. One typically creates many algorithms that
+may "do the job", but one does not know whether it is an idea worth
+investigating further until it has been implemented and a preliminary
+set of results are obtained. Additionally, the type of results
+required may change depending on the point being made.
 
 What a scientist wants to work on is the algorithm. That is what is
 important. That is what is publishable. The experiment stuff validates
@@ -107,24 +103,54 @@ validates a new discovery. Furthermore, it is the experiment design
 where much of a computer scientist's effort is spent and it is to easy
 to see why.
 
-The problem with experiments is that they take time to
-execute. Obviously this time is a function of the algorithm execution
-time. It is also a function of the number of experiments, or what is
-termed, the size of the experiment design. An experiment design
-defines the experiments to be executed i.e. the different types of
-input data, the different types of algorithms, and also the different
-types of information required to compute results.
-
-Tragically, the size of the experiment design is a combinatorial
-function built from the number of values specified for each experiment
-parameter. i.e. If you have a large number of experiment parameters
-and a large number of values per experiment parameter then you have an
-extremely large number of experiments.
+The problem with experiments is that they take time to execute and to
+implement. The long execution time is due to the number of the
+experiments being a combinatorial function built from the number of
+values specified for each experiment parameter. i.e. if you have a
+large number of experiment parameters and a large number of values per
+experiment parameter then you have an /extremely/ large number of
+experiments.
 
 Fortunately, since the experiments are independent, they can be
-executed in parallel. Well not quite in parallel, but there are times
-where parallelism is possible. Consider the following where a number
-of congealing algorithms need to process the given input data.
+executed in parallel. Well not quite in parallel as describe later,
+but the experiment execution problem does belong to the class of
+parallelisable problems which I would consider embarrassingly simple
+to achieve.
+
+Another difficulty is collating results. When writing a report or a
+paper, one typically needs to additional graphs (or tables) that were
+not part of the original set of experiments. To accommodate this use
+case, the output of the experiments should be saved. This
+serialisation not only applies to the algorithm output and input, but
+for all of the experiment parameters as well.
+
+This database of serialised experiment data also needs to have the
+ability to be queried as well. e.g. obtain all of the experiments that
+have this value for this experiment parameter. This is important for
+generating results and inspecting input and output.
+
+All of what this is simple to state, but is moderately difficult to
+implement and very easy to make simple mistakes which are hard to
+identify. Additionally, the code that performs the experiment setup,
+execution and result collation very rarely receive the level of
+attention and care that algorithms receive. (Who releases code for
+their experiments?).
+
+The ~CHAINS~ system attempts to provide facilities for the above tasks
+in order for the scientist to spend more time on developing
+algorithms. 
+
+The ~CHAINS~ is not a plug and play pipe connecting work flow
+optimiser. It should not be a dependency in your algorithm
+implementations. Its domain is very well constrained to the problem
+defined above, specifically, the only place where the ~CHAINS~ system
+should be used is in verifying and validating an algorithm's
+performance on different types of data and collating algorithm output
+for publication.
+
+* Not sure where this goes yet.
+Consider the following where
+two congealing algorithms need to process differing input data.
 #+begin_src ditaa :file parallelism.png
 +--------------+     +-------------+
 | Input Data 1 +-+-->| Algorithm 1 |
@@ -196,10 +222,10 @@ input data images. i.e. with no occlusion, with no cross validation,
 with image noise and so on. Thus the marker "Input data images
 created" really represents the input to the next stage of the
 experiment design. In this case, the initial guess of where the object
-is the image. Obviously, in order to form an initial guess, you need
-to know the ground truth location of the object in the image. Assuming
-this information is available, then synthesising an initial guess is
-trivial.
+is in the image. Obviously, in order to form an initial guess, you
+need to know the ground truth location of the object in the
+image. Assuming this information is available, then synthesising an
+initial guess is trivial.
 
 Once the initial guess is created, then the algorithm can be
 executed. The algorithm also needs the input data images, thus, the
