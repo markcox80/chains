@@ -104,8 +104,8 @@ where much of a computer scientist's effort is spent and it is to easy
 to see why.
 
 The problem with experiments is that they take time to execute and to
-implement. The long execution time is due to the number of the
-experiments being a combinatorial function built from the number of
+implement. The long execution time is because the number of
+experiments is a combinatorial function defined by the number of
 values specified for each experiment parameter. i.e. if you have a
 large number of experiment parameters and a large number of values per
 experiment parameter then you have an /extremely/ large number of
@@ -119,34 +119,35 @@ to achieve.
 
 Another difficulty is collating results. When writing a report or a
 paper, one typically needs to additional graphs (or tables) that were
-not part of the original set of experiments. To accommodate this use
-case, the output of the experiments should be saved. This
+not thought of initially. To accommodate this use case, the output of
+the experiments should be saved in order to save (valuable) time. This
 serialisation not only applies to the algorithm output and input, but
 for all of the experiment parameters as well.
 
 This database of serialised experiment data also needs to have the
-ability to be queried as well. e.g. obtain all of the experiments that
-have this value for this experiment parameter. This is important for
-generating results and inspecting input and output.
+ability to be queried as well. This ability is needed by the results
+collation step mentioned previously.
 
-All of what this is simple to state, but is moderately difficult to
+All of this is simple to state, but is moderately difficult to
 implement and very easy to make simple mistakes which are hard to
 identify. Additionally, the code that performs the experiment setup,
 execution and result collation very rarely receive the level of
-attention and care that algorithms receive. (Who releases code for
-their experiments?).
+attention and care that algorithms receive. In my local minima, I
+haven't seen any one release code just for performing experiments. As
+to why, I am not sure.
 
 The ~CHAINS~ system attempts to provide facilities for the above tasks
-in order for the scientist to spend more time on developing
-algorithms. 
+in order for the scientist to spend more time on developing an
+understanding of existing algorithms and to develop ones own
+algorithms.
 
-The ~CHAINS~ is not a plug and play pipe connecting work flow
-optimiser. It should not be a dependency in your algorithm
+The ~CHAINS~ is not a plug and play work flow optimiser where one
+performs plumping. It should not be a dependency in your algorithm
 implementations. Its domain is very well constrained to the problem
 defined above, specifically, the only place where the ~CHAINS~ system
 should be used is in verifying and validating an algorithm's
 performance on different types of data and collating algorithm output
-for publication.
+for a publication.
 
 * Not sure where this goes yet.
 Consider the following where
