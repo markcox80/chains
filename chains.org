@@ -149,29 +149,74 @@ should be used is in verifying and validating an algorithm's
 performance on different types of data and collating algorithm output
 for a publication.
 
-* Not sure where this goes yet.
-Consider the following where
-two congealing algorithms need to process differing input data.
-#+begin_src ditaa :file parallelism.png
-+--------------+     +-------------+
-| Input Data 1 +-+-->| Algorithm 1 |
-+--------------+ |   +-------------+
-                 |
-                 |   +-------------+
-                 +-->| Algorithm 2 |
-                     +-------------+
+* Concepts and mental models
+The background section painted a picture of the aspects of the problem
+the ~CHAINS~ system attempts to address. This section attempts to
+illustrate more of the core concepts that underpin the library.
 
-+--------------+     +-------------+
-| Input Data 2 +-+-->| Algorithm 1 |
-+--------------+ |   +-------------+
-                 |
-                 |   +-------------+
-                 +-->| Algorithm 2 |
-                     +-------------+
+Performing an experiment is really the serial execution of a number of
+blocks. For the congealing problem, the high-level blocks are as
+follows
+#+begin_src ditaa :file congealing-blocks.png
++------------+
+| Input Data |
++-----+------+
+      |
+      v
++-----------+
+| Algorithm |
++-----+-----+
+      |
+      v
+  +--------+
+  | Metric |
+  +--------+
 #+end_src
-Once input data 1 and 2 are created, all four algorithm invocations
-can be executed in parallel provided the algorithm implementation
-permits.
+The input data block is responsible for creating the ensemble of
+images fed to the algorithm in order to perform its task. Once
+finished, the output of the algorithm is compared to the ground truth
+in order to quantitatively evaluate the algorithm on the input data.
+
+This linking of blocks to be executed is termed a chain.
+
+A collection of experiments to be executed is really a tree. Consider
+the following figure where there are two congealing algorithms which
+are evaluated on differing input data.
+#+begin_src ditaa :file parallelism.png
++--------------+     +-------------+   +--------+
+| Input Data 1 +-+-->| Algorithm 1 |-->| Metric |
++--------------+ |   +-------------+   +--------+
+                 |
+                 |   +-------------+   +--------+
+                 +-->| Algorithm 2 |-->| Metric |
+                     +-------------+   +--------+
+
++--------------+     +-------------+   +--------+
+| Input Data 2 +-+-->| Algorithm 1 |-->| Metric |
++--------------+ |   +-------------+   +--------+
+                 |
+                 |   +-------------+   +--------+
+                 +-->| Algorithm 2 |-->| Metric |
+                     +-------------+   +--------+
+#+end_src
+The above figure presents two trees which start from an input data
+block. In the ~CHAINS~ system a hidden root node is used to produce a
+single tree. As can be seen, the path from the top of the tree to a
+leaf represents a single experiment or execution chain.
+
+The tree view of the experiments also highlights the parallelism of
+the experiment execution. i.e. once input data 1 and 2 are created,
+all four algorithm invocations can be executed in parallel provided
+the algorithm implementation permits. Likewise, all four metrics can
+be computed once the algorithms are completed. 
+
+The ~CHAINS~ system does not limit the length of the chain, nor are
+there any constraints placed on the type of experiment tree. In fact
+the ~CHAINS~ system does provide any default blocks. These blocks are
+arbitrary.
+
+Defining the blocks is one thing, but another important component is
+there interaction.
 
 For congealing, creating the input data is arguably the most
 complicated component of the experimental setup as there are a number
