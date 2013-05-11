@@ -206,17 +206,21 @@ leaf represents a single experiment or execution chain.
 
 The tree view of the experiments also highlights the parallelism of
 the experiment execution. i.e. once input data 1 and 2 are created,
-all four algorithm invocations can be executed in parallel provided
-the algorithm implementation permits. Likewise, all four metrics can
-be computed once the algorithms are completed. 
+all four algorithm invocations can be executed in parallel (provided
+that the implementation permits it). Likewise, all four metrics can be
+computed once the algorithms are completed.
 
 The ~CHAINS~ system does not limit the length of the chain, nor are
 there any constraints placed on the type of experiment tree. In fact
 the ~CHAINS~ system does provide any default blocks. These blocks are
-arbitrary.
+arbitrary. What the ~CHAINS~ system does provide is a mechanism for
+constructing a new tree, discovering an existing tree and executing
+the tree.
 
 Defining the blocks is one thing, but another important component is
-there interaction.
+the way the interact. The ~CHAINS~ system assumes that a block can
+only depend on output from previous blocks in the chain. This is shown
+in the next example for the congealing problem.
 
 For congealing, creating the input data is arguably the most
 complicated component of the experimental setup as there are a number
@@ -258,18 +262,13 @@ initial guesses on where the object is for the same set of
 images. There should be a cross validation block for the synthetic
 occlusion component too, but we have chosen to omit it for clarity.
 
-For an experiment design, there will be many different image
-appearance and lighting statistics used as well as many different
-synthetic occlusions so the above /chain/ that creates the input data
-is really a single path in a tree that defines the experiment design.
-
 To complicate matters, there may be many other ways of selecting the
 input data images. i.e. with no occlusion, with no cross validation,
 with image noise and so on. Thus the marker "Input data images
 created" really represents the input to the next stage of the
-experiment design. In this case, the initial guess of where the object
-is in the image. Obviously, in order to form an initial guess, you
-need to know the ground truth location of the object in the
+experiment design. In this case, computing the initial guess of where
+the object is in the image. Obviously, in order to form an initial
+guess, you need to know the ground truth location of the object in the
 image. Assuming this information is available, then synthesising an
 initial guess is trivial.
 
@@ -303,3 +302,9 @@ guess as depicted in the next figure.
 
 What is obvious is that there are various stages along the chain that
 define the transition from one component of the experiment to another.
+
+** Not sure
+For an experiment design, there will be many different image
+appearance and lighting statistics used as well as many different
+synthetic occlusions so the above /chain/ that creates the input data
+is really a single path in a tree that defines the experiment design.
