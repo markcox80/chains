@@ -314,7 +314,8 @@ following code defines the appropriate block.
   (define-block geometric-cross-validation ()
     ((sample
       :initarg sample
-      :reader sample)))
+      :reader sample
+      :documentation "The index of the random sample.")))
 #+end_src
 
 The following code defines the action that is to performed when the
@@ -323,23 +324,50 @@ above block is executed.
   (define-input input-data)
   (define-input distance-away-from-ground-truth)
   
-  (defmethod perform ((object geometric-cross-validation) &key)  
-    (synthesize-initial-guess (input-data) (distance-away-from-ground-truth)))
+  (define-operation (object geometric-cross-validation)
+      ((input-data input-data)
+       (distance distance-away-from-ground-truth))
+    (synthesize-initial-guess input-data distance))
 #+end_src
 
-The functions ~INPUT-DATA~ and ~DISTANCE-AWAY-FROM-GROUND-TRUTH~ are
-special functions that represent the input data to the
-~GEOMETRIC-CROSS-VALIDATION~ block as depicted in the above diagram.
+The arguments ~INPUT-DATA~ and ~DISTANCE-AWAY-FROM-GROUND-TRUTH~ are
+special arguments that represent the input to the
+~GEOMETRIC-CROSS-VALIDATION~ block. 
 
-Implementing these functions is performed using the ~DEFINE-OUTPUT~
-macro.
+The value of the places ~INPUT-DATA~ and ~DISTANCE~ vary depending on
+the chain being executed. In order to compute the input values for a
+given block and chain you use the ~DEFINE-LINK~ macro.
 #+begin_src lisp
-  (define-output input-data ((occlusion synthetic-occlusion))
+  (define-link input-data geometric-cross-validation ((occlusion synthetic-occlusion))
     (block-value occlusion))
   
-  (define-output distance-away-from-ground-truth ((object distance-away-from-ground-truth))
+  (define-link distance-away-from-ground-truth geometric-cross-validation ((object distance-away-from-ground-truth))
     (distance object))
 #+end_src
+
+The function ~BLOCK-VALUE~ in the link definition for ~INPUT-DATA~ is
+a special function that returns the output of the operation for the
+~OCCLUSION~ block.
+
+The ~DEFINE-INPUT~ and ~DEFINE-LINK~ provide a flexible method of
+computing input values to a block conditioned on the blocks in the
+chain. The ~DEFINE-OPERATION~ macro also permits altering the
+operation performed based on the blocks in the chain.
+
+#+begin_src lisp
+  (define-operation (object appearance-cross-validation)
+      ((variation appearance-and-lighting))
+    ;; Synthesize a set of images with appearance and lighting variation.
+    )
+  
+  (define-operation (object appearance-cross-validation)
+      ((variation appearance))
+    ;; Synthesize a set of images with appearance variation.
+    )
+#+end_src
+
+Further details on the ~DEFINE-OPERATION~ and ~DEFINE-LINK~ are found
+later in this document.
 
 ** Not sure
 For an experiment design, there will be many different image
