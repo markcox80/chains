@@ -369,6 +369,31 @@ operation performed based on the blocks in the chain.
 Further details on the ~DEFINE-OPERATION~ and ~DEFINE-LINK~ are found
 later in this document.
 
+* Serialisation
+The serialisation strategy employed in the ~CHAINS~ system is a very
+simple system involving only the lisp pretty printer
+(~*PRINT-READABLY~ is ~T~) as the data format, and only files and
+directories on the storage device. 
+
+Each node of the experiment tree has its own directory in order to
+store the blocks own data and the data used by the chains system. The
+name of this directory is computed using the function ~BLOCK-NAME~.
+#+begin_src lisp
+(defgeneric block-name (block))
+#+end_src
+
+The macro ~DEFINE-BLOCK~ provides a convenient method of implementing
+this function via the ~:NAME~ form.
+#+begin_src lisp
+    (define-block geometric-cross-validation ()
+      ((sample
+        :initarg sample
+        :reader sample
+        :documentation "The index of the random sample."))
+      (:name (object)
+        (format nil "gcv-~3,'0d" (sample object))))
+#+end_src
+
 ** Not sure
 For an experiment design, there will be many different image
 appearance and lighting statistics used as well as many different
