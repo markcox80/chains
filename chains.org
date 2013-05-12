@@ -287,7 +287,9 @@ guess as depicted in the next figure.
 | | Distance away from ground truth |
 | +------+--------------------------+
 |        | 
-|        v
++---+    |
+|   |    |
+|   v    v
 | +----------------------------+
 | | Geometric Cross Validation |
 | +------+---------------------+
@@ -304,6 +306,40 @@ The above diagram is no longer a chain, nor is it a tree, it is a
 graph. How the ~CHAINS~ system models the above graph is by
 distinguishing between blocks that perform an operation and the
 output of that operation. 
+
+An example of the ~CHAINS~ system in use for the above graph is as
+follows. Lets consider the "Geometric Cross Validation" block. The
+following code defines the appropriate block.
+#+begin_src lisp
+  (define-block geometric-cross-validation ()
+    ((sample
+      :initarg sample
+      :reader sample)))
+#+end_src
+
+The following code defines the action that is to performed when the
+above block is executed.
+#+begin_src lisp
+  (define-input input-data)
+  (define-input distance-away-from-ground-truth)
+  
+  (defmethod perform ((object geometric-cross-validation) &key)  
+    (synthesize-initial-guess (input-data) (distance-away-from-ground-truth)))
+#+end_src
+
+The functions ~INPUT-DATA~ and ~DISTANCE-AWAY-FROM-GROUND-TRUTH~ are
+special functions that represent the input data to the
+~GEOMETRIC-CROSS-VALIDATION~ block as depicted in the above diagram.
+
+Implementing these functions is performed using the ~DEFINE-OUTPUT~
+macro.
+#+begin_src lisp
+  (define-output input-data ((occlusion synthetic-occlusion))
+    (block-value occlusion))
+  
+  (define-output distance-away-from-ground-truth ((object distance-away-from-ground-truth))
+    (distance object))
+#+end_src
 
 ** Not sure
 For an experiment design, there will be many different image
