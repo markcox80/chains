@@ -401,5 +401,35 @@ slot definition option ~:READABLE-VALUE-FUNCTION~ for block
 definitions.
 
 * Querying
+Querying a set of experiments is critical to the collation of
+results. When a set of experiments have finished executing, the
+experiment chains can be discovered using the function
+~DISCOVER-CHAINS~.
+#+begin_src lisp
+  (defgeneric discover-chains (pathname))
+#+end_src
+This function returns a list of ~CHAIN~ instances. A chain instance
+contains the blocks that formed the experiment.
+
+The function ~CONTAINS-BLOCK-P~ can be used to determine if a chain
+contains the given block.
+#+begin_src lisp
+  (defun contains-block-p (chain block))
+#+end_src
+
+The function ~FIND-CHAINS-WITH-BLOCK~ returns all chains in which
+~CONTAINS-BLOCK-P~ is ~T~ for the given block.
+#+begin_src lisp
+  (defun find-chains-with-block (chains block))
+#+end_src
+
+Another important function is ~GROUP-BY~, which groups chains
+together according to given a test.
+#+begin_src lisp
+  (defun group-by (sequence test))
+#+end_src
+
+In fact, the ~GROUP-BY~ function is needed so frequently, that a
+special function ~GROUP-CHAINS~ is provided.
 
 * Generating
