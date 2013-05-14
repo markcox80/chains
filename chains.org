@@ -426,10 +426,54 @@ The function ~FIND-CHAINS-WITH-BLOCK~ returns all chains in which
 Another important function is ~GROUP-BY~, which groups chains
 together according to given a test.
 #+begin_src lisp
-  (defun group-by (sequence test))
+  (defun group-by (sequence test &key sort inner-sort))
 #+end_src
+The argument ~SORT~ specifies a predicate used to sort the groups and
+the argument ~INNER-SORT~ is used to sort the chains within each
+group.
 
 In fact, the ~GROUP-BY~ function is needed so frequently, that a
-special function ~GROUP-CHAINS~ is provided.
+special function ~GROUP-CHAINS~ is provided. The ~GROUP-CHAINS~
+function works in conjunction with information specified when defining
+a block.
+#+begin_src lisp
+    (defun group-chains (chains expression &key sort inner-sort))
+#+end_src
+An ~EXPRESSION~ is a form which is used to synthesize a predicate for
+~GROUP-BY~. 
+
+Valid expressions are 
+- ~symbol~ :: This generally refers to the base class of a
+              block. e.g. All congealing algorithm blocks inherit from
+              ~ALGORITHM~, thus specifying ~(quote ALGORITHM)~ would
+              group all chains that use the same algorithm.
+- ~(= symbol name)~ :: This expression specifies that the chains
+     within a group all have the same value for the slot ~NAME~ in the
+     block with type ~SYMBOL~.
+
+The last expression ~(= symbol name)~ utilises arity two predicate
+specified via the ~:TEST=~ slot definition argument permitted by
+~DEFINE-BLOCK~. For example, in the definition of the
+~GEOMETRIC-CROSS-VALIDATION~ block one would specify
+#+begin_src lisp
+  (define-block geometric-cross-validation ()
+    ((sample
+      :initarg sample
+      :reader sample
+      :test= #'sample-equal
+      :documentation "The index of the random sample.")))
+#+end_src
+This states the equality predicate synthesised by ~GROUP-CHAINS~ would
+use the function ~SAMPLE-EQUAL~ rather than the ~=~ function.
+
+The keyword arguments ~SORT~ and ~INNER-SORT~ perform sorting of the
+groups and the chains within the groups according to a sorting
+expression. A sorting expression is of the form
+
+- ~(>= symbol name)~ :: Like the ~=~ expression previously, but using
+     the ~:TEST>=~ slot definition argument.
+- ~(<= symbol name)~ :: Similar to the ~>=~.
+- ~(block base name-1 name-2 ..)~ :: Order blocks with base class
+     ~BASE~ in the specified order of sub-classes.
 
 * Generating
