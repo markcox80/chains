@@ -385,6 +385,9 @@ directory is computed using the function ~BLOCK-NAME~.
 
 The macro ~EASY-BLOCK-NAME~ can be used to automatically generate the
 implementation of ~BLOCK-NAME~ for a given block.
+#+begin_src lisp
+  (defmacro easy-block-name (block-name))
+#+end_src
 
 Serialisation of blocks is performed using the function
 ~SERIALISE-BLOCK~. This function produces a string that when read and
@@ -392,13 +395,17 @@ evaluated, produces a new instance of the block which is considered
 /equal/ to the block that was serialised. This process is similar to
 the ~*PRINT-READABLY*~ functionality, but does not rely on
 ~PRINT-OBJECT~. 
+#+begin_src lisp
+  (defun serialise-block (block))
+#+end_src
 
 ~SERIALISE-BLOCK~ iterates through all slots of the block,
-transforming each slot value in to an expression which evaluates to an
-/equal/ object. Customisation of the generated expression for a given
-object is provided by the ~READABLE-VALUE~ generic function or by the
-slot definition option ~:READABLE-VALUE-FUNCTION~ for block
-definitions.
+transforming each slot value in to an s-expression which evaluates to
+an /equal/ object. Customisation of the generated expression for a
+given object is provided by the ~OBJECT-SEXP~ generic function.
+#+begin_src lisp
+  (defgeneric object-sexp (object))
+#+end_src
 
 * Querying
 Querying a set of experiments is critical to the collation of
@@ -451,10 +458,10 @@ Valid expressions are
      within a group all have the same value for the slot ~NAME~ in the
      block with type ~SYMBOL~.
 
-The last expression ~(= symbol name)~ utilises arity two predicate
-specified via the ~:TEST=~ slot definition argument permitted by
-~DEFINE-BLOCK~. For example, in the definition of the
-~GEOMETRIC-CROSS-VALIDATION~ block one would specify
+The last expression ~(= symbol name)~ uses the arity two predicate
+specified with the ~:TEST=~ slot definition argument used within
+~DEFINE-BLOCK~. The block definition for ~GEOMETRIC-CROSS-VALIDATION~
+would be
 #+begin_src lisp
   (define-block geometric-cross-validation ()
     ((sample
@@ -467,13 +474,56 @@ This states the equality predicate synthesised by ~GROUP-CHAINS~ would
 use the function ~SAMPLE-EQUAL~ rather than the ~=~ function.
 
 The keyword arguments ~SORT~ and ~INNER-SORT~ perform sorting of the
-groups and the chains within the groups according to a sorting
-expression. A sorting expression is of the form
-
-- ~(>= symbol name)~ :: Like the ~=~ expression previously, but using
-     the ~:TEST>=~ slot definition argument.
-- ~(<= symbol name)~ :: Similar to the ~>=~.
-- ~(block base name-1 name-2 ..)~ :: Order blocks with base class
-     ~BASE~ in the specified order of sub-classes.
+groups and the chains within the groups according to a sort
+expression. A sort expression can be one of
+- ~(> symbol name)~ :: Like the ~=~ expression previously, but using
+     the ~:TEST>~ slot definition argument.
+- ~(< symbol name)~ :: Similar to the ~>~ expression.
+- ~(order base &rest names)~ :: Order blocks that inherit from the
+     base class ~BASE~ in the specified order of sub-classes. It is an
+     error if a block is found with that inherits from ~base~ but no
+     name is present.
+- ~(order base)~ :: Similar to ~(order base &rest names)~, but
+                    dynamically determines the unique sub-classes of
+                    ~BASE~ from the set of chains. Once determined,
+                    the (random) order is used for all groups.
+- ~(&rest sort-expressions)~ :: Construct a compound sorting
+     expression which sorts chains using the first element of
+     ~SORT-EXPRESSIONS~. For the values that are equal, the second
+     element of ~SORT-EXPRESSIONS~ is used to sort, and so on.
 
 * Generating
+This section outlines the process of generating and documenting the
+set of experiments to be performed. 
+
+Once the set of experiments are documented, generating them is
+easy. The following is an example document outlining the set of
+experiments that to be generated for the congealing problem.
+#+begin_src lisp
+  (define-design congealing
+    :documentation "A set of experiments for the paper XYZ."
+    ;; Images
+    ((image-appearance-and-lighting (:lighting-variation 0 0.1 0.2 0.3 0.4)
+                                    (:number-of-subjects 1 2 5 10 20)
+                                    (:samples-per-subject 1 5 10)))
+  
+    ((image-cross-validation (:sample (:eval (loop :for x :from 0 :below 10)))))
+  
+    ((synthetic-occlusion (:count 0 1 2)
+                          (:size 0.5 0.1 0.2)))
+  
+    ;; Initial guess of object location
+    ((distance-away-from-ground-truth (:distance 0.1 0.2 0.3)))
+  
+    ((geometric-cross-validation (:sample (:eval (loop :for x :from 0 :below 3)))))
+  
+    ;; Algorithms to be executed
+    ((learned-miller (:deltas '(1 1 0.1 0.1 1 1))
+                     (:maximum-number-of-iterations 100))
+     (least-squares-congealing (:maximum-number-of-iterations 10))
+     (rasl (:maximum-number-of-iterations 10)))
+    
+    ;; Results to be computed.
+    ((alignment-performance)))
+#+end_src
+
