@@ -496,18 +496,22 @@ expression. A sort expression can be one of
 This section outlines the process of generating and documenting the
 set of experiments to be performed. 
 
-Once the set of experiments are documented, generating them is
-easy. The following is an example document outlining the set of
-experiments that to be generated for the congealing problem.
+The document serves as the definition of the set of experiments to
+generate. The language of the document in the ~CHAINS~ system is
+defined by the experiment design (or just design) can be written
+within a ~DEFINE-DOCUMENT~ block. The following is an example document
+outlining the set of experiments that to be generated for the
+congealing problem.
 #+begin_src lisp
   (define-design congealing
-    :documentation "A set of experiments for the paper XYZ."
+    (:documentation "A set of experiments for the paper XYZ.")
+  
     ;; Images
     ((image-appearance-and-lighting (:lighting-variation 0 0.1 0.2 0.3 0.4)
                                     (:number-of-subjects 1 2 5 10 20)
                                     (:samples-per-subject 1 5 10)))
   
-    ((image-cross-validation (:sample (:eval (loop :for x :from 0 :below 10)))))
+    ((image-cross-validation (:sample (:splice (loop :for x :from 0 :below 10 :collect x)))))
   
     ((synthetic-occlusion (:count 0 1 2)
                           (:size 0.5 0.1 0.2)))
@@ -515,7 +519,7 @@ experiments that to be generated for the congealing problem.
     ;; Initial guess of object location
     ((distance-away-from-ground-truth (:distance 0.1 0.2 0.3)))
   
-    ((geometric-cross-validation (:sample (:eval (loop :for x :from 0 :below 3)))))
+    ((geometric-cross-validation (:sample 0 1 2)))
   
     ;; Algorithms to be executed
     ((learned-miller (:deltas '(1 1 0.1 0.1 1 1))
@@ -527,3 +531,57 @@ experiments that to be generated for the congealing problem.
     ((alignment-performance)))
 #+end_src
 
+The first part of the ~DEFINE-DESIGN~ is self explanatory. Lets
+consider what the first expression means
+#+begin_src lisp
+  (image-appearance-and-lighting (:lighting-variation 0 0.1 0.2 0.3 0.4)
+                                 (:number-of-subjects 1 2 5 10 20)
+                                 (:samples-per-subject 1 5 10))
+#+end_src
+When this expression is encountered by ~DEFINE-DESIGN~, the following
+code is produced.
+#+begin_src lisp
+  (list (make-instance 'image-appearance-and-lighting
+                       :lighting-variation 0
+                       :number-of-subjects 1
+                       :samples-per-subject 1)
+        (make-instance 'image-appearance-and-lighting
+                       :lighting-variation 0.1
+                       :number-of-subjects 1
+                       :samples-per-subject 1)
+        ...
+        (make-instance 'image-appearance-and-lighting
+                       :lighting-variation 0.4
+                       :number-of-subjects 20
+                       :samples-per-subject 10))
+#+end_src
+Thus there exists an instance of the block
+~IMAGE-APPEARANCE-AND-LIGHTING~ for every permutation of the argument
+values for the slots ~:LIGHTING-VARIATION~, ~:NUMBER-OF-SUBJECTS~ and
+~:SAMPLES-PER-SUBJECT~.
+
+The above instances serve as the children of the root node of the
+tree. Each of these children now have the following children generated
+from the expression
+#+begin_src lisp
+(image-cross-validation (:sample (:splice (loop :for x :from 0 :below 10 :collect x))))
+#+end_src
+
+The ~:SPLICE~ keyword operator which evaluates the form ~(loop :for
+x :from 0 :below 10 :collect x)~ and splices it in place to produce
+the following equivalent expression.
+#+begin_src lisp
+  (image-cross-validation (:sample 0 1 2 3 4 5 6 7 8 9))
+#+end_src
+
+The expression involving the algorithms represents the following
+children
+#+begin_src lisp
+  (list (make-instance 'learned-miller
+                       :deltas '(1 1 0.1 0.1 1 1)
+                       :maximum-number-of-iterations 100)
+        (make-instance 'least-squares-congealing
+                       :maximum-number-of-iterations 10)
+        (make-instance 'rasl
+                       :maximum-number-of-iterations 10))
+#+end_src
