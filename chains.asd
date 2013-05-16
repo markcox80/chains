@@ -10,8 +10,5 @@
   :serial t
   :components ((:module "src"
 			:serial t
-			:components ((:file "packages")
-				     (:file "links")
-				     (:file "language")
-				     (:file "executable"))))
+			:components ((:file "packages"))))
   :in-order-to ((test-op (test-op "chains-tests"))))

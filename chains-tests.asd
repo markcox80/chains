@@ -11,8 +11,4 @@
   :components ((:module "tests"
 			:serial t
 			:components ((:file "packages")
-				     (:file "asdf")
-				     (:file "chains")))
-	       (:module "bin"
-			:serial t
-			:components ((lisp-executable:executable "chains-test" :program ("CHAINS" "PROGRAM/PERFORM"))))))
+				     (:file "asdf")))))
