@@ -172,16 +172,16 @@ follows
   | Metric |
   +--------+
 #+end_src
-The input data task is responsible for creating the ensemble of
-images fed to the algorithm in order to perform its task. Once
-finished, the output of the algorithm is compared to the ground truth
-in order to quantitatively evaluate the algorithm on the input data.
+The input data task is responsible for creating the ensemble of images
+fed to the algorithm. Once finished, the output of the algorithm is
+compared to the ground truth in order to quantitatively evaluate the
+algorithm on the input data.
 
 This linking of tasks to be executed is termed a chain.
 
 A collection of experiments to be executed is really a tree. Consider
-the following figure where there are two congealing algorithms which
-are evaluated on differing input data.
+the following figure where there are two congealing algorithms begin
+evaluated on two different sets of input data.
 #+begin_src ditaa :file parallelism.png
 +--------------+     +-------------+   +--------+
 | Input Data 1 +-+-->| Algorithm 1 |-->| Metric |
@@ -201,8 +201,8 @@ are evaluated on differing input data.
 #+end_src
 The above figure presents two trees which start from an input data
 task. In the ~CHAINS~ system a hidden root node is used to produce a
-single tree. As can be seen, the path from the top of the tree to a
-leaf represents a single experiment or execution chain.
+single tree. As can be seen, the path from the top of the root node to
+a leaf represents a single experiment or execution chain.
 
 The tree view of the experiments also highlights the parallelism of
 the experiment execution. i.e. once input data 1 and 2 are created,
@@ -224,7 +224,7 @@ example for the congealing problem.
 
 For congealing, creating the input data is arguably the most
 complicated component of the experimental setup as there are a number
-of parameters that govern how the input data is formed. A
+of parameters that govern the statistics of the input data. A
 visualisation of this process is as follows
 #+begin_src ditaa :file input-data.png
   +-------------------------------+
@@ -272,10 +272,10 @@ you need to know the ground truth location of the object in the
 image. Assuming this information is available, then synthesising an
 initial guess is trivial.
 
-Once the initial guess is created, then the algorithm can be
-executed. The algorithm also needs the input data images, thus, the
-input to the algorithm is really the input data images and the initial
-guess as depicted in the next figure.
+Once the initial guess is created, the algorithm can be executed. The
+algorithm also needs the input data images, thus, the input to the
+algorithm is really the input data images and the initial guess as
+depicted in the next figure.
 #+begin_src ditaa :file algorithm-input.png
          |
          o<--=--Input data images created
@@ -304,10 +304,12 @@ guess as depicted in the next figure.
 
 The above diagram is no longer a chain, nor is it a tree, it is a
 graph. How the ~CHAINS~ system models the above graph is by
-distinguishing between tasks that perform an operation and the
-output of that operation. 
+distinguishing between the operation to be performed, and the input
+and output of that operation. The goal of the ~CHAINS~ system is to
+allow tasks to be reusable. How tasks form a chain is dependent on the
+experiment design and is by definition not reusable across designs.
 
-An example of the ~CHAINS~ system in use for the above graph is as
+An example of the ~CHAINS~ system in use for the graph above is as
 follows. Lets consider the "Geometric Cross Validation" task. The
 following code defines the appropriate task.
 #+begin_src lisp
