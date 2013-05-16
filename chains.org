@@ -155,9 +155,9 @@ the ~CHAINS~ system attempts to address. This section attempts to
 illustrate more of the core concepts that underpin the library.
 
 Performing an experiment is really the serial execution of a number of
-blocks. For the congealing problem, the high-level blocks are as
+tasks. For the congealing problem, the high-level tasks are as
 follows
-#+begin_src ditaa :file congealing-blocks.png
+#+begin_src ditaa :file congealing-tasks.png
 +------------+
 | Input Data |
 +-----+------+
@@ -172,12 +172,12 @@ follows
   | Metric |
   +--------+
 #+end_src
-The input data block is responsible for creating the ensemble of
+The input data task is responsible for creating the ensemble of
 images fed to the algorithm in order to perform its task. Once
 finished, the output of the algorithm is compared to the ground truth
 in order to quantitatively evaluate the algorithm on the input data.
 
-This linking of blocks to be executed is termed a chain.
+This linking of tasks to be executed is termed a chain.
 
 A collection of experiments to be executed is really a tree. Consider
 the following figure where there are two congealing algorithms which
@@ -200,7 +200,7 @@ are evaluated on differing input data.
                      +-------------+   +--------+
 #+end_src
 The above figure presents two trees which start from an input data
-block. In the ~CHAINS~ system a hidden root node is used to produce a
+task. In the ~CHAINS~ system a hidden root node is used to produce a
 single tree. As can be seen, the path from the top of the tree to a
 leaf represents a single experiment or execution chain.
 
@@ -212,15 +212,15 @@ computed once the algorithms are completed.
 
 The ~CHAINS~ system does not limit the length of the chain, nor are
 there any constraints placed on the type of experiment tree. In fact
-the ~CHAINS~ system does not provide any default blocks. Blocks are
-arbitrary problem specific entities. What the ~CHAINS~ system does
-provide is a mechanism for constructing a new tree, discovering an
-existing tree, executing the tree and querying a tree.
+the ~CHAINS~ system does not provide any default tasks. Tasks are
+problem specific entities. What the ~CHAINS~ system does provide is a
+mechanism for constructing a new tree, discovering an existing tree,
+executing the tree and querying a tree.
 
-Defining the blocks is one thing, but another important component is
-the way the interact. The ~CHAINS~ system assumes that a block can
-only depend on output from previous blocks in the chain. This is shown
-in the next example for the congealing problem.
+Another important characteristic of tasks is the way they
+interact. The ~CHAINS~ system assumes that a task can only depend on
+output from previous tasks in the chain. This is shown in the next
+example for the congealing problem.
 
 For congealing, creating the input data is arguably the most
 complicated component of the experimental setup as there are a number
@@ -259,7 +259,7 @@ for the image cross validation, an entirely different set of images
 with same level of appearance variation and lighting conditions are
 selected. Similarly, the geometric cross validation is a new set
 initial guesses on where the object is for the same set of
-images. There should be a cross validation block for the synthetic
+images. There should be a cross validation task for the synthetic
 occlusion component too, but we have chosen to omit it for clarity.
 
 To complicate matters, there may be many other ways of selecting the
@@ -304,14 +304,14 @@ guess as depicted in the next figure.
 
 The above diagram is no longer a chain, nor is it a tree, it is a
 graph. How the ~CHAINS~ system models the above graph is by
-distinguishing between blocks that perform an operation and the
+distinguishing between tasks that perform an operation and the
 output of that operation. 
 
 An example of the ~CHAINS~ system in use for the above graph is as
-follows. Lets consider the "Geometric Cross Validation" block. The
-following code defines the appropriate block.
+follows. Lets consider the "Geometric Cross Validation" task. The
+following code defines the appropriate task.
 #+begin_src lisp
-  (define-block geometric-cross-validation ()
+  (define-task geometric-cross-validation ()
     ((sample
       :initarg sample
       :reader sample
@@ -319,7 +319,7 @@ following code defines the appropriate block.
 #+end_src
 
 The following code defines the action that is to performed when the
-above block is executed.
+above task is executed.
 #+begin_src lisp
   (define-input input-data)
   (define-input distance-away-from-ground-truth)
@@ -332,27 +332,29 @@ above block is executed.
 
 The arguments ~INPUT-DATA~ and ~DISTANCE-AWAY-FROM-GROUND-TRUTH~ are
 special arguments that represent the input to the
-~GEOMETRIC-CROSS-VALIDATION~ block. 
+~GEOMETRIC-CROSS-VALIDATION~ task. 
 
 The value of the places ~INPUT-DATA~ and ~DISTANCE~ vary depending on
 the chain being executed. In order to compute the input values for a
-given block and chain you use the ~DEFINE-LINK~ macro.
+given task and chain you use the ~DEFINE-TASK-INPUT~ macro.
 #+begin_src lisp
-  (define-link input-data geometric-cross-validation ((occlusion synthetic-occlusion))
-    (block-value occlusion))
+  (define-task-input input-data geometric-cross-validation ((occlusion synthetic-occlusion))
+    (task-value occlusion))
   
-  (define-link distance-away-from-ground-truth geometric-cross-validation ((object distance-away-from-ground-truth))
+  (define-task-input distance-away-from-ground-truth geometric-cross-validation ((object distance-away-from-ground-truth))
     (distance object))
 #+end_src
 
-The function ~BLOCK-VALUE~ in the link definition for ~INPUT-DATA~ is
+The function ~TASK-VALUE~ in the task input definition for ~INPUT-DATA~ is
 a special function that returns the output of the operation for the
-~OCCLUSION~ block.
+~OCCLUSION~ task.
 
-The ~DEFINE-INPUT~ and ~DEFINE-LINK~ provide a flexible method of
-computing input values to a block conditioned on the blocks in the
-chain. The ~DEFINE-OPERATION~ macro also permits altering the
-operation performed based on the blocks in the chain.
+The ~DEFINE-INPUT~ and ~DEFINE-TASK-INPUT~ provide a flexible method
+of computing input values to a task conditioned on the tasks in the
+chain.
+
+The ~DEFINE-OPERATION~ macro also permits altering the operation
+performed based on the tasks in the chain.
 
 #+begin_src lisp
   (define-operation (object appearance-cross-validation)
@@ -376,30 +378,30 @@ simple system involving only the lisp pretty printer
 directories on the storage device. 
 
 Each node of an experiment tree has its own directory in order to
-store the block parameters, the block value generated by
-~BLOCK-OPERATION~ and other block specific data. The name of this
-directory is computed using the function ~BLOCK-NAME~.
+store the task parameters, the task value generated by a tasks
+operation and other task specific data. The name of this directory is
+computed using the function ~TASK-NAME~.
 #+begin_src lisp
-(defgeneric block-name (block))
+(defgeneric task-name (task))
 #+end_src
 
-The macro ~EASY-BLOCK-NAME~ can be used to automatically generate the
-implementation of ~BLOCK-NAME~ for a given block.
+The macro ~EASY-TASK-NAME~ can be used to automatically generate the
+implementation of ~TASK-NAME~ for a given task.
 #+begin_src lisp
-  (defmacro easy-block-name (block-name))
+  (defmacro easy-task-name (task-name))
 #+end_src
 
-Serialisation of blocks is performed using the function
-~SERIALISE-BLOCK~. This function produces a string that when read and
-evaluated, produces a new instance of the block which is considered
-/equal/ to the block that was serialised. This process is similar to
+Serialisation of tasks is performed using the function
+~SERIALISE-TASK~. This function produces a string that when read and
+evaluated, produces a new instance of the task which is considered
+/equal/ to the task that was serialised. This process is similar to
 the ~*PRINT-READABLY*~ functionality, but does not rely on
 ~PRINT-OBJECT~. 
 #+begin_src lisp
-  (defun serialise-block (block))
+  (defun serialise-task (task))
 #+end_src
 
-~SERIALISE-BLOCK~ iterates through all slots of the block,
+~SERIALISE-TASK~ iterates through all slots of the task,
 transforming each slot value in to an s-expression which evaluates to
 an /equal/ object. Customisation of the generated expression for a
 given object is provided by the ~OBJECT-SEXP~ generic function.
@@ -416,18 +418,18 @@ experiment chains can be discovered using the function
   (defgeneric discover-chains (pathname))
 #+end_src
 This function returns a list of ~CHAIN~ instances. A chain instance
-contains the blocks that formed the experiment.
+contains the tasks that formed the experiment.
 
-The function ~CONTAINS-BLOCK-P~ can be used to determine if a chain
-contains the given block.
+The function ~CONTAINS-TASK-P~ can be used to determine if a chain
+contains the given task.
 #+begin_src lisp
-  (defun contains-block-p (chain block))
+  (defun contains-task-p (chain task))
 #+end_src
 
-The function ~FIND-CHAINS-WITH-BLOCK~ returns all chains in which
-~CONTAINS-BLOCK-P~ is ~T~ for the given block.
+The function ~FIND-CHAINS-WITH-TASK~ returns all chains in which
+~CONTAINS-TASK-P~ is ~T~ for the given task.
 #+begin_src lisp
-  (defun find-chains-with-block (chains block))
+  (defun find-chains-with-task (chains task))
 #+end_src
 
 Another important function is ~GROUP-BY~, which groups chains
@@ -442,7 +444,7 @@ group.
 In fact, the ~GROUP-BY~ function is needed so frequently, that a
 special function ~GROUP-CHAINS~ is provided. The ~GROUP-CHAINS~
 function works in conjunction with information specified when defining
-a block.
+a task.
 #+begin_src lisp
     (defun group-chains (chains expression &key sort inner-sort))
 #+end_src
@@ -451,19 +453,19 @@ An ~EXPRESSION~ is a form which is used to synthesize a predicate for
 
 Valid expressions are 
 - ~symbol~ :: This generally refers to the base class of a
-              block. e.g. All congealing algorithm blocks inherit from
+              task. e.g. All congealing algorithm tasks inherit from
               ~ALGORITHM~, thus specifying ~(quote ALGORITHM)~ would
               group all chains that use the same algorithm.
 - ~(= symbol name)~ :: This expression specifies that the chains
      within a group all have the same value for the slot ~NAME~ in the
-     block with type ~SYMBOL~.
+     task with type ~SYMBOL~.
 
 The last expression ~(= symbol name)~ uses the arity two predicate
 specified with the ~:TEST=~ slot definition argument used within
-~DEFINE-BLOCK~. The block definition for ~GEOMETRIC-CROSS-VALIDATION~
+~DEFINE-TASK~. The task definition for ~GEOMETRIC-CROSS-VALIDATION~
 would be
 #+begin_src lisp
-  (define-block geometric-cross-validation ()
+  (define-task geometric-cross-validation ()
     ((sample
       :initarg sample
       :reader sample
@@ -479,9 +481,9 @@ expression. A sort expression can be one of
 - ~(> symbol name)~ :: Like the ~=~ expression previously, but using
      the ~:TEST>~ slot definition argument.
 - ~(< symbol name)~ :: Similar to the ~>~ expression.
-- ~(order base &rest names)~ :: Order blocks that inherit from the
+- ~(order base &rest names)~ :: Order tasks that inherit from the
      base class ~BASE~ in the specified order of sub-classes. It is an
-     error if a block is found with that inherits from ~base~ but no
+     error if a task is found with that inherits from ~base~ but no
      name is present.
 - ~(order base)~ :: Similar to ~(order base &rest names)~, but
                     dynamically determines the unique sub-classes of
@@ -499,7 +501,7 @@ set of experiments to be performed.
 The document serves as the definition of the set of experiments to
 generate. The language of the document in the ~CHAINS~ system is
 defined by the experiment design (or just design) can be written
-within a ~DEFINE-DOCUMENT~ block. The following is an example document
+within a ~DEFINE-DOCUMENT~ task. The following is an example document
 outlining the set of experiments that to be generated for the
 congealing problem.
 #+begin_src lisp
@@ -555,7 +557,7 @@ code is produced.
                        :number-of-subjects 20
                        :samples-per-subject 10))
 #+end_src
-Thus there exists an instance of the block
+Thus there exists an instance of the task
 ~IMAGE-APPEARANCE-AND-LIGHTING~ for every permutation of the argument
 values for the slots ~:LIGHTING-VARIATION~, ~:NUMBER-OF-SUBJECTS~ and
 ~:SAMPLES-PER-SUBJECT~.
@@ -601,7 +603,7 @@ performs the creation of the input data. For example, the portion of
 the ~CONGEALING~ design up until the ~;; Algorithms to be executed~
 comment. Many designs can be specified to ~:APPEND-TO~.
 
-To encourage reuse of designs, a special block ~(:design name)~
+To encourage reuse of designs, a special task ~(:design name)~
 expression is supported by ~DEFINE-DESIGN~. For example, the
 ~CONGEALING~ design could be written as follows.
 #+begin_src lisp
