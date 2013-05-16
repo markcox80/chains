@@ -1,7 +1,7 @@
 *.fasl
 *~
 /algorithm-input.png
-/congealing-blocks.png
+/congealing-tasks.png
 /input-data.png
 /parallelism.png
 bin/*
