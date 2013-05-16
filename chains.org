@@ -585,3 +585,39 @@ children
         (make-instance 'rasl
                        :maximum-number-of-iterations 10))
 #+end_src
+
+The keyword ~:APPEND-TO~ can be used in ~DEFINE-DESIGN~ to build up
+trees of differing depths. This functionality is useful in the
+following situation for a different type of congealing algorithm.
+#+begin_src lisp
+  (define-design face-detection-and-refinement
+    (:documentation "Run the Viola-Jones face detector and refine it with non-rigid congealing algorithm.")
+    (:append-to congealing/input-data)
+    ...)
+#+end_src
+
+The symbol ~CONGEALING/INPUT-DATA~ refers to a design that just
+performs the creation of the input data. For example, the portion of
+the ~CONGEALING~ design up until the ~;; Algorithms to be executed~
+comment. Many designs can be specified to ~:APPEND-TO~.
+
+To encourage reuse of designs, a special block ~(:design name)~
+expression is supported by ~DEFINE-DESIGN~. For example, the
+~CONGEALING~ design could be written as follows.
+#+begin_src lisp
+  (define-design congealing/input-data
+      ...)
+  (define-design congealing/algorithms
+      ...)
+  (define-design congealing/results
+      ...)
+  
+  (define-design congealing
+    (:documentation "The complete set of experiments for congealing.")
+  
+    ((:design congealing/input-data))
+  
+    ((:design congealing/algorithms))
+  
+    ((:design congealing/results)))
+#+end_src
