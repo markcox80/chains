@@ -1,11 +1,10 @@
 #+TITLE: Experiment Chains
 #+AUTHOR: Mark Cox
 
-~CHAINS~ is a common lisp system for making it easy to construct an
-experiment chain in which a number of links are assembled to produce a
-result. Its main purpose is to accommodate scenarios where the line
-between a scientific experiment and algorithmic experimentation is
-blurred.
+~CHAINS~ is a common lisp system for constructing an experiment chain
+in which a number of links are assembled to produce a result. Its main
+purpose is to accommodate scenarios where the line between a
+scientific experiment and algorithmic experimentation is blurred.
 
 [TABLE-OF-CONTENTS]
 
@@ -112,42 +111,41 @@ experiment parameter then you have an /extremely/ large number of
 experiments.
 
 Fortunately, since the experiments are independent, they can be
-executed in parallel. Well not quite in parallel as describe later,
+executed in parallel. Well not quite in parallel as described later,
 but the experiment execution problem does belong to the class of
-parallelisable problems which I would consider embarrassingly simple
-to achieve.
+parallelisable problems which I personally would consider
+embarrassingly simple to achieve.
 
 Another difficulty is collating results. When writing a report or a
-paper, one typically needs to additional graphs (or tables) that were
-not thought of initially. To accommodate this use case, the output of
-the experiments should be saved in order to save (valuable) time. This
-serialisation not only applies to the algorithm output and input, but
-for all of the experiment parameters as well.
+paper, one typically needs additional graphs (or tables, but who likes
+tables?) that were not thought of initially. To accommodate this use
+case, the output of the experiments should be saved in order to save
+(valuable) time. This serialisation not only applies to the algorithm
+output and input, but for all data required to perform the experiment.
 
 This database of serialised experiment data also needs to have the
-ability to be queried as well. This ability is needed by the results
-collation step mentioned previously.
+ability to be queried. This ability is needed by the results collation
+step mentioned previously.
 
 All of this is simple to state, but is moderately difficult to
 implement and very easy to make simple mistakes which are hard to
 identify. Additionally, the code that performs the experiment setup,
 execution and result collation very rarely receive the level of
-attention and care that algorithms receive. In my local minima, I
-haven't seen any one release code just for performing experiments. As
-to why, I am not sure.
+attention and care that algorithms receive. In my local minima which
+is termed life, I have not seen code just for performing
+experiments. Why? Good question.
 
 The ~CHAINS~ system attempts to provide facilities for the above tasks
 in order for the scientist to spend more time on developing an
-understanding of existing algorithms and to develop ones own
-algorithms.
+understanding of existing algorithms and to develop new algorithms
+that overcome identified issues.
 
 The ~CHAINS~ is not a plug and play work flow optimiser where one
 performs plumping. It should not be a dependency in your algorithm
-implementations. Its domain is very well constrained to the problem
-defined above, specifically, the only place where the ~CHAINS~ system
-should be used is in verifying and validating an algorithm's
-performance on different types of data and collating algorithm output
-for a publication.
+implementations. The only place where the ~CHAINS~ system should be
+used is in verifying and validating an algorithm's performance on
+different types of data and collating algorithm results for some sort
+of publication.
 
 * Concepts and mental models
 The background section painted a picture of the aspects of the problem
@@ -173,9 +171,10 @@ follows
   +--------+
 #+end_src
 The input data task is responsible for creating the ensemble of images
-fed to the algorithm. Once finished, the output of the algorithm is
-compared to the ground truth in order to quantitatively evaluate the
-algorithm on the input data.
+fed to the algorithm. Once the algorithm has provided an estimate of
+the object's position, this position is then compared to the ground
+truth using a metric. The metric provides a quantitative measure of
+the algorithm's performance.
 
 This linking of tasks to be executed is termed a chain.
 
@@ -200,22 +199,21 @@ evaluated on two different sets of input data.
                      +-------------+   +--------+
 #+end_src
 The above figure presents two trees which start from an input data
-task. In the ~CHAINS~ system a hidden root node is used to produce a
-single tree. As can be seen, the path from the top of the root node to
-a leaf represents a single experiment or execution chain.
+task. The ~CHAINS~ system uses a hidden root node in order to produce
+a single tree. The key property of the tree is that a path from the
+top of the root node to a leaf represents a single experiment or
+execution chain.
 
 The tree view of the experiments also highlights the parallelism of
-the experiment execution. i.e. once input data 1 and 2 are created,
-all four algorithm invocations can be executed in parallel (provided
-that the implementation permits it). Likewise, all four metrics can be
-computed once the algorithms are completed.
+the experiment execution. Once a node in the tree has completed, all
+of its children can be executed in parallel.
 
 The ~CHAINS~ system does not limit the length of the chain, nor are
 there any constraints placed on the type of experiment tree. In fact
-the ~CHAINS~ system does not provide any default tasks. Tasks are
-problem specific entities. What the ~CHAINS~ system does provide is a
-mechanism for constructing a new tree, discovering an existing tree,
-executing the tree and querying a tree.
+the ~CHAINS~ system does not provide any default tasks as tasks are
+fundamentally problem specific. What the ~CHAINS~ system does provide
+is a mechanism for constructing a new tree, discovering an existing
+tree, executing a tree, tree serialisation and querying.
 
 Another important characteristic of tasks is the way they
 interact. The ~CHAINS~ system assumes that a task can only depend on
