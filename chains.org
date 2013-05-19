@@ -395,7 +395,7 @@ Serialisation of tasks is performed using the function
 ~SERIALISE-TASK~. This function produces a string that when read and
 evaluated, produces a new instance of the task which is considered
 /equal/ to the task that was serialised. This process is similar to
-the ~*PRINT-READABLY*~ functionality, but does not rely on
+the ~*PRINT-READABLY*~ functionality, but does not directly rely on
 ~PRINT-OBJECT~. 
 #+begin_src lisp
   (defun serialise-task (task))
@@ -409,13 +409,16 @@ given object is provided by the ~OBJECT-SEXP~ generic function.
   (defgeneric object-sexp (object))
 #+end_src
 
+If no ~OBJECT-SEXP~ method exists for ~OBJECT~, then ~PRINT-OBJECT~ is
+invoked with ~*PRINT-READABLY*~ bound to ~T~.
+
 * Querying
 Querying a set of experiments is critical to the collation of
 results. When a set of experiments have finished executing, the
 experiment chains can be discovered using the function
 ~DISCOVER-CHAINS~.
 #+begin_src lisp
-  (defgeneric discover-chains (pathname))
+  (defun discover-chains (pathname))
 #+end_src
 This function returns a list of ~CHAIN~ instances. A chain instance
 contains the tasks that formed the experiment.
@@ -622,4 +625,40 @@ expression is supported by ~DEFINE-DESIGN~. For example, the
     ((:design congealing/algorithms))
   
     ((:design congealing/results)))
+#+end_src
+
+The function ~GENERATE~ is used to create the experiments defined with
+the ~DEFINE-DESIGN~ macro. 
+#+begin_src lisp
+(defun generate (design-name))
+#+end_src
+This function returns a ~TREE~ containing the entire collection of
+experiments.
+* Executing
+Before a tree of experiments is executed, an area to store the results
+must be prepared. The function ~PREPARE~ performs this task.
+#+begin_src lisp
+  (defun prepare (directory &key if-exists))
+#+end_src
+The argument ~IF-EXISTS~ determines what to do if the given
+~DIRECTORY~ is not empty.
+
+A task's operation can not be executed directly as it is conditioned
+on tasks in the chain. A chain can be executed using the function
+~PERFORM~.
+#+begin_src lisp
+  (defun perform (area chain &key force &allow-other-keys))
+#+end_src
+The ~DIRECTORY~ argument specifies where the results of the execution
+are to be stored. The ~CHAIN~ argument is the chain to be
+executed. The keyword argument ~FORCE~, specifies that all of the
+tasks should be executed, regardless of whether or not they have been
+executed.
+
+An operation can obtain the value of the ~FORCE~ argument via the
+~*FORCED*~ dynamic variable. All keyword arguments given to ~PERFORM~
+can be obtained using the function ~PERFORM-PROPERTIES~.
+#+begin_src lisp
+(defvar *forced*)
+(defun perform-properties ())
 #+end_src
