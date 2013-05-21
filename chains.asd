@@ -11,5 +11,5 @@
   :components ((:module "src"
 			:serial t
 			:components ((:file "packages")
-				     (:file "blocks"))))
+				     (:file "tasks"))))
   :in-order-to ((test-op (test-op "chains-tests"))))
