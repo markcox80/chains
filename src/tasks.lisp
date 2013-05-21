@@ -4,6 +4,15 @@
   ()
   (:documentation "The metaclass for all objects that represent task classes."))
 
+(defgeneric test=-form (slot-definition))
+(defgeneric test=-function (slot-definition))
+
+(defgeneric test<-form (slot-definition))
+(defgeneric test<-function (slot-definition))
+
+(defgeneric test>-form (slot-definition))
+(defgeneric test>-function (slot-definition))
+
 (defclass task-direct-slot-definition (closer-mop:standard-direct-slot-definition)
   ((test=-form
     :initarg :test=-form
@@ -22,7 +31,10 @@
     :reader test>-form)
    (test>-function
     :initarg :test>-function
-    :reader test>-function)))
+    :reader test>-function))
+  (:default-initargs
+   :test=-form '(function eql)
+   :test=-function #'eql))
 
 ;; Not sure why this is needed
 (defmethod closer-mop:validate-superclass ((class task-class) (superclass (eql (find-class 'standard-object))))
@@ -81,6 +93,7 @@ TASK-DIRECT-SLOT-DEFINITION."
 	    initargs
 	    readers
 	    writers
+	    type
 	    initform initfunction
 	    test=-form test=-function
 	    test<-form test<-function
@@ -98,11 +111,13 @@ TASK-DIRECT-SLOT-DEFINITION."
 	     (push value initargs))
 	    (:reader
 	     (push value readers))
-	    (:writers
-	     (push value writers))
+	    (:writer
+	     (push `(setf ,value) writers))
 	    (:accessor
 	     (push value readers)
 	     (push `(setf ,value) writers))
+	    (:type
+	     (setf type value))
 	    (:test=
 	     (setf test=-function value
 		   test=-form `',value))
@@ -117,6 +132,7 @@ TASK-DIRECT-SLOT-DEFINITION."
 	       ,@(when initargs `(:initargs ',(reverse initargs)))
 	       ,@(when readers  `(:readers ',(reverse readers)))
 	       ,@(when writers  `(:writers ',(reverse writers)))
+	       ,@(when type `(:type ',type))
 	       ,@(when test=-function `(:test=-form ,test=-form :test=-function ,test=-function))
 	       ,@(when test<-function `(:test<-form ,test<-form :test<-function ,test<-function))
 	       ,@(when test>-function `(:test>-form ,test>-form :test>-function ,test>-function))))))
