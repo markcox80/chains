@@ -4,6 +4,7 @@
   ;; Predicates
   (:export #:ensure-predicates
 	   #:define-predicates
+	   #:find-predicates
 	   
 	   #:test=-function
 	   #:test<-function

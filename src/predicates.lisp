@@ -10,6 +10,9 @@
 (defun (setf %predicates) (value name)
   (setf (get name 'predicates) value))
 
+(defun find-predicates (name)
+  (%predicates name))
+
 (defclass predicates ()
   ((test=-function
     :initarg :test=-function
