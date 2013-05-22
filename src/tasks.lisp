@@ -1,40 +1,35 @@
 (in-package "CHAINS")
 
+(define-predicates default-predicates
+  #'eql
+  #'(lambda (a b)
+      (error "No /less-than/ predicate specified for values ~A and ~B. Use DEFINE-PREDICATES." a b))
+  #'(lambda (a b)
+      (error "No /greater-than/ predicate specified for values ~A and ~B. Use DEFINE-PREDICATES." a b)))
+
+(define-predicates number #'= #'< #'>)
+(define-predicates string/case-sensitive #'string= #'string< #'string>)
+(define-predicates string/case-insensitive #'string-equal #'string-lessp #'string-greaterp)
+
 (defclass task-class (standard-class)
   ()
   (:documentation "The metaclass for all objects that represent task classes."))
 
-(defgeneric test=-form (slot-definition))
-(defgeneric test=-function (slot-definition))
-
-(defgeneric test<-form (slot-definition))
-(defgeneric test<-function (slot-definition))
-
-(defgeneric test>-form (slot-definition))
-(defgeneric test>-function (slot-definition))
-
 (defclass task-direct-slot-definition (closer-mop:standard-direct-slot-definition)
-  ((test=-form
-    :initarg :test=-form
-    :reader test=-form)
-   (test=-function
-    :initarg :test=-function
-    :reader test=-function)
-   (test<-form
-    :initarg :test<-form
-    :reader test<-form)
-   (test<-function
-    :initarg :test<-function
-    :reader test<-function)
-   (test>-form
-    :initarg :test>-form
-    :reader test>-form)
-   (test>-function
-    :initarg :test>-function
-    :reader test>-function))
+  ((predicates
+    :initarg :predicates
+    :reader task-direct-slot-definition-predicates))
   (:default-initargs
-   :test=-form '(function eql)
-   :test=-function #'eql))
+   :predicates 'default-predicates))
+
+(defmethod test=-function ((object task-direct-slot-definition))
+  (test=-function (task-direct-slot-definition-predicates object)))
+
+(defmethod test<-function ((object task-direct-slot-definition))
+  (test<-function (task-direct-slot-definition-predicates object)))
+
+(defmethod test>-function ((object task-direct-slot-definition))
+  (test>-function (task-direct-slot-definition-predicates object)))
 
 ;; Not sure why this is needed
 (defmethod closer-mop:validate-superclass ((class task-class) (superclass (eql (find-class 'standard-object))))
@@ -95,9 +90,7 @@ TASK-DIRECT-SLOT-DEFINITION."
 	    writers
 	    type
 	    initform initfunction
-	    test=-form test=-function
-	    test<-form test<-function
-	    test>-form test>-function)
+	    predicates)
 	(assert (zerop (mod (length (rest spec)) 2)))
 	(do* ((slot-options (rest spec) (cddr slot-options))
 	      (key (first slot-options) (first slot-options))
@@ -118,24 +111,15 @@ TASK-DIRECT-SLOT-DEFINITION."
 	     (push `(setf ,value) writers))
 	    (:type
 	     (setf type value))
-	    (:test=
-	     (setf test=-function value
-		   test=-form `',value))
-	    (:test<
-	     (setf test<-function value
-		   test<-form `',value))
-	    (:test>
-	     (setf test>-function value
-		   test>-form `',value))))
+	    (:predicates
+	     (setf predicates value))))
 	`(list :name ',name
 	       ,@(when initfunction `(:initform ,initform :initfunction ,initfunction))
 	       ,@(when initargs `(:initargs ',(reverse initargs)))
 	       ,@(when readers  `(:readers ',(reverse readers)))
 	       ,@(when writers  `(:writers ',(reverse writers)))
 	       ,@(when type `(:type ',type))
-	       ,@(when test=-function `(:test=-form ,test=-form :test=-function ,test=-function))
-	       ,@(when test<-function `(:test<-form ,test<-form :test<-function ,test<-function))
-	       ,@(when test>-function `(:test>-form ,test>-form :test>-function ,test>-function))))))
+	       ,@(when predicates `(:predicates ',predicates))))))
 
 (defun canonicalise-define-task-option (option)
   (alexandria:destructuring-case option

@@ -4,22 +4,16 @@
   ((mean
     :initarg :mean
     :reader mean
-    :test= #'=
-    :test< #'<
-    :test> #'>)
+    :predicates number)
    (variance
     :initarg :variance
     :writer variance
-    :test= #'=
-    :test< #'<
-    :test> #'>)
+    :predicates number)
    (name
     :accessor name
     :initform "Example Task"
     :type string
-    :test= #'string=
-    :test< #'string<
-    :test> #'string>))
+    :predicates string/case-sensitive))
   (:documentation "Example usage of the DEFINE-TASK macro.")
   (:default-initargs
    :mean 0
@@ -37,18 +31,12 @@
 
     (dolist (item (list mean-slot variance-slot))
       (assert-equal #'= (test=-function item))
-      (assert-equal '#'= (test=-form item))
       (assert-equal #'< (test<-function item))
-      (assert-equal '#'< (test<-form item))
-      (assert-equal #'> (test>-function item))
-      (assert-equal '#'> (test>-form item)))
+      (assert-equal #'> (test>-function item)))
 
     (assert-equal #'string= (test=-function name-slot))
-    (assert-equal '#'string= (test=-form name-slot))
     (assert-equal #'string< (test<-function name-slot))
-    (assert-equal '#'string< (test<-form name-slot))
     (assert-equal #'string> (test>-function name-slot))
-    (assert-equal '#'string> (test>-form name-slot))
     
     (assert-equal "Example usage of the DEFINE-TASK macro."
 		  (documentation c t))))
