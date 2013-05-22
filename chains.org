@@ -463,16 +463,32 @@ Valid expressions are
      within a group all have the same value for the slot ~NAME~ in the
      task with type ~SYMBOL~.
 
-The last expression ~(= symbol name)~ uses the arity two predicate
-specified with the ~:TEST=~ slot definition argument used within
-~DEFINE-TASK~. The task definition for ~GEOMETRIC-CROSS-VALIDATION~
-would be
+The last expression ~(= symbol name)~ does not use the function ~=~,
+but rather it obtains an arity two predicate using the
+~:PREDICATES~ slot definition argument used within
+~DEFINE-TASK~. 
+
+The predicates argument represents a collection of comparison
+predicates for a specific type of value. The predicates for ~NUMBER~
+are defined as follows.
+#+begin_src lisp
+  (define-predicates number #'= #'< #'>)
+#+end_src
+The functions can be obtained using generic functions
+#+begin_src lisp
+  (defgeneric test=-function (name))
+  (defgeneric test<-function (name))
+  (defgeneric test>-function (name))
+#+end_src
+
+The task definition for ~GEOMETRIC-CROSS-VALIDATION~ including the
+test predicates would be
 #+begin_src lisp
   (define-task geometric-cross-validation ()
     ((sample
       :initarg sample
       :reader sample
-      :test= #'sample-equal
+      :predicates number
       :documentation "The index of the random sample.")))
 #+end_src
 This states the equality predicate synthesised by ~GROUP-CHAINS~ would
@@ -482,7 +498,7 @@ The keyword arguments ~SORT~ and ~INNER-SORT~ perform sorting of the
 groups and the chains within the groups according to a sort
 expression. A sort expression can be one of
 - ~(> symbol name)~ :: Like the ~=~ expression previously, but using
-     the ~:TEST>~ slot definition argument.
+     the ~TEST>-FUNCTION~ predicate.
 - ~(< symbol name)~ :: Similar to the ~>~ expression.
 - ~(order base &rest names)~ :: Order tasks that inherit from the
      base class ~BASE~ in the specified order of sub-classes. It is an
