@@ -69,7 +69,7 @@
 ;; by Gregor Kiczales, Jim des Rivieres and Daniel G. Bobrow
 
 (defun canonicalise-direct-superclasses (superclasses)
-  (mapcar #'canonicalise-direct-superclass superclasses))
+  `(list ,@(mapcar #'canonicalise-direct-superclass superclasses)))
 
 (defun canonicalise-direct-superclass (superclass)
   `(find-class ',superclass))
