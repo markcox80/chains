@@ -353,21 +353,6 @@ The ~DEFINE-INPUT~ and ~DEFINE-TASK-INPUT~ provide a flexible method
 of computing input values to a task conditioned on the tasks in the
 chain.
 
-The ~DEFINE-OPERATION~ macro also permits altering the operation
-performed based on the tasks in the chain.
-
-#+begin_src lisp
-  (define-operation (object appearance-cross-validation)
-      ((variation appearance-and-lighting))
-    ;; Synthesize a set of images with appearance and lighting variation.
-    )
-  
-  (define-operation (object appearance-cross-validation)
-      ((variation appearance))
-    ;; Synthesize a set of images with appearance variation.
-    )
-#+end_src
-
 Further details on the ~DEFINE-OPERATION~ and ~DEFINE-LINK~ are found
 later in this document.
 
