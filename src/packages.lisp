@@ -22,4 +22,11 @@
 
   ;; Tasks
   (:export #:task
-	   #:define-task))
+	   #:define-task)
+
+  ;; Serialisation
+  (:export #:object-sexp
+	   #:serialise-object
+	   #:serialise-task
+
+	   #:task-string))

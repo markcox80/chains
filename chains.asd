@@ -12,5 +12,6 @@
 			:serial t
 			:components ((:file "packages")
 				     (:file "predicates")
-				     (:file "tasks"))))
+				     (:file "tasks")
+				     (:file "serialisation"))))
   :in-order-to ((test-op (test-op "chains-tests"))))

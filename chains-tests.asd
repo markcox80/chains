@@ -12,4 +12,5 @@
 			:serial t
 			:components ((:file "packages")
 				     (:file "asdf")
-				     (:file "tasks")))))
+				     (:file "tasks")
+				     (:file "serialisation")))))
