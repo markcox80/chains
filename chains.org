@@ -321,8 +321,8 @@ following code defines the appropriate task.
 The following code defines the action that is to performed when the
 above task is executed.
 #+begin_src lisp
-  (define-input input-data)
-  (define-input distance-away-from-ground-truth)
+  (define-task-input input-data)
+  (define-task-input distance-away-from-ground-truth)
   
   (define-operation (object geometric-cross-validation)
       ((input-data input-data)
@@ -336,12 +336,12 @@ special arguments that represent the input to the
 
 The value of the places ~INPUT-DATA~ and ~DISTANCE~ vary depending on
 the chain being executed. In order to compute the input values for a
-given task and chain you use the ~DEFINE-TASK-INPUT~ macro.
+given task and chain you use the ~DEFINE-TASK-INPUT-FUNCTION~ macro.
 #+begin_src lisp
-  (define-task-input input-data geometric-cross-validation ((occlusion synthetic-occlusion))
+  (define-task-input-function input-data geometric-cross-validation ((occlusion synthetic-occlusion))
     (task-value occlusion))
   
-  (define-task-input distance-away-from-ground-truth geometric-cross-validation ((object distance-away-from-ground-truth))
+  (define-task-input-function distance-away-from-ground-truth geometric-cross-validation ((object distance-away-from-ground-truth))
     (distance object))
 #+end_src
 
@@ -349,9 +349,9 @@ The function ~TASK-VALUE~ in the task input definition for ~INPUT-DATA~ is
 a special function that returns the output of the operation for the
 ~OCCLUSION~ task.
 
-The ~DEFINE-INPUT~ and ~DEFINE-TASK-INPUT~ provide a flexible method
-of computing input values to a task conditioned on the tasks in the
-chain.
+The ~DEFINE-TASK-INPUT~ and ~DEFINE-TASK-INPUT-FUNCTION~ provide a
+flexible method of computing input values to a task conditioned on the
+tasks in the chain.
 
 Further details on the ~DEFINE-OPERATION~ and ~DEFINE-LINK~ are found
 later in this document.
