@@ -15,7 +15,7 @@
 	   #:string/case-sensitive
 	   #:string/case-insensitive)
 
-  ;; Tasks Metaobjects and programatic creation
+  ;; Tasks Metaobjects and programmatic creation
   (:export #:task-class
 	   #:task-direct-slot-definition
 	   #:ensure-task)
@@ -29,4 +29,24 @@
 	   #:serialise-object
 	   #:serialise-task
 
-	   #:task-string))
+	   #:task-string)
+
+  ;; Task input objects and programmatic creation.
+  (:export #:task-input
+	   #:find-task-input
+	   #:ensure-task-input
+	   #:define-task-input
+	   #:task-input-name
+	   #:task-input-functions
+	   #:task-input-documentation
+	   
+	   #:no-applicable-task-input)
+
+  ;; Task input function objects and programmatic creation.
+  (:export #:task-input-function
+	   #:ensure-task-input-function
+	   #:define-task-input-function
+	   #:task-input-function-performed-classes
+	   #:task-input-function-task-input
+	   #:task-input-function-target-class
+	   #:task-input-function-documentation))

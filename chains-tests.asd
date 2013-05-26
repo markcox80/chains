@@ -13,4 +13,5 @@
 			:components ((:file "packages")
 				     (:file "asdf")
 				     (:file "tasks")
+				     (:file "operations")
 				     (:file "serialisation")))))

@@ -13,5 +13,6 @@
 			:components ((:file "packages")
 				     (:file "predicates")
 				     (:file "tasks")
+				     (:file "operations")
 				     (:file "serialisation"))))
   :in-order-to ((test-op (test-op "chains-tests"))))
