@@ -1,6 +1,10 @@
 (defpackage "CHAINS"
   (:use "COMMON-LISP")
 
+  ;; Utilities
+  (:export #:separate-according-to
+	   #:group-by)
+
   ;; Predicates
   (:export #:ensure-predicates
 	   #:define-predicates
