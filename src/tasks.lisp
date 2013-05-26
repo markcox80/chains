@@ -119,7 +119,7 @@ TASK-DIRECT-SLOT-DEFINITION."
 	       ,@(when readers  `(:readers ',(reverse readers)))
 	       ,@(when writers  `(:writers ',(reverse writers)))
 	       ,@(when type `(:type ',type))
-	       ,@(when predicates `(:predicates '(find-predicates ',predicates)))))))
+	       ,@(when predicates `(:predicates (find-predicates ',predicates)))))))
 
 (defun canonicalise-define-task-option (option)
   (alexandria:destructuring-case option
