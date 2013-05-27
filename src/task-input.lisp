@@ -208,14 +208,14 @@
       (when (> (length group) 1)
 	(error "
 Unable to compute task input function as more than
-one TASK-INPUT-FUNCTION match.
+one TASK-INPUT-FUNCTION fall in to the same bucket.
 
 ~A
 
 You have not encountered a bug. This situation was intentionally
 omitted as it was not clear what should be done at the time of
-writing. I am very interested in your use case and your opinion on
-what should occur. Please email me."  group)))
+writing. I am very interested in your use case and your expectation on
+what should occur. Please email me." group)))
     (mapcar #'first (sort groups (test>-function 'sort-applicable-functions) :key #'first))))
 
 ;; SAF == Sort Applicable Functions
