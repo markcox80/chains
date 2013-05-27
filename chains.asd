@@ -14,6 +14,6 @@
 				     (:file "utilities")
 				     (:file "predicates")
 				     (:file "tasks")
-				     (:file "operations")
+				     (:file "task-input")
 				     (:file "serialisation"))))
   :in-order-to ((test-op (test-op "chains-tests"))))
