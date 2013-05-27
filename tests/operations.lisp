@@ -66,6 +66,13 @@
 						   (list 'example-task)
 						   #'identity))
 
+  ;; Duplicate performed class.
+  (assert-error 'error (ensure-task-input-function (find-task-input 'example-task-input)
+						   (find-class 'target-task)
+						   (list (find-class 'example-task)
+							 (find-class 'example-task))
+						   #'identity))
+
   ;; Programmtic creation
   (let* ((ti (find-task-input 'programmatic-task-input))
 	 (tif (ensure-task-input-function ti
@@ -94,3 +101,50 @@
     ;; Insert another function with different target class.
     (ensure-task-input-function ti (find-class 'example-task) nil #'identity)
     (assert-equal 3 (length (task-input-functions ti)))))
+
+;; Compute task input functions tests
+(define-task input-data-1 ()
+  ())
+
+(define-task input-data-1-1 (input-data-1)
+  ())
+
+(define-task input-data-2 ()
+  ())
+
+(define-task-input algorithm-input-data
+  (:documentation "Retrieve the input data to the algorithm."))
+
+(define-task algorithm ()
+  ())
+
+(define-task algorithm-1 (algorithm)
+  ())
+
+(define-task-input-function algorithm-input-data algorithm ((data input-data-1))
+  (declare (ignore data))
+  'input-data-1)
+
+(define-task-input-function algorithm-input-data algorithm ((data input-data-1-1))
+  (declare (ignore data))
+  'input-data-1-1)
+
+(define-task-input-function algorithm-input-data algorithm ((data input-data-2))
+  (declare (ignore data))
+  'input-data-2)
+
+(define-test compute-task-input-functions
+  (let ((ti (find-task-input 'algorithm-input-data)))
+    (assert-equal 3 (length (task-input-functions ti)))
+
+    (let ((fns (compute-task-input-functions ti (find-class 'algorithm-1) (list (find-class 'input-data-2)))))
+      (assert-equal 1 (length fns))
+      (assert-equal 'input-data-2 (funcall (first fns) :does-not-matter)))
+
+    (let ((fns (compute-task-input-functions ti (find-class 'algorithm-1) (list (find-class 'input-data-1)))))
+      (assert-equal 1 (length fns))
+      (assert-equal 'input-data-1 (funcall (first fns) :does-not-matter)))
+
+    (let ((fns (compute-task-input-functions ti (find-class 'algorithm-1) (list (find-class 'input-data-1-1)))))
+      (assert-equal 2 (length fns))
+      (assert-equal 'input-data-1-1 (funcall (first fns) :does-not-matter)))))

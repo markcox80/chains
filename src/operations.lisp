@@ -101,7 +101,8 @@
 
 (defun performed-classes-equal (classes-a classes-b)
   (and (= (length classes-a) (length classes-b))
-       (null (set-difference classes-a classes-b :test #'task-class-equal))))
+       (null (set-difference classes-a classes-b :test #'task-class-equal))
+       (null (set-difference classes-b classes-a :test #'task-class-equal))))
 
 (defun target-class-equal (class-a class-b)
   (task-class-equal class-a class-b))
@@ -124,6 +125,8 @@
 		     (typep x 'task-class))
 		 performed-classes))
   (assert (functionp function))
+  (assert (= (length performed-classes)
+	     (length (remove-duplicates performed-classes))))
 
   (let ((tif (make-instance 'task-input-function
 			    :task-input task-input
@@ -156,4 +159,143 @@
 				   #'(lambda ,arguments
 				       ,@body)
 				   ,@(when doc-string
-				     (list :documentation doc-string))))))
+				       (list :documentation doc-string))))))
+
+;; Finding the right task input function
+;;
+;; The function COMPUTE-TASK-INPUT-FUNCTIONS is used by an operation
+;; to invoke the function needed to compute an input value.
+;;
+;; The function chosen is based on the target task and the tasks
+;; already performed. The sorting predicates (in order of execution)
+;; are:
+;; - the most specific target class (See predicates SAF/TARGET-CLASS)
+;; - the most specific performed tasks (See predicates SAF/PERFORMED-TASKS)
+;;
+;; More predicates are needed to guarantee uniqueness, but it is not
+;; clear what is required until a better understanding of the usage
+;; patterns are obtained. If more than one function matches then an
+;; error is signalled.
+;;
+;; Another to aspect to consider is CALL-NEXT-TASK-INPUT-FUNCTION.
+
+(defun compute-task-input-functions (task-input target-task-class performed-task-classes)
+  (let ((functions (task-input-functions task-input)))
+    (setf functions (remove-if-not #'(lambda (function)
+				       (applicable-task-input-function-p function task-input target-task-class performed-task-classes))
+				   functions))
+    (sort-applicable-functions functions performed-task-classes)))
+
+(defun applicable-task-input-function-p (function task-input target-task performed-task-classes)
+  (declare (type task-input-function function)
+	   (type task-input task-input)
+	   (type task-class target-task)
+	   (type list performed-task-classes))
+  (and (task-input-equal task-input (task-input-function-task-input function))
+       (closer-mop:subclassp target-task (task-input-function-target-class function))
+       (every #'(lambda (p)
+		  (declare (type task-class p))
+		  (some #'(lambda (o)
+			    (declare (type task-class o))
+			    (closer-mop:subclassp o p))
+			performed-task-classes))
+	      (task-input-function-performed-classes function))))
+
+(defun sort-applicable-functions (functions performed-tasks)
+  (declare (ignore performed-tasks))
+  (let ((groups (group-by (test=-function 'sort-applicable-functions) functions)))
+    (dolist (group groups)
+      (when (> (length group) 1)
+	(error "
+Unable to compute task input function as more than
+one TASK-INPUT-FUNCTION match.
+
+~A
+
+You have not encountered a bug. This situation was intentionally
+omitted as it was not clear what should be done at the time of
+writing. I am very interested in your use case and your opinion on
+what should occur. Please email me."  group)))
+    (mapcar #'first (sort groups (test>-function 'sort-applicable-functions) :key #'first))))
+
+;; SAF == Sort Applicable Functions
+;;; - target class
+(defun saf/target-class-equal (a b)
+  (declare (type task-class a b))
+  (equal a b))
+
+(defun saf/target-class-more-specific (a b)
+  (declare (type task-class a b))
+  (and (not (saf/target-class-equal a b))
+       (closer-mop:subclassp a b)))
+
+(defun saf/target-class-less-specific (a b)
+  (declare (type task-class a b))
+  (and (not (saf/target-class-equal a b))
+       (closer-mop:subclassp b a)))
+
+(define-predicates saf/target-class
+  #'saf/target-class-equal
+  #'saf/target-class-less-specific
+  #'saf/target-class-more-specific)
+
+;;; - performed classes
+(defun saf/performed-classes-equal (classes-a classes-b)
+  (and (= (length classes-a) (length classes-b))
+       (null (set-difference classes-a classes-b :test #'saf/target-class-equal))
+       (null (set-difference classes-b classes-a :test #'saf/target-class-equal))))
+
+(defun saf/performed-classes-more-specific (classes-a classes-b)
+  (labels ((count-subtypes (seq-a seq-b)
+	     (count-if #'(lambda (class)
+			   (some #'(lambda (other-class)
+				     (closer-mop:subclassp class other-class))
+				 seq-b))
+		       seq-a)))
+    (let ((len-a (length classes-a))
+	  (len-b (length classes-b)))
+      (cond	
+	((> len-a len-b)
+	 t)
+	((= len-a len-b)
+	 (let ((a-count (count-subtypes classes-a classes-b))
+	       (b-count (count-subtypes classes-b classes-a)))
+	   (and (plusp a-count)
+		(zerop b-count))))
+	(t
+	 nil)))))
+
+(defun saf/performed-classes-less-specific (classes-a classes-b)
+  (and (not (saf/performed-classes-equal classes-a classes-b))
+       (not (saf/performed-classes-more-specific classes-a classes-b))))
+
+(define-predicates saf/performed-classes
+  #'saf/performed-classes-equal
+  #'saf/performed-classes-less-specific
+  #'saf/performed-classes-more-specific)
+
+;; - Combining target class and performed classes.
+(defun saf/equal (a b)
+  (declare (type task-input-function a b))
+  (and (saf/target-class-equal (task-input-function-target-class a)
+			       (task-input-function-target-class b))
+       (saf/performed-classes-equal (task-input-function-performed-classes a)
+				    (task-input-function-performed-classes b))))
+
+(defun saf/more-specific (a b)
+  (declare (type task-input-function a b))
+  (let ((target-class-a (task-input-function-target-class a))
+	(target-class-b (task-input-function-target-class b)))
+    (or (saf/target-class-more-specific target-class-a target-class-b)
+	(and (saf/target-class-equal target-class-a target-class-b)
+	     (saf/performed-classes-more-specific (task-input-function-performed-classes a)
+						  (task-input-function-performed-classes b))))))
+
+(defun saf/less-specific (a b)
+  (and (not (saf/equal a b))
+       (not (saf/more-specific a b))))
+
+(define-predicates sort-applicable-functions
+  #'saf/equal
+  #'saf/less-specific
+  #'saf/more-specific)

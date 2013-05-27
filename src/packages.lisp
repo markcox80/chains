@@ -53,4 +53,7 @@
 	   #:task-input-function-performed-classes
 	   #:task-input-function-task-input
 	   #:task-input-function-target-class
-	   #:task-input-function-documentation))
+	   #:task-input-function-documentation)
+  
+  ;; Determining task input functions
+  (:export #:compute-task-input-functions))
