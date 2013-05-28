@@ -56,4 +56,5 @@
 	   #:task-input-function-documentation)
   
   ;; Determining task input functions
-  (:export #:compute-task-input-functions))
+  (:export #:compute-task-input-function
+	   #:compute-task-input-functions))

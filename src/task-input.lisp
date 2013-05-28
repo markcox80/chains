@@ -179,6 +179,9 @@
 ;;
 ;; Another to aspect to consider is CALL-NEXT-TASK-INPUT-FUNCTION.
 
+(defun compute-task-input-function (task-input target-task-class performed-task-classes)
+  (first (compute-task-input-functions task-input target-task-class performed-task-classes)))
+
 (defun compute-task-input-functions (task-input target-task-class performed-task-classes)
   (let ((functions (task-input-functions task-input)))
     (setf functions (remove-if-not #'(lambda (function)
