@@ -511,17 +511,52 @@ expression. A sort expression can be one of
 
 * Generating
 This section outlines the process of generating and documenting the
-set of experiments to be performed. 
+set of experiments which are to be performed.
 
-The document serves as the definition of the set of experiments to
-generate. The language of the document in the ~CHAINS~ system is
-defined by the experiment design (or just design) can be written
-within a ~DEFINE-DOCUMENT~ task. The following is an example document
-outlining the set of experiments that to be generated for the
+Creating the experiments is a two step process. The first step is
+specifying the experiment design using the ~DEFINE-DESIGN~ macro. The
+second step is generating the experiment tree using the function
+~GENERATE~. It is important to understand that the design document
+only contains the information needed to generate the tree, it doesn't
+contain the experiments themselves.
+
+A design document contains information needed to generate the set of
+experiments. Creating a design document in the ~CHAINS~ system is
+achieved with the ~DEFINE-DESIGN~ macro.
+#+begin_src lisp
+  (defmacro define-design (name design-options &body levels))
+#+end_src
+The argument ~NAME~ is a symbol naming the design that is being
+defined. ~DEFINE-OPTIONS~ is a list of design options. These options
+will be specified later. The argument ~LEVELS~ contains information
+about the hierarchy of the tree. A diagram illustrating the role of
+~LEVELS~ in the ~DEFINE-DESIGN~ is as follows.
+#+begin_src ditaa :file levels.png
+                               +--------------+
+                               | Root of Tree |
+                               +----+-+-+-----+
+                                    | | |
+                          +---------+ | +-----------------+
+                          |           |                   |
+                          v           v                   v
+                    +----------+ +----------+       +------------+
+  Level 0           | Task 0 0 | | Task 0 1 |  -=-  | Task 0 M_0 |
+                    +----+-----+ +----+-----+       +-----+------+
+                         |            |                   |
+                         v            v                   v
+              +---------------+ +---------------+ +---------------+
+              | Level 1 Tasks | | Level 1 Tasks | | Level 1 Tasks |
+              +-+-----+-----+-+ +-+-----+-----+-+ +-+-----+-----+-+
+                |     |     |     |     |     |     |     |     |
+                v     v     v     v     v     v     v     v     v                 
+#+end_src
+
+The following is an example
+document outlining the set of experiments that to be generated for the
 congealing problem.
 #+begin_src lisp
   (define-design congealing
-    (:documentation "A set of experiments for the paper XYZ.")
+    ((:documentation "A set of experiments for the paper XYZ."))
   
     ;; Images
     ((image-appearance-and-lighting (:lighting-variation 0 0.1 0.2 0.3 0.4)
@@ -548,15 +583,16 @@ congealing problem.
     ((alignment-performance)))
 #+end_src
 
-The first part of the ~DEFINE-DESIGN~ is self explanatory. Lets
-consider what the first expression means
+The first two lines of the ~DEFINE-DESIGN~ are self explanatory.
+
+Lets consider what the first expression means
 #+begin_src lisp
   (image-appearance-and-lighting (:lighting-variation 0 0.1 0.2 0.3 0.4)
                                  (:number-of-subjects 1 2 5 10 20)
                                  (:samples-per-subject 1 5 10))
 #+end_src
 When this expression is encountered by ~DEFINE-DESIGN~, the following
-code is produced.
+list of tasks are produced.
 #+begin_src lisp
   (list (make-instance 'image-appearance-and-lighting
                        :lighting-variation 0
@@ -578,15 +614,15 @@ values for the slots ~:LIGHTING-VARIATION~, ~:NUMBER-OF-SUBJECTS~ and
 ~:SAMPLES-PER-SUBJECT~.
 
 The above instances serve as the children of the root node of the
-tree. Each of these children now have the following children generated
-from the expression
+tree. The tasks produced with the next expression in the
+~DESIGN-DOCUMENT~ will be children to the 
 #+begin_src lisp
 (image-cross-validation (:sample (:splice (loop :for x :from 0 :below 10 :collect x))))
 #+end_src
 
-The ~:SPLICE~ keyword operator which evaluates the form ~(loop :for
-x :from 0 :below 10 :collect x)~ and splices it in place to produce
-the following equivalent expression.
+The ~:SPLICE~ keyword operator evaluates the form ~(loop :for x :from
+0 :below 10 :collect x)~ and splices it in place to produce the
+following equivalent expression.
 #+begin_src lisp
   (image-cross-validation (:sample 0 1 2 3 4 5 6 7 8 9))
 #+end_src
