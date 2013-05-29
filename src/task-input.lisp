@@ -302,3 +302,20 @@ what should occur. Please email me." group)))
   #'saf/equal
   #'saf/less-specific
   #'saf/more-specific)
+
+;; Evaluating the task input function
+;;
+;; Given a chain containing the performed tasks, compute the task
+;; input values.
+(defun evaluate-task-input-function (task-input-function chain)  
+  (let ((performed-tasks (mapcar #'(lambda (performed-class)
+				     (declare (type task-class performed-class))
+				     (let ((v (find-if #'(lambda (task)
+							   (closer-mop:subclassp (class-of task) performed-class))
+						       chain)))
+				       (unless v
+					 (error "Task input function ~A is not suitable for chain ~A"
+						task-input-function chain))
+				       v))
+				 (task-input-function-performed-classes task-input-function))))
+    (apply task-input-function performed-tasks)))

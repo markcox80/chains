@@ -107,7 +107,11 @@
   ())
 
 (define-task input-data-1-1 (input-data-1)
-  ())
+  ((sigma
+    :initarg :sigma
+    :reader sigma))
+  (:default-initargs
+   :sigma 1))
 
 (define-task input-data-2 ()
   ())
@@ -126,8 +130,7 @@
   'input-data-1)
 
 (define-task-input-function algorithm-input-data algorithm ((data input-data-1-1))
-  (declare (ignore data))
-  'input-data-1-1)
+  (values 'input-data-1-1 (1+ (sigma data))))
 
 (define-task-input-function algorithm-input-data algorithm ((data input-data-2))
   (declare (ignore data))
@@ -147,4 +150,12 @@
 
     (let ((fns (compute-task-input-functions ti (find-class 'algorithm-1) (list (find-class 'input-data-1-1)))))
       (assert-equal 2 (length fns))
-      (assert-equal 'input-data-1-1 (funcall (first fns) :does-not-matter)))))
+      (assert-equal 'input-data-1-1 (funcall (first fns) (make-instance 'input-data-1-1))))))
+
+(define-test evaluate-task-input-function
+  (let* ((chain (list (make-instance 'input-data-1-1 :sigma 2)))
+	 (ti (find-task-input 'algorithm-input-data))
+	 (tif   (compute-task-input-function ti (find-class 'algorithm-1) (list (find-class 'input-data-1-1)))))
+    (multiple-value-bind (arg1 arg2) (evaluate-task-input-function tif chain)
+      (assert-equal 'input-data-1-1 arg1)
+      (assert-equal 3 arg2))))
