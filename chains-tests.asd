@@ -15,4 +15,5 @@
 				     (:file "utilities")
 				     (:file "tasks")
 				     (:file "task-input")
+				     (:file "operations")
 				     (:file "serialisation")))))

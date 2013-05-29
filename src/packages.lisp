@@ -60,4 +60,9 @@
 	   #:compute-task-input-functions)
 
   ;; Evaluate a task input function
-  (:export #:evaluate-task-input-function))
+  (:export #:evaluate-task-input-function)
+
+  ;; Operations
+  (:export #:ensure-operation
+	   #:define-operation
+	   #:perform-operation))
