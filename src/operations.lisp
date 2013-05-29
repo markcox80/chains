@@ -9,6 +9,11 @@
      :for task-input :in task-inputs
      :collect
      (let ((fn (compute-task-input-function task-input target-class performed-classes)))
+       (unless fn
+	 (error 'no-applicable-task-input-function
+		:task-input task-input
+		:target-class target-class
+		:performed-classes performed-classes))
        (evaluate-task-input-function fn chain))))
 
 (defun make-operation-method-lambda (task-var task-input-vars task-inputs chain-var body)
