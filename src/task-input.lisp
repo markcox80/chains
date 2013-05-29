@@ -1,17 +1,17 @@
 (in-package "CHAINS")
 
 ;; Conditions
-(define-condition no-applicable-task-input (error)
-  ((name
-    :initarg :name)
-   (task
-    :initarg :task)
-   (chain
-    :initarg :chain))
-  (:report (lambda (stream condition)
-	     (with-slots (name task chain) condition
-	       (format stream "No applicable TASK-INPUT exists for name ~S, task ~S and chain ~A."
-		       name (class-of task) chain)))))
+(define-condition no-applicable-task-input-function (error)
+  ((task-input
+    :initarg :task-input)
+   (target-class
+    :initarg :target-class)
+   (performed-classes
+    :initarg :performed-classes))
+  (:report (lambda (condition stream)
+	     (with-slots (task-input target-class performed-classes) condition
+	       (format stream "No applicable TASK-INPUT-FUNCTION exists for TASK-INPUT ~S, target class ~S and performed classes ~A."
+		       task-input target-class performed-classes)))))
 
 ;; Class TASK-INPUT
 ;;

@@ -44,7 +44,7 @@
 	   #:task-input-functions
 	   #:task-input-documentation
 	   
-	   #:no-applicable-task-input)
+	   #:no-applicable-task-input-function)
 
   ;; Task input function objects and programmatic creation.
   (:export #:task-input-function
