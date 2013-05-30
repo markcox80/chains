@@ -510,27 +510,26 @@ expression. A sort expression can be one of
      element of ~SORT-EXPRESSIONS~ is used to sort, and so on.
 
 * Generating
-This section outlines the process of generating and documenting the
-set of experiments which are to be performed.
+This section outlines the process of generating and documenting a set
+of experiments.
 
-Creating the experiments is a two step process. The first step is
+Creating a set of experiments requires two steps. The first step is
 specifying the experiment design using the ~DEFINE-DESIGN~ macro. The
 second step is generating the experiment tree using the function
 ~GENERATE~. It is important to understand that the design document
-only contains the information needed to generate the tree, it doesn't
+only contains the information needed to generate the tree, it does not
 contain the experiments themselves.
 
-A design document contains information needed to generate the set of
-experiments. Creating a design document in the ~CHAINS~ system is
-achieved with the ~DEFINE-DESIGN~ macro.
+The macro ~DEFINE-DESIGN~ is as follows
 #+begin_src lisp
   (defmacro define-design (name design-options &body levels))
 #+end_src
 The argument ~NAME~ is a symbol naming the design that is being
-defined. ~DEFINE-OPTIONS~ is a list of design options. These options
-will be specified later. The argument ~LEVELS~ contains information
-about the hierarchy of the tree. A diagram illustrating the role of
-~LEVELS~ in the ~DEFINE-DESIGN~ is as follows.
+defined. ~DEFINE-OPTIONS~ is a list of design options that will be
+covered throughout this section. The important argument, ~LEVELS~,
+contains information about the hierarchy of the tree.
+
+A diagram illustrating what ~LEVELS~ in ~DEFINE-DESIGN~ 
 #+begin_src ditaa :file levels.png
                                +--------------+
                                | Root of Tree |
@@ -550,10 +549,17 @@ about the hierarchy of the tree. A diagram illustrating the role of
                 |     |     |     |     |     |     |     |     |
                 v     v     v     v     v     v     v     v     v                 
 #+end_src
+The first item of ~LEVELS~, level 0, contains information about
+generating the children of the root node. In other words, the children
+of the root node represent the first tasks to be executed in each
+experiment chain. The second item of ~LEVELS~ contains information
+about generating the children for each of the first children in
+level 0. In essence, a level represents the tasks that are to be added
+to each leaf in the tree constructed from the previous levels.
 
-The following is an example
-document outlining the set of experiments that to be generated for the
-congealing problem.
+Each element of ~LEVELS~ is a level definition expression. Examples of
+these forms can be seen in an example design used for the congealing
+problem
 #+begin_src lisp
   (define-design congealing
     ((:documentation "A set of experiments for the paper XYZ."))
@@ -569,30 +575,33 @@ congealing problem.
                           (:size 0.5 0.1 0.2)))
   
     ;; Initial guess of object location
-    ((distance-away-from-ground-truth (:distance 0.1 0.2 0.3)))
+    ((distance-away-from-ground-truth (:distance 2 5 10 15)))
   
     ((geometric-cross-validation (:sample 0 1 2)))
   
     ;; Algorithms to be executed
-    ((learned-miller (:deltas '(1 1 0.1 0.1 1 1))
-                     (:maximum-number-of-iterations 100))
-     (least-squares-congealing (:maximum-number-of-iterations 10))
-     (rasl (:maximum-number-of-iterations 10)))
+    ((learned-miller (:deltas '(1 1 0.1 0.1 1 1)))
+     least-squares-congealing
+     rasl)
     
     ;; Results to be computed.
-    ((alignment-performance)))
+    (alignment-performance))
 #+end_src
+A level definition is a list containing generate expressions, where a
+generate expression specifies the tasks to generate. When the tasks
+for each generate expression have been generated, they are appended
+together to form the list of tasks that are to be appended to each
+leaf in the current experiment tree.
 
-The first two lines of the ~DEFINE-DESIGN~ are self explanatory.
-
-Lets consider what the first expression means
+Lets consider what the generate expression in the level 0 definition
+means.
 #+begin_src lisp
   (image-appearance-and-lighting (:lighting-variation 0 0.1 0.2 0.3 0.4)
                                  (:number-of-subjects 1 2 5 10 20)
                                  (:samples-per-subject 1 5 10))
 #+end_src
-When this expression is encountered by ~DEFINE-DESIGN~, the following
-list of tasks are produced.
+This expression states that the following list of tasks are to be
+generated.
 #+begin_src lisp
   (list (make-instance 'image-appearance-and-lighting
                        :lighting-variation 0
@@ -613,9 +622,9 @@ Thus there exists an instance of the task
 values for the slots ~:LIGHTING-VARIATION~, ~:NUMBER-OF-SUBJECTS~ and
 ~:SAMPLES-PER-SUBJECT~.
 
-The above instances serve as the children of the root node of the
-tree. The tasks produced with the next expression in the
-~DESIGN-DOCUMENT~ will be children to the 
+The previous generate expression illustrates some basic
+functionality. The generate expression for level 1 illustrates some
+more advanced capabilities.
 #+begin_src lisp
 (image-cross-validation (:sample (:splice (loop :for x :from 0 :below 10 :collect x))))
 #+end_src
@@ -626,6 +635,8 @@ following equivalent expression.
 #+begin_src lisp
   (image-cross-validation (:sample 0 1 2 3 4 5 6 7 8 9))
 #+end_src
+It should be noted that the evaluation only occurs during ~GENERATE~
+and not when the design is created.
 
 The expression involving the algorithms represents the following
 children
@@ -639,23 +650,8 @@ children
                        :maximum-number-of-iterations 10))
 #+end_src
 
-The keyword ~:APPEND-TO~ can be used in ~DEFINE-DESIGN~ to build up
-trees of differing depths. This functionality is useful in the
-following situation for a different type of congealing algorithm.
-#+begin_src lisp
-  (define-design face-detection-and-refinement
-    (:documentation "Run the Viola-Jones face detector and refine it with non-rigid congealing algorithm.")
-    (:append-to congealing/input-data)
-    ...)
-#+end_src
-
-The symbol ~CONGEALING/INPUT-DATA~ refers to a design that just
-performs the creation of the input data. For example, the portion of
-the ~CONGEALING~ design up until the ~;; Algorithms to be executed~
-comment. Many designs can be specified to ~:APPEND-TO~.
-
-To encourage reuse of designs, a special task ~(:design name)~
-expression is supported by ~DEFINE-DESIGN~. For example, the
+A special generate expression ~(:design design-name)~ is provided to
+allow trees with leaves at different depths. For example, the
 ~CONGEALING~ design could be written as follows.
 #+begin_src lisp
   (define-design congealing/input-data
@@ -674,6 +670,8 @@ expression is supported by ~DEFINE-DESIGN~. For example, the
   
     ((:design congealing/results)))
 #+end_src
+The ~:DESIGN~ generate expression also permits some reuse of
+experiment designs.
 
 The function ~GENERATE~ is used to create the experiments defined with
 the ~DEFINE-DESIGN~ macro. 
