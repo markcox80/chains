@@ -18,17 +18,24 @@
 
 (defun make-operation-method-lambda (task-var task-input-vars task-inputs chain-var body environment)
   "Create a method lambda that will be used for a method added to the
-  PERFORM-OPERATION generic function. The resulting method added akin to
-  the method lambda created when evaluating the following DEFMETHOD
+PERFORM-OPERATION generic function. The resulting method lambda is
+similar to the method lambda created when evaluating the following
+DEFMETHOD
 
-  `(let ((#:task-inputs ',task-input-classes))
-     (defmethod perform-operation ((,task-var ,task-class) #:chain)
-       (destructuring-bind ,task-input-vars
-           (obtain-task-inputs #:chain (class-of ,task-var) #:task-input-classes)
-         ,@body))))
+`(let ((#:task-inputs ',task-input-classes))
+   (defmethod perform-operation ((,task-var ,task-class) #:chain)
+     (destructuring-bind ,task-input-vars
+         (obtain-task-inputs #:chain (class-of ,task-var) #:task-input-classes)
+       ,@body))))
 
-  Note that the TASK-CLASS above is not used in
-  MAKE-OPERATION-METHOD-LAMBDA. It is however used in MAKE-OPERATION-METHOD.
+Note that the TASK-CLASS above is not used in
+MAKE-OPERATION-METHOD-LAMBDA. It is however used in
+MAKE-OPERATION-METHOD.
+
+Like CLOSER-MOP:MAKE-METHOD-LAMBDA, this function should be invoked
+within a macro and the result used in the returned expression.
+
+See DEFINE-OPERATION on how to use this function correctly.
 "
   (let ((gf (ensure-generic-function 'perform-operation)))
     (closer-mop:make-method-lambda
@@ -43,6 +50,23 @@
      environment)))
 
 (defun make-operation-method (task-var task-class chain-var method-lambda initialisation-arguments)
+  "Create a method for the PERFORM-OPERATION function. 
+
+TASK-VAR is the name of the argument that will be bound to the
+instance of TASK-CLASS.
+
+CHAIN-VAR is the name of the argument that will be bound the chain.
+
+TASK-CLASS is the class of the task the method is for.
+
+METHOD-LAMBDA is the :FUNCTION initialisation argument for the method.
+
+INITIALISATION-ARGUMENTS are any other initialisation arguments for
+the new method object.
+
+See the macro DEFINE-OPERATION on how to use this function correctly."
+  (declare (type task-class task-class))
+  (assert (closer-mop:subclassp task-class (find-class 'task)))
   (let ((gf (ensure-generic-function 'perform-operation)))
     (apply #'make-instance (closer-mop:generic-function-method-class gf)
 	   :specializers (list task-class (find-class t))
@@ -50,30 +74,19 @@
 	   :function method-lambda
 	   initialisation-arguments)))
 
-(defun ensure-operation (task-var task-class chain-var method-lambda initialisation-arguments)
-  "Add a method to the PERFORM-OPERATION generic function which is similar
-  to the method created with the following DEFMETHOD
-
-  `(let ((#:task-inputs ',task-input-classes))
-     (defmethod perform-operation ((,task-var ,task-class) #:chain)
-       (destructuring-bind ,task-input-vars
-           (obtain-task-inputs #:chain (class-of ,task-var) #:task-input-classes)
-         ,@body))))
-
-NOTE!! The input to ENSURE-OPERATION is slightly different to the above.
-
-TASK-VAR is a symbol used to denote the task whose operation is being performed.
-TASK-CLASS is a class metaobject.
-TASK-INPUT-VARS is a list of symbols to assign the compute input values.
-TASK-INPUTS is a list of TASK-INPUT instances.
-CHAIN-VAR is a symbol used to denote the performed tasks.
-BODY is the body of the method.
-"
+(defun ensure-operation (method)
+  "Add METHOD to the PERFORM-OPERATION generic function."
   (let ((gf (ensure-generic-function 'perform-operation)))
-    (add-method gf (make-operation-method task-var task-class chain-var
-					  method-lambda initialisation-arguments))))
+    (add-method gf method)))
 
 (defmacro define-operation ((task-var task-class) (&rest task-inputs) &body body &environment env)
+  "Define the operation to be performed for the TASK-CLASS. All task
+inputs are defined with TASK-INPUTS.
+
+e.g.
+(define-operation (task my-task) ((input task-input))
+  (compute-solution (rho task) input)
+"
   (let ((task-input-vars (mapcar #'first task-inputs))
 	(task-inputs (mapcar #'(lambda (x)
 				 `(find-task-input ',(second x)))
@@ -81,8 +94,9 @@ BODY is the body of the method.
 	(chain-var (gensym)))
     (multiple-value-bind (method-lambda initialisation-arguments)
 	(make-operation-method-lambda task-var task-input-vars task-inputs chain-var body env)
-      `(ensure-operation ',task-var
-			 (find-class ',task-class)
-			 ',chain-var
-			 (function ,method-lambda)
-			 ',initialisation-arguments))))
+      `(let ((m (make-operation-method ',task-var
+				       (find-class ',task-class)
+				       ',chain-var
+				       (function ,method-lambda)
+				       ',initialisation-arguments)))
+	 (ensure-operation m)))))
