@@ -16,7 +16,7 @@
 		:performed-classes performed-classes))
        (evaluate-task-input-function fn chain))))
 
-(defun make-operation-method-lambda (task-var task-input-vars task-inputs chain-var body)
+(defun make-operation-method-lambda (task-var task-input-vars task-inputs chain-var body environment)
   "Create a method lambda that will be used for a method added to the
   PERFORM-OPERATION generic function. The resulting method added akin to
   the method lambda created when evaluating the following DEFMETHOD
@@ -38,22 +38,19 @@
 	(destructuring-bind ,task-input-vars
 	    (obtain-task-inputs ,chain-var
 				(class-of ,task-var)
-				',task-inputs)
+				(list ,@task-inputs))
 	  ,@body))
-     nil)))
+     environment)))
 
-(defun make-operation-method (task-var task-class task-input-vars task-inputs chain-var body)
+(defun make-operation-method (task-var task-class chain-var method-lambda initialisation-arguments)
   (let ((gf (ensure-generic-function 'perform-operation)))
-    (multiple-value-bind (method-lambda initialisation-arguments)
-	(make-operation-method-lambda task-var task-input-vars
-				      task-inputs chain-var body)
-      (apply #'make-instance (closer-mop:generic-function-method-class gf)
-	     :specializers (list task-class (find-class t))
-	     :lambda-list `(,task-var ,chain-var)
-	     :function (compile nil method-lambda)
-	     initialisation-arguments))))
+    (apply #'make-instance (closer-mop:generic-function-method-class gf)
+	   :specializers (list task-class (find-class t))
+	   :lambda-list `(,task-var ,chain-var)
+	   :function method-lambda
+	   initialisation-arguments)))
 
-(defun ensure-operation (task-var task-class task-input-vars task-inputs chain-var body)
+(defun ensure-operation (task-var task-class chain-var method-lambda initialisation-arguments)
   "Add a method to the PERFORM-OPERATION generic function which is similar
   to the method created with the following DEFMETHOD
 
@@ -73,18 +70,19 @@ CHAIN-VAR is a symbol used to denote the performed tasks.
 BODY is the body of the method.
 "
   (let ((gf (ensure-generic-function 'perform-operation)))
-    (add-method gf (make-operation-method task-var task-class
-					  task-input-vars task-inputs
-					  chain-var body))))
+    (add-method gf (make-operation-method task-var task-class chain-var
+					  method-lambda initialisation-arguments))))
 
-(defmacro define-operation ((task-var task-class) (&rest task-inputs) &body body)
+(defmacro define-operation ((task-var task-class) (&rest task-inputs) &body body &environment env)
   (let ((task-input-vars (mapcar #'first task-inputs))
 	(task-inputs (mapcar #'(lambda (x)
 				 `(find-task-input ',(second x)))
-			     task-inputs)))
-    `(ensure-operation ',task-var
-		       (find-class ',task-class)
-		       ',task-input-vars
-		       (list ,@task-inputs)
-		       (gensym "CHAIN")
-		       ',body)))
+			     task-inputs))
+	(chain-var (gensym)))
+    (multiple-value-bind (method-lambda initialisation-arguments)
+	(make-operation-method-lambda task-var task-input-vars task-inputs chain-var body env)
+      `(ensure-operation ',task-var
+			 (find-class ',task-class)
+			 ',chain-var
+			 (function ,method-lambda)
+			 ',initialisation-arguments))))

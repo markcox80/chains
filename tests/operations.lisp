@@ -3,8 +3,9 @@
 (define-task no-algorithm-input-data-task ()
   ())
 
-(define-operation (task algorithm-1) ((obj algorithm-input-data))
-  (list obj :performed))
+(let ((v :performed))
+  (define-operation (task algorithm-1) ((obj algorithm-input-data))
+    (list obj v)))
 
 (define-test define-operation
   (let ((chain (list (make-instance 'input-data-1)))
