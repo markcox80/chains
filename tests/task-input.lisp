@@ -129,8 +129,9 @@
   (declare (ignore data))
   'input-data-1)
 
-(define-task-input-function algorithm-input-data algorithm ((data input-data-1-1))
-  (values 'input-data-1-1 (1+ (sigma data))))
+(let ((offset 1))
+  (define-task-input-function algorithm-input-data algorithm ((data input-data-1-1))
+    (values 'input-data-1-1 (+ offset (sigma data)))))
 
 (define-task-input-function algorithm-input-data algorithm ((data input-data-2))
   (declare (ignore data))
