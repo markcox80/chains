@@ -22,11 +22,11 @@ PERFORM-OPERATION generic function. The resulting method lambda is
 similar to the method lambda created when evaluating the following
 DEFMETHOD
 
-`(let ((#:task-inputs ',task-input-classes))
-   (defmethod perform-operation ((,task-var ,task-class) #:chain)
-     (destructuring-bind ,task-input-vars
-         (obtain-task-inputs #:chain (class-of ,task-var) #:task-input-classes)
-       ,@body))))
+  `(let ((#:task-inputs ',task-input-classes))
+     (defmethod perform-operation ((,task-var ,task-class) #:chain)
+       (destructuring-bind ,task-input-vars
+           (obtain-task-inputs #:chain (class-of ,task-var) #:task-input-classes)
+         ,@body))))
 
 Note that the TASK-CLASS above is not used in
 MAKE-OPERATION-METHOD-LAMBDA. It is however used in
@@ -81,11 +81,11 @@ See the macro DEFINE-OPERATION on how to use this function correctly."
 
 (defmacro define-operation ((task-var task-class) (&rest task-inputs) &body body &environment env)
   "Define the operation to be performed for the TASK-CLASS. All task
-inputs are defined with TASK-INPUTS.
+inputs are defined with TASK-INPUTS. 
 
-e.g.
-(define-operation (task my-task) ((input task-input))
-  (compute-solution (rho task) input)
+Example of DEFINE-OPERATION:
+  (define-operation (task my-task) ((input task-input))
+    (compute-solution (rho task) input)
 "
   (let ((task-input-vars (mapcar #'first task-inputs))
 	(task-inputs (mapcar #'(lambda (x)
