@@ -16,5 +16,7 @@
 				     (:file "tasks")
 				     (:file "task-input")
 				     (:file "operations")
-				     (:file "serialisation"))))
+				     (:file "serialisation")
+				     (:file "tree")
+				     (:file "design"))))
   :in-order-to ((test-op (test-op "chains-tests"))))

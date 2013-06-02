@@ -65,4 +65,31 @@
   ;; Operations
   (:export #:ensure-operation
 	   #:define-operation
-	   #:perform-operation))
+	   #:perform-operation)
+
+  ;; Trees
+  (:export #:tree
+	   #:value
+	   #:children
+	   #:treep
+	   #:make-tree
+	   #:leafp
+	   
+	   #:count-leaves
+	   #:replace-leaves)
+
+  ;; Designs and programmatic creation
+  (:export #:design
+	   #:design-name
+	   #:design-documentation
+	   #:design-levels
+
+	   #:designp
+	   #:find-design
+	   #:ensure-design
+	   
+	   #:make-generator
+	   
+	   #:define-design
+	   
+	   #:generate))

@@ -16,4 +16,5 @@
 				     (:file "tasks")
 				     (:file "task-input")
 				     (:file "operations")
-				     (:file "serialisation")))))
+				     (:file "serialisation")
+				     (:file "design")))))
