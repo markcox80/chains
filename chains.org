@@ -416,31 +416,29 @@ experiment chains can be discovered using the function
 #+begin_src lisp
   (defun discover-chains (pathname))
 #+end_src
-This function returns a list of ~CHAIN~ instances. A chain instance
-contains the tasks that formed the experiment.
+This function returns a list of lists where each list contains the
+tasks that formed the experiment. In this section, the term chain
+represents an item and the term chains is a sequence of chains.
 
 The function ~CONTAINS-TASK-P~ can be used to determine if a chain
-contains the given task.
+contains task which is a subclass of ~TASK-CLASS~.
 #+begin_src lisp
-  (defun contains-task-p (chain task))
+  (defun contains-task-p (chain task-class))
 #+end_src
 
 The function ~FIND-CHAINS-WITH-TASK~ returns all chains in which
 ~CONTAINS-TASK-P~ is ~T~ for the given task.
 #+begin_src lisp
-  (defun find-chains-with-task (chains task))
+  (defun find-chains-with-task (chains task-class))
 #+end_src
 
-Another important function is ~GROUP-BY~, which groups chains
+Another important function is ~GROUP-BY~, which can group tasks
 together according to given a test.
 #+begin_src lisp
-  (defun group-by (sequence test &key sort inner-sort))
+  (defun group-by (sequence test &key key))
 #+end_src
-The argument ~SORT~ specifies a predicate used to sort the groups and
-the argument ~INNER-SORT~ is used to sort the chains within each
-group.
 
-In fact, the ~GROUP-BY~ function is needed so frequently, that a
+In practice, the ~GROUP-BY~ function is needed so frequently, that a
 special function ~GROUP-CHAINS~ is provided. The ~GROUP-CHAINS~
 function works in conjunction with information specified when defining
 a task.
@@ -451,10 +449,13 @@ An ~EXPRESSION~ is a form which is used to synthesize a predicate for
 ~GROUP-BY~. 
 
 Valid expressions are 
-- ~symbol~ :: This generally refers to the base class of a
-              task. e.g. All congealing algorithm tasks inherit from
-              ~ALGORITHM~, thus specifying ~(quote ALGORITHM)~ would
-              group all chains that use the same algorithm.
+- ~symbol~ :: Group chain items together according to the subclasses
+              of ~SYMBOL~. e.g. all congealing algorithm tasks inherit
+              from ~ALGORITHM~, thus specifying ~(quote ALGORITHM)~
+              would group all chains that use the same algorithm.
+- ~(= symbol)~ :: Group chain items together according to the
+                  subclasses of ~SYMBOL~ and ensure every task is
+                  equal.
 - ~(= symbol name)~ :: This expression specifies that the chains
      within a group all have the same value for the slot ~NAME~ in the
      task with type ~SYMBOL~.
@@ -490,9 +491,9 @@ test predicates would be
 This states the equality predicate synthesised by ~GROUP-CHAINS~ would
 use the function ~SAMPLE-EQUAL~ rather than the ~=~ function.
 
-The keyword arguments ~SORT~ and ~INNER-SORT~ perform sorting of the
-groups and the chains within the groups according to a sort
-expression. A sort expression can be one of
+The keyword arguments ~SORT~ and ~INNER-SORT~ of the ~GROUP-CHAINS~
+function perform sorting of the groups and the chains within the
+groups according to a sort expression. A sort expression can be one of
 - ~(> symbol name)~ :: Like the ~=~ expression previously, but using
      the ~TEST>-FUNCTION~ predicate.
 - ~(< symbol name)~ :: Similar to the ~>~ expression.
@@ -508,6 +509,13 @@ expression. A sort expression can be one of
      expression which sorts chains using the first element of
      ~SORT-EXPRESSIONS~. For the values that are equal, the second
      element of ~SORT-EXPRESSIONS~ is used to sort, and so on.
+
+If the same expression and sort expression arguments are being
+repeatedly passed to ~GROUP-CHAINS~ consider using the function
+~PREPARE-GROUP-CHAINS~.
+#+begin_src lisp
+(defun prepare-group-chains (expression &key sort inner-sort))
+#+end_src
 
 * Generating
 This section outlines the process of generating and documenting a set
