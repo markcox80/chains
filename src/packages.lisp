@@ -92,4 +92,8 @@
 	   
 	   #:define-design
 	   
-	   #:generate))
+	   #:generate)
+
+  ;; Querying
+  (:export #:find-task-in-chain
+	   #:prepare-group-chains-test))
