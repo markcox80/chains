@@ -12,8 +12,37 @@
 (define-predicates string/case-insensitive #'string-equal #'string-lessp #'string-greaterp)
 
 (defclass task-class (standard-class)
-  ()
+  ((test=-function-cache
+    :reader test=-function
+    :documentation "A cache of a computed TEST=-FUNCTION."))
   (:documentation "The metaclass for all objects that represent task classes."))
+
+(defun compute-task-class-test=-function (task-class)
+  (let* ((dslots (remove-if-not #'(lambda (dslot)
+				    (typep dslot 'task-direct-slot-definition))
+				(closer-mop:class-direct-slots task-class)))
+	 (fns (mapcar #'(lambda (dslot)
+			  (let ((fn (test=-function dslot))
+				(name (closer-mop:slot-definition-name dslot)))
+			    (lambda (a b)
+			      (funcall fn
+				       (slot-value a name)
+				       (slot-value b name)))))
+		      dslots)))    
+    (apply #'alexandria:conjoin
+	   (lambda (a b)
+	     (and (typep a task-class)
+		  (typep b task-class)))
+	   (append (if fns
+		       fns
+		       (list (constantly t)))
+		   (unless (equal (find-class 'task) task-class)
+		     (mapcar #'test=-function (closer-mop:class-direct-superclasses task-class)))))))
+
+(defmethod test=-function :before ((object task-class))
+  (unless (slot-boundp object 'test=-function-cache)
+    (let ((fn (compute-task-class-test=-function object)))
+      (setf (slot-value object 'test=-function-cache) fn))))
 
 (defclass task-direct-slot-definition (closer-mop:standard-direct-slot-definition)
   ((predicates
