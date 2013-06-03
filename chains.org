@@ -465,9 +465,9 @@ but rather it obtains an arity two predicate using the
 ~:PREDICATES~ slot definition argument used within
 ~DEFINE-TASK~. 
 
-The predicates argument represents a collection of comparison
-predicates for a specific type of value. The predicates for ~NUMBER~
-are defined as follows.
+Predicates represent a collection of comparison functions for a
+specific type of value. The predicates for built-in ~NUMBER~ are
+defined as follows.
 #+begin_src lisp
   (define-predicates number #'= #'< #'>)
 #+end_src
@@ -477,6 +477,9 @@ The functions can be obtained using generic functions
   (defgeneric test<-function (name))
   (defgeneric test>-function (name))
 #+end_src
+
+Other built-in predicates provided are ~STRING/CASE-SENSITIVE~ and
+~STRING/CASE-INSENSITIVE~.
 
 The task definition for ~GEOMETRIC-CROSS-VALIDATION~ including the
 test predicates would be
@@ -489,7 +492,8 @@ test predicates would be
       :documentation "The index of the random sample.")))
 #+end_src
 This states the equality predicate synthesised by ~GROUP-CHAINS~ would
-use the function ~SAMPLE-EQUAL~ rather than the ~=~ function.
+use the ~TEST=-FUNCTION~ function from the ~NUMBER~ predicates
+definition, which is in this case is actually the function ~=~.
 
 The keyword arguments ~SORT~ and ~INNER-SORT~ of the ~GROUP-CHAINS~
 function perform sorting of the groups and the chains within the
