@@ -438,10 +438,10 @@ together according to given a test.
   (defun group-by (sequence test &key key))
 #+end_src
 
-In practice, the ~GROUP-BY~ function is needed so frequently, that a
-special function ~GROUP-CHAINS~ is provided. The ~GROUP-CHAINS~
-function works in conjunction with information specified when defining
-a task.
+In practice, the ~GROUP-BY~ function is needed so frequently and
+coupled so tightly with the tasks, that a special function
+~GROUP-CHAINS~ is provided. The ~GROUP-CHAINS~ function works in
+conjunction with information specified when defining a task.
 #+begin_src lisp
     (defun group-chains (chains expression &key sort inner-sort))
 #+end_src
@@ -501,18 +501,12 @@ groups according to a sort expression. A sort expression can be one of
 - ~(> symbol name)~ :: Like the ~=~ expression previously, but using
      the ~TEST>-FUNCTION~ predicate.
 - ~(< symbol name)~ :: Similar to the ~>~ expression.
-- ~(order base &rest names)~ :: Order tasks that inherit from the
-     base class ~BASE~ in the specified order of sub-classes. It is an
-     error if a task is found with that inherits from ~base~ but no
-     name is present.
-- ~(order base)~ :: Similar to ~(order base &rest names)~, but
-                    dynamically determines the unique sub-classes of
-                    ~BASE~ from the set of chains. Once determined,
-                    the (random) order is used for all groups.
-- ~(&rest sort-expressions)~ :: Construct a compound sorting
-     expression which sorts chains using the first element of
-     ~SORT-EXPRESSIONS~. For the values that are equal, the second
-     element of ~SORT-EXPRESSIONS~ is used to sort, and so on.
+- ~(:classes &rest task-class-names)~ :: Order tasks according to
+     their order of appearance in ~TASK-CLASS-NAMES~. It is an error
+     if a task is found which does not inherit from any class in
+     ~TASK-CLASS-NAMES~.
+- ~(:group-by expression)~ :: Sort the chains by grouping them
+     according to the grouping expression ~EXPRESSION~.
 
 If the same expression and sort expression arguments are being
 repeatedly passed to ~GROUP-CHAINS~ consider using the function
