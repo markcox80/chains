@@ -167,4 +167,4 @@ EXPRESSION can be one of:
 	   (assert (and pos-a pos-b))
 	   (< pos-a pos-b)))))
     (t
-     (error "Unable to process expression ~A"))))
+     (error "Unable to process expression ~A" expression))))
