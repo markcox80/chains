@@ -64,3 +64,58 @@
       (assert-true (funcall fn chains-1 chains-2))
       (assert-false (funcall fn chains-1 chains-3))
       (assert-false (funcall fn chains-1 chains-other)))))
+
+(define-test prepare-group-chains-sort-test
+  ;; (< TASK-CLASS SLOT)
+  (dolist (exp (list `(< query-algorithm sigma)
+		     `(< ,(find-class 'query-algorithm)
+			 ,(find 'sigma (closer-mop:class-direct-slots (find-class 'query-algorithm))
+				:key #'closer-mop:slot-definition-name))))
+    (let ((fn (prepare-group-chains-sort-test exp)))
+      (assert-true (funcall fn
+			    (list (make-instance 'query-algorithm-1 :sigma 1))
+			    (list (make-instance 'query-algorithm-2 :sigma 2))))
+      (assert-false (funcall fn
+			     (list (make-instance 'query-algorithm-1 :sigma 2))
+			     (list (make-instance 'query-algorithm-2 :sigma 2))))
+      (assert-false (funcall fn
+			     (list (make-instance 'query-algorithm-1 :sigma 2))
+			     (list (make-instance 'query-algorithm-2 :sigma 1))))))
+  ;; (> TASK-CLASS SLOT)
+  (dolist (exp (list `(> query-algorithm sigma)
+		     `(> ,(find-class 'query-algorithm)
+			 ,(find 'sigma (closer-mop:class-direct-slots (find-class 'query-algorithm))
+				:key #'closer-mop:slot-definition-name))))
+    (let ((fn (prepare-group-chains-sort-test exp)))
+      (assert-false (funcall fn
+			    (list (make-instance 'query-algorithm-1 :sigma 1))
+			    (list (make-instance 'query-algorithm-2 :sigma 2))))
+      (assert-false (funcall fn
+			     (list (make-instance 'query-algorithm-1 :sigma 2))
+			     (list (make-instance 'query-algorithm-2 :sigma 2))))
+      (assert-true (funcall fn
+			     (list (make-instance 'query-algorithm-1 :sigma 2))
+			     (list (make-instance 'query-algorithm-2 :sigma 1))))))
+
+  ;; (:classes &rest classes)
+  (dolist (exp (list `(:classes query-algorithm-2 query-algorithm-1 query-algorithm-3)
+		     `(:classes ,(find-class 'query-algorithm-2)
+				,(find-class 'query-algorithm-1)
+				,(find-class 'query-algorithm-3))))
+    (let ((fn (prepare-group-chains-sort-test exp)))
+      (assert-false (funcall fn
+			    (list (make-instance 'query-algorithm-1 :sigma 1))
+			    (list (make-instance 'query-algorithm-2 :sigma 2))))
+      (assert-false (funcall fn
+			    (list (make-instance 'query-algorithm-3 :sigma 1))
+			    (list (make-instance 'query-algorithm-1 :sigma 2))))
+      (assert-true (funcall fn
+			     (list (make-instance 'query-algorithm-2 :sigma 2))
+			     (list (make-instance 'query-algorithm-1 :sigma 2))))
+      (assert-true (funcall fn
+			     (list (make-instance 'query-algorithm-1 :sigma 2))
+			     (list (make-instance 'query-algorithm-3 :sigma 1))))))
+  (let ((fn (prepare-group-chains-sort-test `(:classes query-algorithm-2 query-algorithm-1))))
+    (assert-error 'error (funcall fn
+				  (list (make-instance 'query-algorithm-1 :sigma 1))
+				  (list (make-instance 'query-algorithm-3 :sigma 2))))))

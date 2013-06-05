@@ -96,4 +96,5 @@
 
   ;; Querying
   (:export #:find-task-in-chain
-	   #:prepare-group-chains-test))
+	   #:prepare-group-chains-test
+	   #:prepare-group-chains-sort-test))

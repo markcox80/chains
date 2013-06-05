@@ -9,6 +9,26 @@ TASK-CLASS."
 	   chain
 	   :key #'class-of))
 
+(defun chain-task-slot-predicate (task-class slot task-slot-definition-function)
+  (let* ((task-class (if (symbolp task-class)
+			 (find-class task-class)
+			 task-class))
+	 (slot-definition (if (symbolp slot)
+			      (find slot (closer-mop:class-direct-slots task-class)
+				    :key #'closer-mop:slot-definition-name)
+			      slot)))
+    (declare (type task-class task-class)
+	     (type task-direct-slot-definition slot-definition))
+    (let ((slot-name (closer-mop:slot-definition-name slot-definition))
+	  (fn (funcall task-slot-definition-function slot-definition)))
+      (lambda (chain-a chain-b)
+	(let ((a-task (find-task-in-chain task-class chain-a))
+	      (b-task (find-task-in-chain task-class chain-b)))
+	  (when (and a-task b-task)
+	    (funcall fn
+		     (slot-value a-task slot-name)
+		     (slot-value b-task slot-name))))))))
+
 (defun prepare-group-chains-test (expression)
   "Convert EXPRESSION to a two arity predicate. Both arguments for the
   returned predicate must be chains (a list of task instances).
@@ -79,24 +99,13 @@ EXPRESSION can be one of:
       ;; (= TASK-CLASS TASK-DIRECT-SLOT-DEFINITION)
       ;; (= symbol slot-name)
       ((equal-exp-with-length-p 2)
-       (let* ((task-class (if (symbolp (second expression))
-			      (find-class (second expression))
-			      (second expression)))
-	      (slot-definition (if (symbolp (third expression))
-				   (find (third expression) (closer-mop:class-direct-slots task-class)
-					 :key #'closer-mop:slot-definition-name)
-				   (third expression)))
-	      (slot-name (closer-mop:slot-definition-name slot-definition)))
-	 (declare (type task-class task-class)
-		  (type task-direct-slot-definition slot-definition))
-	 (let ((fn (test=-function slot-definition)))
-	   (lambda (chain-a chain-b)
-	     (let ((a-task (find-task-in-chain task-class chain-a))
-		   (b-task (find-task-in-chain task-class chain-b)))
-	       (when (and a-task b-task)
-		 (funcall fn
-			  (slot-value a-task slot-name)
-			  (slot-value b-task slot-name)))))))))))
+       (chain-task-slot-predicate (second expression) (third expression) #'test=-function)))))
+
+(defun position-of-one-of-classes (chain task-classes)
+  (labels ((testp (task)
+	     (declare (type task task))
+	     (position (class-of task) task-classes :test #'task-class-equal)))
+    (some #'testp (reverse chain))))
 
 (defun prepare-group-chains-sort-test (expression)
   "Return an arity two predicate that can be used to sort a collection
@@ -139,4 +148,23 @@ EXPRESSION can be one of:
    compared with the task obtained from CHAIN-B. An error is signalled
    if no task inheriting from one of the TASK-CLASSes can be found in
    either CHAINS-A or CHAINS-B.
-")
+"
+  (assert (listp expression))
+  (cond
+    ((and (eql '> (first expression)) (= 3 (length expression)))
+     (chain-task-slot-predicate (second expression) (third expression) #'test>-function))
+    ((and (eql '< (first expression)) (= 3 (length expression)))
+     (chain-task-slot-predicate (second expression) (third expression) #'test<-function))
+    ((and (eql :classes (first expression)))
+     (let ((task-classes (mapcar #'(lambda (x)
+				     (if (symbolp x)
+					 (find-class x)
+					 x))
+				 (rest expression))))
+       (lambda (chain-a chain-b)
+	 (let ((pos-a (position-of-one-of-classes chain-a task-classes))
+	       (pos-b (position-of-one-of-classes chain-b task-classes)))
+	   (assert (and pos-a pos-b))
+	   (< pos-a pos-b)))))
+    (t
+     (error "Unable to process expression ~A"))))
