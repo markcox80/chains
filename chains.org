@@ -49,41 +49,29 @@ against the following criteria
 It is fine if you do not understand all of the above. The key point is
 that they are /variables/ or statistics measured on the ensemble of
 images fed to the congealing algorithm. Congealing algorithms behave
-differently depending on the value of each variables. One should
-understand that is possible for two different image ensembles to have
-the same statistics.
+differently depending on the value of each variables. In fact, even a
+different ensemble with the same statistics can behave
+differently.
 
 In addition to variables associated with the input data, a congealing
 algorithm typically has a number of parameters that influence its own
 performance. These parameters have a range of values that are "worth"
-trying, with the best value selected at the end.
+trying, with the best value selected at the end by some means.
 
 One also must compare the algorithm against another algorithm on
 /exactly/ the same image ensemble. Having exactly the ensemble is
 extremely important as a strategically chosen change can have a
-dramatic effect on results for some algorithms.
+dramatic effect on performance for some algorithms.
 
 Once all of the algorithms are executed, a results collation process
 begins. The results obtained depend on the report or paper that is
 being written. These results may involve performance conditioned on
-the statistics of the image ensemble, or results indicating the level
-of influence that an algorithm parameter has on the overall algorithm
-performance. 
+the statistics of the image ensemble, or the amount of influence an
+algorithm parameter has on the overall algorithm performance.
 
 Everything up to this point is straight forward. You prepare the image
-ensemble or data which is fed to the congealing algorithms, you
-execute each algorithm, prepare the results and then write the
-report/paper. Easy.
-
-Unfortunately, this rarely occurs in practice. In practice, one
-implements an algorithm that has been published. Upon experimenting
-(or implementing) with the algorithm, it is discovered that there is
-something that could be improved. For example, the algorithm cannot
-handle image ensembles with certain statistics or the algorithm is
-really sensitive to a particular parameter or the algorithm is
-theoretically flawed in some manner. With this new information, the
-goal is now to design a new algorithm, that can overcome the
-identified problem.
+ensemble to be fed to all congealing algorithms, execute each
+algorithm, prepare the results and then write the report/paper. Easy.
 
 Immediately we see that the algorithm and the experiments to be
 performed are not concrete. One typically creates many algorithms that
@@ -91,6 +79,16 @@ may "do the job", but one does not know whether it is an idea worth
 investigating further until it has been implemented and a preliminary
 set of results are obtained. Additionally, the type of results
 required may change depending on the point being made.
+
+Unfortunately, this rarely occurs in practice. In practice, one
+implements an algorithm that has been published. Upon experimenting
+(or implementing) with the algorithm, it is discovered that there is
+something that could be improved. For example, the algorithm cannot
+handle image ensembles with certain statistics or the algorithm is
+really sensitive to a particular parameter or the algorithm is flawed
+in some manner. With this new information, the goal now is to
+empirically confirm the identified problem and design a new algorithm
+that can overcome the identified problem.
 
 What a scientist wants to work on is the algorithm. That is what is
 important. That is what is publishable. The experiment stuff validates
@@ -111,17 +109,16 @@ experiment parameter then you have an /extremely/ large number of
 experiments.
 
 Fortunately, since the experiments are independent, they can be
-executed in parallel. Well not quite in parallel as described later,
+executed in parallel. Well, not quite in parallel as described later,
 but the experiment execution problem does belong to the class of
-parallelisable problems which I personally would consider
-embarrassingly simple to achieve.
+embarrassingly parallelisable problems.
 
 Another difficulty is collating results. When writing a report or a
 paper, one typically needs additional graphs (or tables, but who likes
 tables?) that were not thought of initially. To accommodate this use
 case, the output of the experiments should be saved in order to save
 (valuable) time. This serialisation not only applies to the algorithm
-output and input, but for all data required to perform the experiment.
+output and input, but for all data computed in the experiment.
 
 This database of serialised experiment data also needs to have the
 ability to be queried. This ability is needed by the results collation
@@ -132,29 +129,29 @@ implement and very easy to make simple mistakes which are hard to
 identify. Additionally, the code that performs the experiment setup,
 execution and result collation very rarely receive the level of
 attention and care that algorithms receive. In my local minima which
-is termed life, I have not seen code just for performing
-experiments. Why? Good question.
+is termed life, I have not seen released code that just performs
+experiments. Why? Great question.
 
 The ~CHAINS~ system attempts to provide facilities for the above tasks
 in order for the scientist to spend more time on developing an
 understanding of existing algorithms and to develop new algorithms
 that overcome identified issues.
 
-The ~CHAINS~ is not a plug and play work flow optimiser where one
-performs plumping. It should not be a dependency in your algorithm
-implementations. The only place where the ~CHAINS~ system should be
-used is in verifying and validating an algorithm's performance on
-different types of data and collating algorithm results for some sort
-of publication.
+Lastly, the ~CHAINS~ is not a plug and play work flow optimiser where
+one only performs plumping. It should not be a dependency in your
+algorithm implementations. The only place where the ~CHAINS~ system
+should be used is in verifying and validating an algorithm's
+performance on different types of data and collating algorithm results
+for some sort of publication.
 
 * Concepts and mental models
 The background section painted a picture of the aspects of the problem
 the ~CHAINS~ system attempts to address. This section attempts to
 illustrate more of the core concepts that underpin the library.
 
-Performing an experiment is really the serial execution of a number of
-tasks. For the congealing problem, the high-level tasks are as
-follows
+Performing a single experiment is really the serial execution of a
+number of tasks. For the congealing problem outlined above, the
+high-level tasks are as follows
 #+begin_src ditaa :file congealing-tasks.png
 +------------+
 | Input Data |
@@ -176,10 +173,11 @@ the object's position, this position is then compared to the ground
 truth using a metric. The metric provides a quantitative measure of
 the algorithm's performance.
 
-This linking of tasks to be executed is termed a chain.
+This linking of tasks to be executed is termed a task chain, or just a
+chain.
 
 A collection of experiments to be executed is really a tree. Consider
-the following figure where there are two congealing algorithms begin
+the following figure where there are two congealing algorithms being
 evaluated on two different sets of input data.
 #+begin_src ditaa :file parallelism.png
 +--------------+     +-------------+   +--------+
@@ -199,21 +197,22 @@ evaluated on two different sets of input data.
                      +-------------+   +--------+
 #+end_src
 The above figure presents two trees which start from an input data
-task. The ~CHAINS~ system uses a hidden root node in order to produce
-a single tree. The key property of the tree is that a path from the
-top of the root node to a leaf represents a single experiment or
-execution chain.
+task. The ~CHAINS~ system inserts a "start here" root task in order to
+produce a single tree. The key property of the tree is that a path
+from the root task to a leaf represents a single experiment or task
+chain.
 
 The tree view of the experiments also highlights the parallelism of
-the experiment execution. Once a node in the tree has completed, all
-of its children can be executed in parallel.
+the experiment execution. Once a task is completed, all of its
+children can be executed in parallel.
 
-The ~CHAINS~ system does not limit the length of the chain, nor are
-there any constraints placed on the type of experiment tree. In fact
-the ~CHAINS~ system does not provide any default tasks as tasks are
-fundamentally problem specific. What the ~CHAINS~ system does provide
-is a mechanism for constructing a new tree, discovering an existing
-tree, executing a tree, tree serialisation and querying.
+The ~CHAINS~ system does not limit the length of the chain, nor is
+there any requirement that all leaves should have the same distance to
+the root task. In fact the ~CHAINS~ system does not provide any
+default tasks as tasks are fundamentally problem specific. What the
+~CHAINS~ system does provide is a mechanism for constructing a new
+tree, discovering an existing tree, executing a tree, tree
+serialisation and querying.
 
 Another important characteristic of tasks is the way they
 interact. The ~CHAINS~ system assumes that a task can only depend on
@@ -231,7 +230,7 @@ visualisation of this process is as follows
          | 
          v
   +------------------------+
-  | Image Cross Validation |<--=-Images selected here
+  | Image Cross Validation |<--=-Images determined here
   +------+-----------------+
          |
          v
@@ -242,9 +241,9 @@ visualisation of this process is as follows
          o<--=--Input data images created
          |
          v         
-  +---------------------------------+
-  | Distance away from ground truth |
-  +------+--------------------------+
+  +---------------+
+  | Initial Guess |
+  +------+--------+
          |
          v
   +----------------------------+
@@ -252,13 +251,12 @@ visualisation of this process is as follows
   +----------------------------+
 #+end_src
 The term cross validation used above refers to the process of
-synthesising a set of random samples with the same statistics. Thus
-for the image cross validation, an entirely different set of images
-with same level of appearance variation and lighting conditions are
-selected. Similarly, the geometric cross validation is a new set
-initial guesses on where the object is for the same set of
-images. There should be a cross validation task for the synthetic
-occlusion component too, but we have chosen to omit it for clarity.
+synthesising a set of random samples with the same
+statistics. Meaning, when the image cross validation task executes, an
+entirely different set of images with same level of appearance
+variation and lighting conditions are selected. Similarly, the
+geometric cross validation is a new set initial guesses on where the
+object is for the same set of images.
 
 To complicate matters, there may be many other ways of selecting the
 input data images. i.e. with no occlusion, with no cross validation,
@@ -281,9 +279,9 @@ depicted in the next figure.
 +--------+
 |        |
 |        v                                                  
-| +---------------------------------+
-| | Distance away from ground truth |
-| +------+--------------------------+
+| +---------------+
+| | Initial Guess |
+| +------+--------+
 |        | 
 +---+    |
 |   |    |
@@ -352,9 +350,6 @@ a special function that returns the output of the operation for the
 The ~DEFINE-TASK-INPUT~ and ~DEFINE-TASK-INPUT-FUNCTION~ provide a
 flexible method of computing input values to a task conditioned on the
 tasks in the chain.
-
-Further details on the ~DEFINE-OPERATION~ and ~DEFINE-LINK~ are found
-later in this document.
 
 * Serialisation
 The serialisation strategy employed in the ~CHAINS~ system is a very
