@@ -122,6 +122,8 @@ EXPRESSION can be one of:
        (chain-task-slot-predicate (second expression) (third expression) #'test=-function)))))
 
 (defun position-of-one-of-classes (chain task-classes)
+  "Find the first task in CHAIN (starting from the end) whose class is
+equal to one of the classes in TASK-CLASSES."
   (labels ((testp (task)
 	     (declare (type task task))
 	     (position (class-of task) task-classes :test #'task-class-equal)))
