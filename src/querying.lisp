@@ -1,6 +1,6 @@
 (in-package "CHAINS")
 
-(defun find-task-in-chain (task-class chain)
+(defun contains-task-p (chain task-class)
   "Search the list CHAIN for an instances whose class is a subclass of
 TASK-CLASS."
   (declare (type list chain))
@@ -42,8 +42,8 @@ or #'TEST>-FUNCTION.
     (let ((slot-name (closer-mop:slot-definition-name slot-definition))
 	  (fn (funcall task-slot-definition-function slot-definition)))
       (lambda (chain-a chain-b)
-	(let ((a-task (find-task-in-chain task-class chain-a))
-	      (b-task (find-task-in-chain task-class chain-b)))
+	(let ((a-task (contains-task-p chain-a task-class))
+	      (b-task (contains-task-p chain-b task-class)))
 	  (when (and a-task b-task)
 	    (funcall fn
 		     (slot-value a-task slot-name)
@@ -96,8 +96,8 @@ EXPRESSION can be one of:
 			     expression)))
 	 (declare (type task-class task-class))
 	 (lambda (chain-a chain-b)
-	   (let ((a-task (find-task-in-chain task-class chain-a))
-		 (b-task (find-task-in-chain task-class chain-b)))
+	   (let ((a-task (contains-task-p chain-a task-class))
+		 (b-task (contains-task-p chain-b task-class)))
 	     (when (and (closer-mop:subclassp (class-of a-task) task-class)
 			(closer-mop:subclassp (class-of b-task) task-class))
 	       (task-class-equal (class-of a-task) (class-of b-task)))))))
@@ -111,8 +111,8 @@ EXPRESSION can be one of:
 	      (fn (test=-function task-class)))
 	 (declare (type task-class task-class))
 	 (lambda (chain-a chain-b)
-	   (let ((a-task (find-task-in-chain task-class chain-a))
-		 (b-task (find-task-in-chain task-class chain-b)))
+	   (let ((a-task (contains-task-p chain-a task-class))
+		 (b-task (contains-task-p chain-b task-class)))
 	     (when (and a-task b-task)
 	       (funcall fn a-task b-task))))))
       
@@ -190,3 +190,21 @@ equal to one of the classes in TASK-CLASSES."
 	   (< pos-a pos-b)))))
     (t
      (error "Unable to process expression ~A" expression))))
+
+(defun prepare-group-chains (expression &key sort sort-inner)
+  (let ((group-test (prepare-group-chains-test expression))
+	(sort-test (when sort (prepare-group-chains-sort-test sort)))
+	(sort-inner-test (when sort-inner (prepare-group-chains-sort-test sort-inner))))
+    (lambda (chains)
+      (let ((groups (group-by group-test chains)))
+	(when sort-test
+	  (setf groups (sort groups sort-test :key #'first)))
+	(if sort-inner-test
+	    (mapcar #'(lambda (group)
+			(sort group sort-inner-test))
+		    groups)
+	    groups)))))
+
+(defun group-chains (chains expression &key sort sort-inner)
+  (let ((fn (prepare-group-chains expression :sort sort :sort-inner sort-inner)))
+    (funcall fn chains)))

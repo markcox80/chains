@@ -119,3 +119,31 @@
     (assert-error 'error (funcall fn
 				  (list (make-instance 'query-algorithm-1 :sigma 1))
 				  (list (make-instance 'query-algorithm-3 :sigma 2))))))
+
+(define-test group-chains
+  (let* ((chain-a (list (make-instance 'input-data-1) (make-instance 'query-algorithm-1 :sigma 1)))
+	 (chain-b (list (make-instance 'input-data-1) (make-instance 'query-algorithm-1 :sigma 2)))
+	 (chain-c (list (make-instance 'input-data-2) (make-instance 'query-algorithm-2 :sigma 1)))
+	 (chains (list chain-a chain-b chain-c)))
+    (assert-equal (list (list chain-a chain-b)
+			(list chain-c))
+		  (group-chains chains 'query-algorithm :sort '(:classes input-data-1 input-data-2)))
+    (assert-equal (list (list chain-b chain-a)
+			(list chain-c))
+		  (group-chains chains 'query-algorithm
+				:sort '(:classes input-data-1 input-data-2)
+				:sort-inner '(> query-algorithm sigma)))
+    (assert-equal (list (list chain-c)
+			(list chain-b chain-a))
+		  (group-chains chains 'query-algorithm
+				:sort '(:classes input-data-2 input-data-1)
+				:sort-inner '(> query-algorithm sigma)))
+    (assert-equal (list (list chain-b)
+			(list chain-a chain-c))
+		  (group-chains chains '(= query-algorithm sigma)
+				:sort '(> query-algorithm sigma)))
+    (assert-equal (list (list chain-c chain-a)
+			(list chain-b))
+		  (group-chains chains '(= query-algorithm sigma)
+				:sort '(< query-algorithm sigma)
+				:sort-inner '(:classes input-data-2 input-data-1)))))
