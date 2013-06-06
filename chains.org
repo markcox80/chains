@@ -217,139 +217,37 @@ serialisation and querying.
 Another important characteristic of tasks is the way they
 interact. The ~CHAINS~ system assumes that a task can only depend on
 output from previous tasks in the chain. This is shown in the next
-example for the congealing problem.
-
-For congealing, creating the input data is arguably the most
-complicated component of the experimental setup as there are a number
-of parameters that govern the statistics of the input data. A
-visualisation of this process is as follows
-#+begin_src ditaa :file input-data.png
-  +-------------------------------+
-  | Image Appearance and Lighting |
-  +------+------------------------+
-         | 
-         v
-  +------------------------+
-  | Image Cross Validation |<--=-Images determined here
-  +------+-----------------+
-         |
-         v
-  +---------------------+
-  | Synthetic Occlusion |<--=-- Occluded regions added.
-  +------+--------------+
-         | 
-         o<--=--Input data images created
-         |
-         v         
-  +---------------+
-  | Initial Guess |
-  +------+--------+
-         |
-         v
-  +----------------------------+
-  | Geometric Cross Validation |<--=-Create initial guess
-  +----------------------------+
-#+end_src
-The term cross validation used above refers to the process of
-synthesising a set of random samples with the same
-statistics. Meaning, when the image cross validation task executes, an
-entirely different set of images with same level of appearance
-variation and lighting conditions are selected. Similarly, the
-geometric cross validation is a new set initial guesses on where the
-object is for the same set of images.
-
-To complicate matters, there may be many other ways of selecting the
-input data images. i.e. with no occlusion, with no cross validation,
-with image noise and so on. Thus the marker "Input data images
-created" really represents the input to the next stage of the
-experiment. In this case, computing the initial guess of where the
-object is in the image. Obviously, in order to form an initial guess,
-you need to know the ground truth location of the object in the
-image. Assuming this information is available, then synthesising an
-initial guess is trivial.
-
-Once the initial guess is created, the algorithm can be executed. The
-algorithm also needs the input data images, thus, the input to the
-algorithm is really the input data images and the initial guess as
-depicted in the next figure.
+figure for the congealing problem.
 #+begin_src ditaa :file algorithm-input.png
-         |
-         o<--=--Input data images created
+    +---------------------------+
+    | Synthesize Image Ensemble |
+    +----+----------------------+
          |
 +--------+
 |        |
-|        v                                                  
-| +---------------+
-| | Initial Guess |
-| +------+--------+
-|        | 
-+---+    |
-|   |    |
-|   v    v
-| +----------------------------+
-| | Geometric Cross Validation |
-| +------+---------------------+
+|        v
+|   +--------------------------+
+|   | Synthesize Initial Guess |
+|   +----+---------------------+
 |        |
-+---+    o<--=--Initial Guess
-    |    |
-    v    v
-  +-----------+
-  | Algorithm |
-  +-----------+
++-----+  |
+      |  |
+      v  v
+    +-----------+
+    | Algorithm |
+    +-----------+
 #+end_src
+As you can see, the input to the algorithm requires data from the
+task(s) that synthesize the image ensemble and the task(s) that
+synthesize the initial guess. The above diagram is no longer a chain,
+it is a directed graph. How the ~CHAINS~ system models the above graph
+is by distinguishing between the operation to be performed, and the
+input and output of that operation. The goal of the ~CHAINS~ system is
+to allow tasks to be reusable. How tasks form a chain is dependent on
+the experiment design and is by definition not reusable across
+designs.
 
-The above diagram is no longer a chain, nor is it a tree, it is a
-graph. How the ~CHAINS~ system models the above graph is by
-distinguishing between the operation to be performed, and the input
-and output of that operation. The goal of the ~CHAINS~ system is to
-allow tasks to be reusable. How tasks form a chain is dependent on the
-experiment design and is by definition not reusable across designs.
 
-An example of the ~CHAINS~ system in use for the graph above is as
-follows. Lets consider the "Geometric Cross Validation" task. The
-following code defines the appropriate task.
-#+begin_src lisp
-  (define-task geometric-cross-validation ()
-    ((sample
-      :initarg sample
-      :reader sample
-      :documentation "The index of the random sample.")))
-#+end_src
-
-The following code defines the action that is to performed when the
-above task is executed.
-#+begin_src lisp
-  (define-task-input input-data)
-  (define-task-input distance-away-from-ground-truth)
-  
-  (define-operation (object geometric-cross-validation)
-      ((input-data input-data)
-       (distance distance-away-from-ground-truth))
-    (synthesize-initial-guess input-data distance))
-#+end_src
-
-The arguments ~INPUT-DATA~ and ~DISTANCE-AWAY-FROM-GROUND-TRUTH~ are
-special arguments that represent the input to the
-~GEOMETRIC-CROSS-VALIDATION~ task. 
-
-The value of the places ~INPUT-DATA~ and ~DISTANCE~ vary depending on
-the chain being executed. In order to compute the input values for a
-given task and chain you use the ~DEFINE-TASK-INPUT-FUNCTION~ macro.
-#+begin_src lisp
-  (define-task-input-function input-data geometric-cross-validation ((occlusion synthetic-occlusion))
-    (task-value occlusion))
-  
-  (define-task-input-function distance-away-from-ground-truth geometric-cross-validation ((object distance-away-from-ground-truth))
-    (distance object))
-#+end_src
-
-The function ~TASK-VALUE~ in the task input definition for ~INPUT-DATA~ is
-a special function that returns the output of the operation for the
-~OCCLUSION~ task.
-
-The ~DEFINE-TASK-INPUT~ and ~DEFINE-TASK-INPUT-FUNCTION~ provide a
-flexible method of computing input values to a task conditioned on the
-tasks in the chain.
 
 * Serialisation
 The serialisation strategy employed in the ~CHAINS~ system is a very
