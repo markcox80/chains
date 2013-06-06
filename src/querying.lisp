@@ -10,6 +10,26 @@ TASK-CLASS."
 	   :key #'class-of))
 
 (defun chain-task-slot-predicate (task-class slot task-slot-definition-function)
+  "This is a helper function for PREPARE-GROUP-CHAINS-TEST and
+PREPARE-GROUP-CHAINS-SORT-TEST. This function returns an arity two
+predicate which accepts to arguments, both of which are chains. The
+predicate first finds a task in chain which is of type TASK-CLASS. The
+values of the SLOT in each class are compared with a function that is
+obtained by invoking TASK-SLOT-DEFINITION-FUNCTION on the
+TASK-DIRECT-SLOT-DEFINITION object representing the SLOT.
+
+TASK-CLASS may be a class metaobject which inherits from TASK-CLASS or
+a name of such a class.
+
+SLOT may be a TASK-DIRECT-SLOT-DEFINITION or a symbol name. If it is a
+symbol name, then that symbol must be the name of a slot withing
+TASK-CLASS.
+
+TASK-SLOT-DEFINITION-FUNCTION is a function to be called on the
+TASK-DIRECT-SLOT-DEFINITION for SLOT. The value of this function
+should only be one of the functions #'TEST=-FUNCTION, #'TEST<-FUNCTION
+or #'TEST>-FUNCTION.
+"
   (let* ((task-class (if (symbolp task-class)
 			 (find-class task-class)
 			 task-class))
