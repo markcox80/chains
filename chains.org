@@ -2,13 +2,13 @@
 #+AUTHOR: Mark Cox
 
 ~CHAINS~ is a common lisp system for constructing an experiment chain
-in which a number of links are assembled to produce a result. Its main
+in which a number of tasks are executed to produce a result. Its main
 purpose is to accommodate scenarios where the line between a
 scientific experiment and algorithmic experimentation is blurred.
 
 [TABLE-OF-CONTENTS]
 
-* A backstory
+* A Backstory
 This section outlines the main use case for the ~CHAINS~ system. The
 abstraction the ~CHAINS~ system employs is rather strange when
 introduced on its own. Hopefully this section aids in understanding
@@ -239,15 +239,119 @@ figure for the congealing problem.
 #+end_src
 As you can see, the input to the algorithm requires data from the
 task(s) that synthesize the image ensemble and the task(s) that
-synthesize the initial guess. The above diagram is no longer a chain,
-it is a directed graph. How the ~CHAINS~ system models the above graph
-is by distinguishing between the operation to be performed, and the
-input and output of that operation. The goal of the ~CHAINS~ system is
-to allow tasks to be reusable. How tasks form a chain is dependent on
-the experiment design and is by definition not reusable across
-designs.
+synthesize the initial guess. The above diagram is obviously no longer
+a chain, it is a directed graph. How the ~CHAINS~ system models the
+above graph is by distinguishing between the operation to be
+performed, and the input and output of that operation. This
+distinction is made to encourage the creation of reusable tasks. How
+tasks form a chain is dependent on the experiment design and is by
+definition not reusable across designs. 
 
+We now turn to implementing the above graph. The macro ~DEFINE-TASK~
+is used to create a new task class. The "Algorithm" task in the above
+diagram would be defined using the following code
+#+begin_src lisp
+  (define-task algorithm ()
+    ((sigma
+      :initarg :sigma
+      :reader sigma)))
+#+end_src
+where ~SIGMA~ is some parameter for the algorithm. The ~DEFINE-TASK~
+macro is like ~DEFCLASS~ but with some features removed. Its purpose
+is to hide away the details of how tasks are implemented. Facilities
+for the programmatic creation of new task classes are provided
+e.g. ~ENSURE-TASK~.
 
+When a task is performed, the task's "operation" is executed. Before
+outlining how to define a task's operation, lets outline what an
+operation is. An operation can be understood as being a method like so
+#+begin_src lisp
+  (defmethod perform-task ((task task-class) chain)
+    ;; Obtain task inputs
+    (let ((var-a (compute-task-input :input-a (find-class 'task-class) chain))
+          (var-b (compute-task-input :input-b (find-class 'task-class) chain)))
+      ;; Task Body
+      ...))
+#+end_src
+where ~CHAIN~ is a list of tasks that have already been performed. As
+you can see, a task can only have one operation i.e. the performed
+tasks in ~CHAIN~ have no effect on the operation. How the performed
+tasks in the chain influence the operation is via the task's
+inputs. Computing the value of these inputs is performed using the
+hypothetical function ~COMPUTE-TASK-INPUT~. It is the inputs to the
+task's operation that depend on the already performed tasks. This is
+how the ~CHAINS~ system connects tasks to form a graph.
+
+The operation for the "Algorithm" task would be implemented as follows
+#+begin_src lisp
+  (define-task-input ensemble-images)
+  (define-task-input initial-guess)
+  
+  (define-operation (object algorithm) ((images ensemble-images) (guess initial-guess))
+    (perorm-congealing images guess :sigma (sigma object)))
+#+end_src
+We begin with the ~DEFINE-OPERATION~ form where the expression
+~(OBJECT ALGORITHM)~ corresponds to the task specialization in the
+~PERFORM-TASK~ method example. The second argument to
+~DEFINE-OPERATION~ is a list of the inputs required by the task. Each
+item in this list must be a list of two symbols. The first symbol is
+variable in the operation body can use to access the value of the task
+input. The second symbol represents the name of the task input that
+should be computed.
+
+Each task input specified in ~DEFINE-OPERATION~ must have been
+declared using the ~DEFINE-TASK-INPUT~ macro. It is important to
+understand that a task input is not a class, it is special type of
+function provided by the ~CHAINS~ system. This special function
+dispatches on the tasks found in ~CHAIN~ and the task that is about to
+be performed.
+
+Before detailing how to add "methods" or ~TASK-INPUT-FUNCTIONS~ to a
+~TASK-INPUT~, we first create the tasks responsible for controlling
+the image ensemble and the initial guess. 
+#+begin_src lisp
+  (define-task basic-ensemble ()
+    (number-of-subjects samples-per-subject))
+  
+  (define-task initial-guess/similarity-transform ()
+    (scale rotation translation))
+#+end_src
+
+With the above tasks, we are now ready to define the task input
+functions using ~DEFINE-TASK-INPUT-FUNCTION~ for the algorithm
+operation.
+#+begin_src lisp
+  (define-task-input-function ensemble-images
+      algorithm ((data basic-ensemble))
+    (task-value data))
+  
+  (define-task-input-function initial-guess
+      algorithm ((data initial-guess/similarity-transform))
+    (task-value data))
+#+end_src
+The first argument to ~DEFINE-TASK-INPUT-FUNCTION~ refers to the task
+input that the function is to be added to. The second argument refers
+to the task that is about to be performed, termed the target
+class. The third argument represents the performed tasks needed to
+compute the value to be used as input. All forms after the third
+argument represent the body of the task input function. The value (not
+values) of the last evaluated form is what is fed to the
+operation. The function ~TASK-VALUE~ is a function that returns the
+result of executing a tasks' operation, in this case the result of
+~INITIAL-GUESS/SIMILARITY-TRANSFORM~ task.
+
+The rules for computing which task input function is to be used to
+compute a value are currently defined as
+- the most specific target task
+- the most recent performed task
+- the most specific performed task
+
+This is obviously a partial definition. At the time of writing it is
+not clear what the defaults should be and I am interested in getting
+feedback from any users as to what they should be based off of real
+world examples. Because of this, there is no such ~CALL-NEXT-FUNCTION~
+local function like there is with generic functions and methods with
+the local function ~CALL-NEXT-METHOD~.
 
 * Serialisation
 The serialisation strategy employed in the ~CHAINS~ system is a very
