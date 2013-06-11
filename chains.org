@@ -692,39 +692,57 @@ performs this task.
 #+end_src
 The argument ~IF-EXISTS~ determines what to do if there exists tasks
 in ~DIRECTORY~ that would be overwritten. ~IF-EXISTS~ can be one of
-~:ERROR~, ~:SUPERSEDE~ or ~:SKIP~. Since a chain is also a tree, the
-~PREPARE~ function can accept objects of type ~CHAIN~.
+~:ERROR~, ~:SUPERSEDE~ or ~:SKIP~. 
 
 If a directory has already been prepared then the function
 ~DISCOVER-TREE~ can be executed to obtain the tree.
 #+begin_src lisp
   (defun discover-tree (pathname))
 #+end_src
+One could also use the function ~DISCOVER-CHAINS~.
+#+begin_src lisp
+  (defun discover-chains (pathname))
+#+end_src
+Alternatively, given an existing ~TREE~, the function ~COMPUTE-CHAINS~
+can be used to compute all of the chains in the tree.
+#+begin_src lisp
+  (defun compute-chains (tree))
+#+end_src
 
 A task's operation can not be executed directly as it is conditioned
 on other tasks in the chain. The function ~PERFORM-LEAF~ executes the
 task at the end of the chain.
 #+begin_src lisp
-  (defgeneric perform-leaf (area chain &key force &allow-other-keys))
+  (defun perform-leaf (area chain &key force &allow-other-keys))
 #+end_src
 The ~AREA~ argument specifies a prepared area in which to store the
 results. The ~CHAIN~ argument is the chain whose leaf is to be
 executed. The keyword argument ~FORCE~, specifies that the task should
-be executed, overwriting any existing output.
+be executed, overwriting any existing values.
 
 An operation can obtain the value of the ~FORCE~ argument via the
-~*FORCED*~ dynamic variable. Other keyword arguments passed to
-~PERFORM-LEAF~ can be retrieved using the function ~OPERATION-PLIST~.
+~FORCEDP~ function. Other keyword arguments passed to ~PERFORM-LEAF~
+can be retrieved using the function ~OPERATION-PLIST~.
 #+begin_src lisp
   (defvar *forced*)
   
   (defun operation-plist ())
 #+end_src
 
+~PERFORM-LEAF~ also provides a number of useful functions for
+operations. These are
+#+begin_src lisp
+  (defun task-data-directory (task)) ;; The directory where any data for TASK is stored.
+  (defun task-value (task)) ;; The value of the result computed for TASK.
+#+end_src
+When an operation is performed, the dynamic variable
+~DEFAULT-PATHNAME-DEFAULTS~ is set to the output of
+~TASK-DATA-DIRECTORY~ on the executing task.
+
 Associated with the ~PERFORM-LEAF~ function is the function
 ~PERFORM~. This function executes all tasks in the chain.
 #+begin_src lisp
-  (defgeneric perform (area chain &key force &allow-other-keys))
+  (defun perform (area chain &key force &allow-other-keys))
 #+end_src
 
 ** Execution parameters
@@ -749,24 +767,29 @@ the task has to start from the beginning because the ~TASK-NAME~ will
 change.
 
 More importantly, ~NUMBER-OF-ITERATIONS~ is not an experiment
-parameter. It does change the result of the task, but it is a measure
-like the amount of appearance variation experiment measure found in
-congealing. 
+parameter. It does change the result of the task, but it is not a
+measure like the amount of appearance variation experiment measure
+found in congealing.
 
-We now outline the recommended way of implementing these types of
-tasks.
-
-The first step is to introduce the /execution/ parameter as a dynamic
-variable.
+The recommended way of implementing these types of tasks is to
+introduce the /execution/ parameter as a dynamic variable. 
 #+begin_src lisp
   (defvar *number-of-iterations* 10)
 #+end_src
+The value of this parameter represents a default value. Alongside this
+dynamic variable should a function which checks the operation-plist to
+~PERFORM-PLIST~ to see if an alternate value is specified, otherwise
+revert to the default.
+#+begin_src lisp
+  (defun number-of-iterations ()
+    (or (getf (operation-plist) :number-of-iterations)
+        *number-of-iterations*))
+#+end_src
 
-Specifying the number of iterations to execute impacts the ~CHAINS~
-system's method of determining whether a task is finished or not. 
-
-The generic function responsible for determining whether a task has
-been completed is the function ~TASK-COMPLETED-P~.
+Obviously, specifying the number of iterations to execute impacts the
+~CHAINS~ system's method of determining whether a task is finished or
+not. The generic function responsible for determining whether a task
+has been completed is the function ~TASK-COMPLETED-P~.
 #+begin_src lisp
   (defgeneric task-completed-p (task))
 #+end_src
@@ -778,12 +801,6 @@ the correct number of iterations have been executed.
     (and (probe-file (iteration-output task *number-of-iterations*))
          (call-next-method)))
 #+end_src
-
-The ~TASK-COMPLETED-P~ generic function has no support for altering
-the implementation based on the tasks in the chain as is the case for
-~DEFINE-OPERATION~. This behaviour is considered an abuse of the
-~CHAINS~ system. All operations should produce similar outputs and
-behave similarly as well.
 
 The operation for the task is then responsible for determining the
 previous iterations output to reprocess.
