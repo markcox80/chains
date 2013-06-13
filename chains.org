@@ -49,9 +49,8 @@ against the following criteria
 It is fine if you do not understand all of the above. The key point is
 that they are /variables/ or statistics measured on the ensemble of
 images fed to the congealing algorithm. Congealing algorithms behave
-differently depending on the value of each variables. In fact, even a
-different ensemble with the same statistics can behave
-differently.
+differently depending on the value of each variable. In fact, even a
+different ensemble with the same statistics can behave differently.
 
 In addition to variables associated with the input data, a congealing
 algorithm typically has a number of parameters that influence its own
@@ -59,7 +58,7 @@ performance. These parameters have a range of values that are "worth"
 trying, with the best value selected at the end by some means.
 
 One also must compare the algorithm against another algorithm on
-/exactly/ the same image ensemble. Having exactly the ensemble is
+/exactly/ the same image ensemble. Having exactly the same ensemble is
 extremely important as a strategically chosen change can have a
 dramatic effect on performance for some algorithms.
 
@@ -684,24 +683,23 @@ the ~DEFINE-DESIGN~ macro.
 This function returns a ~TREE~ containing the entire collection of
 experiments.
 * Executing
-Before a tree of experiments is executed, an area to store the tree
-and each task results must be prepared. The function ~PREPARE~
-performs this task.
+Before a tree of experiments is executed, an area to store the results
+must be prepared. The function ~PREPARE-DIRECTORY~ performs this task.
 #+begin_src lisp
-  (defgeneric prepare (directory tree &key if-exists))
+  (defgeneric prepare-directory (directory &key if-exists))
 #+end_src
 The argument ~IF-EXISTS~ determines what to do if there exists tasks
 in ~DIRECTORY~ that would be overwritten. ~IF-EXISTS~ can be one of
-~:ERROR~, ~:SUPERSEDE~ or ~:SKIP~. 
+~:ERROR~ or ~:SKIP~.
 
 If a directory has already been prepared then the function
 ~DISCOVER-TREE~ can be executed to obtain the tree.
 #+begin_src lisp
-  (defun discover-tree (pathname))
+  (defgeneric discover-tree (area))
 #+end_src
 One could also use the function ~DISCOVER-CHAINS~.
 #+begin_src lisp
-  (defun discover-chains (pathname))
+  (defgeneric discover-chains (area))
 #+end_src
 Alternatively, given an existing ~TREE~, the function ~COMPUTE-CHAINS~
 can be used to compute all of the chains in the tree.
@@ -724,20 +722,18 @@ An operation can obtain the value of the ~FORCE~ argument via the
 ~FORCEDP~ function. Other keyword arguments passed to ~PERFORM-LEAF~
 can be retrieved using the function ~OPERATION-PLIST~.
 #+begin_src lisp
-  (defvar *forced*)
-  
   (defun operation-plist ())
 #+end_src
 
-~PERFORM-LEAF~ also provides a number of useful functions for
-operations. These are
+~PERFORM-LEAF~ also provides a number of useful functions that can be
+used within the body of operations and task input functions. These are
 #+begin_src lisp
   (defun task-data-directory (task)) ;; The directory where any data for TASK is stored.
   (defun task-value (task)) ;; The value of the result computed for TASK.
 #+end_src
 When an operation is performed, the dynamic variable
 ~DEFAULT-PATHNAME-DEFAULTS~ is set to the output of
-~TASK-DATA-DIRECTORY~ on the executing task.
+~TASK-DATA-DIRECTORY~ on the executing task. 
 
 Associated with the ~PERFORM-LEAF~ function is the function
 ~PERFORM~. This function executes all tasks in the chain.
@@ -798,9 +794,31 @@ This method can be implemented for a specific task which checks that
 the correct number of iterations have been executed.
 #+begin_src lisp
   (defmethod task-completed-p ((task iterative-algorithm))
-    (and (probe-file (iteration-output task *number-of-iterations*))
+    (and (probe-file (iteration-output task (number-of-iterations)))
          (call-next-method)))
 #+end_src
 
 The operation for the task is then responsible for determining the
 previous iterations output to reprocess.
+
+* Obtaining Results
+Now that all chains in an experiment design have been [[*Execution][executed]] and
+[[*Querying][queried and sorted]] it is now time to retrieve values computed by
+operations. This requires an ~AREA~ object and the two functions
+~TASK-DATA-DIRECTORY~ and ~TASK-VALUE~.
+#+begin_src lisp
+(defun task-data-directory (task &optional chain area))
+(defun task-value (task &optional chain area))
+#+end_src
+The dynamic variables ~*CHAIN*~ and ~*AREA*~ are provided as default
+values for the chain and area arguments respectively.
+
+The value of the argument can be one of the following 
+- Instance of type ~TASK~ :: The instance must be present in the
+     ~CHAIN~ argument. 
+- Instance of type ~TASK-CLASS~ :: Find a task instance in chain whose
+     type is a subclass of ~TASK-CLASS~.
+- Symbol :: The name of a ~TASK-CLASS~. 
+- Function :: Find an object in chain for which the function returns
+              non-NIL.
+

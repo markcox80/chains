@@ -18,4 +18,5 @@
 				     (:file "operations")
 				     (:file "serialisation")
 				     (:file "design")
-				     (:file "querying")))))
+				     (:file "querying")
+				     (:file "execution")))))

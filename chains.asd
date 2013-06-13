@@ -19,5 +19,6 @@
 				     (:file "serialisation")
 				     (:file "tree")
 				     (:file "design")
-				     (:file "querying"))))
+				     (:file "querying")
+				     (:file "execution"))))
   :in-order-to ((test-op (test-op "chains-tests"))))

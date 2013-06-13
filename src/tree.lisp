@@ -41,3 +41,17 @@
 		 1
 		 (reduce #'+ (children tree) :key #'process))))
     (process tree)))
+
+(defun compute-chains (tree)
+  (let ((child-chains (reduce #'append (children tree) :key #'compute-chains)))
+    (cond
+      ((leafp tree)
+       (assert (value tree))
+       (list (list (value tree))))
+      ((value tree)
+       (mapcar #'(lambda (chain)
+		   (cons (value tree) chain))
+	       child-chains))
+      (t
+       ;; Root node
+       child-chains))))

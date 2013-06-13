@@ -76,7 +76,9 @@
 	   #:leafp
 	   
 	   #:count-leaves
-	   #:replace-leaves)
+	   #:replace-leaves
+
+	   #:compute-chains)
 
   ;; Designs and programmatic creation
   (:export #:design
@@ -95,8 +97,35 @@
 	   #:generate)
 
   ;; Querying
-  (:export #:find-task-in-chain
-	   #:prepare-group-chains-test
+  (:export #:prepare-group-chains-test
 	   #:prepare-group-chains-sort-test
 	   #:prepare-group-chains
-	   #:group-chains))
+	   #:group-chains)
+
+  ;; Execution
+  (:export ;; Area protocol
+	   #:task-data-directory*
+	   #:task-completed-p*
+	   #:task-value*
+	   
+	   ;; Prepared directory area
+	   #:prepared-directory
+	   #:prepare-directory
+	   #:area-directory
+
+	   ;; Execution
+	   #:task-data-directory
+	   #:task-value
+	   #:task-completed-p	   
+	   #:operation-plist
+	   #:forcedp
+	   
+	   #:chain-completed-p
+	   #:perform-leaf
+	   #:perform
+
+	   ;; Operation Results
+	   #:*area*
+	   #:*chain*
+	   #:task-data-directory
+	   #:task-value))
