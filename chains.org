@@ -1,7 +1,7 @@
 #+TITLE: Experiment Chains
 #+AUTHOR: Mark Cox
 
-~CHAINS~ is a common lisp system for constructing an experiment chain
+~CHAINS~ is a Common Lisp system for constructing an experiment chain
 in which a number of tasks are executed to produce a result. Its main
 purpose is to accommodate scenarios where the line between a
 scientific experiment and algorithmic experimentation is blurred.
@@ -50,11 +50,12 @@ It is fine if you do not understand all of the above. The key point is
 that they are /variables/ or statistics measured on the ensemble of
 images fed to the congealing algorithm. Congealing algorithms behave
 differently depending on the value of each variable. In fact, even a
-different ensemble with the same statistics can behave differently.
+different ensemble with the same statistics can cause algorithms to
+behave differently.
 
 In addition to variables associated with the input data, a congealing
 algorithm typically has a number of parameters that influence its own
-performance. These parameters have a range of values that are "worth"
+behaviour. These parameters have a range of values that are "worth"
 trying, with the best value selected at the end by some means.
 
 One also must compare the algorithm against another algorithm on
@@ -72,13 +73,6 @@ Everything up to this point is straight forward. You prepare the image
 ensemble to be fed to all congealing algorithms, execute each
 algorithm, prepare the results and then write the report/paper. Easy.
 
-Immediately we see that the algorithm and the experiments to be
-performed are not concrete. One typically creates many algorithms that
-may "do the job", but one does not know whether it is an idea worth
-investigating further until it has been implemented and a preliminary
-set of results are obtained. Additionally, the type of results
-required may change depending on the point being made.
-
 Unfortunately, this rarely occurs in practice. In practice, one
 implements an algorithm that has been published. Upon experimenting
 (or implementing) with the algorithm, it is discovered that there is
@@ -89,28 +83,33 @@ in some manner. With this new information, the goal now is to
 empirically confirm the identified problem and design a new algorithm
 that can overcome the identified problem.
 
+Immediately we see that the algorithm and the experiments to be
+performed are not concrete. One typically creates many algorithms that
+may "do the job", but one does not know whether it is an idea worth
+investigating further until it has been implemented and a preliminary
+set of results are obtained. Additionally, the type of results
+required may change depending on the point needed to be made.
+
 What a scientist wants to work on is the algorithm. That is what is
 important. That is what is publishable. The experiment stuff validates
 the argument for the algorithm, but it is not the primary focus. 
 
 Saying it is not of primary focus is rather ironic. The experiment
-design is what lead to the discovery. The experiment design also
-validates a new discovery. Furthermore, it is the experiment design
-where much of a computer scientist's effort is spent and it is to easy
-to see why.
+design partly lead to the discovery. The experiment design also
+empirically validates a new discovery. Furthermore, it is the
+experiment design where much of a computer scientist's effort is spent
+and it is to easy to see why.
 
-The problem with experiments is that they take time to execute and to
-implement. The long execution time is because the number of
+The problem with experiments is that they take time to implement and
+to execute. The long execution time is because the number of
 experiments is a combinatorial function defined by the number of
 values specified for each experiment parameter. i.e. if you have a
 large number of experiment parameters and a large number of values per
 experiment parameter then you have an /extremely/ large number of
-experiments.
-
-Fortunately, since the experiments are independent, they can be
-executed in parallel. Well, not quite in parallel as described later,
-but the experiment execution problem does belong to the class of
-embarrassingly parallelisable problems.
+experiments. Fortunately, since the experiments are independent, they
+can be executed in parallel. Well, not quite in parallel as described
+later, but the experiment execution problem does belong to the class
+of embarrassingly parallelisable problems.
 
 Another difficulty is collating results. When writing a report or a
 paper, one typically needs additional graphs (or tables, but who likes
@@ -125,10 +124,12 @@ step mentioned previously.
 
 All of this is simple to state, but is moderately difficult to
 implement and very easy to make simple mistakes which are hard to
-identify. Additionally, the code that performs the experiment setup,
-execution and result collation very rarely receive the level of
-attention and care that algorithms receive. In my local minima which
-is termed life, I have not seen released code that just performs
+identify. Moreover, the pipeline for conducting experiments is similar
+across many domains. Writing something again and again is not a smart
+use of one's time. Additionally, the code that performs the experiment
+setup, execution and result collation very rarely receives the level
+of attention and care that algorithms receive. In my local minima
+which is termed life, I have not seen released code that just performs
 experiments. Why? Great question.
 
 The ~CHAINS~ system attempts to provide facilities for the above tasks
@@ -136,17 +137,17 @@ in order for the scientist to spend more time on developing an
 understanding of existing algorithms and to develop new algorithms
 that overcome identified issues.
 
-Lastly, the ~CHAINS~ is not a plug and play work flow optimiser where
-one only performs plumping. It should not be a dependency in your
-algorithm implementations. The only place where the ~CHAINS~ system
-should be used is in verifying and validating an algorithm's
+Lastly, the ~CHAINS~ system is not a plug and play work flow optimiser
+where one only performs plumping. It should not be a dependency in
+your algorithm implementations. The only place where the ~CHAINS~
+system should be used is in verifying and validating an algorithm's
 performance on different types of data and collating algorithm results
 for some sort of publication.
 
 * Concepts and mental models
 The background section painted a picture of the aspects of the problem
-the ~CHAINS~ system attempts to address. This section attempts to
-illustrate more of the core concepts that underpin the library.
+the ~CHAINS~ system attempts to address. This section illustrates more
+of the core concepts and code that underpin the library.
 
 Performing a single experiment is really the serial execution of a
 number of tasks. For the congealing problem outlined above, the
@@ -197,21 +198,21 @@ evaluated on two different sets of input data.
 #+end_src
 The above figure presents two trees which start from an input data
 task. The ~CHAINS~ system inserts a "start here" root task in order to
-produce a single tree. The key property of the tree is that a path
+produce a single tree. A key property of the above tree is that a path
 from the root task to a leaf represents a single experiment or task
 chain.
 
 The tree view of the experiments also highlights the parallelism of
 the experiment execution. Once a task is completed, all of its
-children can be executed in parallel.
+children can now be executed in parallel.
 
 The ~CHAINS~ system does not limit the length of the chain, nor is
 there any requirement that all leaves should have the same distance to
 the root task. In fact the ~CHAINS~ system does not provide any
 default tasks as tasks are fundamentally problem specific. What the
-~CHAINS~ system does provide is a mechanism for constructing a new
-tree, discovering an existing tree, executing a tree, tree
-serialisation and querying.
+~CHAINS~ system does provide is a mechanism for documenting a tree,
+constructing a new tree, executing a tree, chain serialisation, chain
+querying and discovering an existing tree.
 
 Another important characteristic of tasks is the way they
 interact. The ~CHAINS~ system assumes that a task can only depend on
@@ -240,11 +241,11 @@ As you can see, the input to the algorithm requires data from the
 task(s) that synthesize the image ensemble and the task(s) that
 synthesize the initial guess. The above diagram is obviously no longer
 a chain, it is a directed graph. How the ~CHAINS~ system models the
-above graph is by distinguishing between the operation to be
-performed, and the input and output of that operation. This
-distinction is made to encourage the creation of reusable tasks. How
-tasks form a chain is dependent on the experiment design and is by
-definition not reusable across designs. 
+above graph is by distinguishing between the operation to be performed
+and the input and output of that operation. This distinction is made
+to encourage the creation of reusable tasks. How tasks form a chain is
+dependent on the experiment design and is by definition not reusable
+across designs.
 
 We now turn to implementing the above graph. The macro ~DEFINE-TASK~
 is used to create a new task class. The "Algorithm" task in the above
@@ -261,7 +262,7 @@ is to hide away the details of how tasks are implemented. Facilities
 for the programmatic creation of new task classes are provided
 e.g. ~ENSURE-TASK~.
 
-When a task is performed, the task's "operation" is executed. Before
+When a task is performed, the task's operation is executed. Before
 outlining how to define a task's operation, lets outline what an
 operation is. An operation can be understood as being a method like so
 #+begin_src lisp
@@ -282,9 +283,10 @@ task's operation that depend on the already performed tasks. This is
 how the ~CHAINS~ system connects tasks to form a graph.
 
 The operation for the "Algorithm" task would be implemented as follows
+in the ~CHAINS~ system.
 #+begin_src lisp
-  (define-task-input ensemble-images)
-  (define-task-input initial-guess)
+  (define-task-input ensemble-images) ;; The images fed to the algorithm
+  (define-task-input initial-guess)   ;; The initial guess of the object's location
   
   (define-operation (object algorithm) ((images ensemble-images) (guess initial-guess))
     (perorm-congealing images guess :sigma (sigma object)))
@@ -293,17 +295,16 @@ We begin with the ~DEFINE-OPERATION~ form where the expression
 ~(OBJECT ALGORITHM)~ corresponds to the task specialization in the
 ~PERFORM-TASK~ method example. The second argument to
 ~DEFINE-OPERATION~ is a list of the inputs required by the task. Each
-item in this list must be a list of two symbols. The first symbol is
-variable in the operation body can use to access the value of the task
+item in this list must be a list of two symbols. The first symbol is a
+variable the operation body can use to access the value of the task
 input. The second symbol represents the name of the task input that
-should be computed.
+the task needs to perform its operation.
 
 Each task input specified in ~DEFINE-OPERATION~ must have been
-declared using the ~DEFINE-TASK-INPUT~ macro. It is important to
-understand that a task input is not a class, it is special type of
-function provided by the ~CHAINS~ system. This special function
-dispatches on the tasks found in ~CHAIN~ and the task that is about to
-be performed.
+declared using ~DEFINE-TASK-INPUT~. It is important to understand that
+a task input is not a class, it is special type of function provided
+by the ~CHAINS~ system. This special function dispatches on the tasks
+found in the ~CHAIN~ and the task that is about to be performed.
 
 Before detailing how to add "methods" or ~TASK-INPUT-FUNCTIONS~ to a
 ~TASK-INPUT~, we first create the tasks responsible for controlling
@@ -328,15 +329,17 @@ operation.
       algorithm ((data initial-guess/similarity-transform))
     (task-value data))
 #+end_src
-The first argument to ~DEFINE-TASK-INPUT-FUNCTION~ refers to the task
-input that the function is to be added to. The second argument refers
-to the task that is about to be performed, termed the target
-class. The third argument represents the performed tasks needed to
-compute the value to be used as input. All forms after the third
-argument represent the body of the task input function. The value (not
-values) of the last evaluated form is what is fed to the
-operation. The function ~TASK-VALUE~ is a function that returns the
-result of executing a tasks' operation, in this case the result of
+The first argument to ~DEFINE-TASK-INPUT-FUNCTION~ is the name of the
+task input that the function is to be added to. The second argument
+refers to the task that is about to be performed, termed the target
+task or target class. The third argument represents the performed
+tasks needed to compute the value to be used as input. All forms after
+the third argument represent the body of the task input function. The
+value (values are unsupported) of the last evaluated form is what is
+fed to the operation.  
+
+The function ~TASK-VALUE~ returns the result of executing a tasks'
+operation, in this case the result of
 ~INITIAL-GUESS/SIMILARITY-TRANSFORM~ task.
 
 The rules for computing which task input function is to be used to
@@ -347,10 +350,9 @@ compute a value are currently defined as
 
 This is obviously a partial definition. At the time of writing it is
 not clear what the defaults should be and I am interested in getting
-feedback from any users as to what they should be based off of real
-world examples. Because of this, there is no such ~CALL-NEXT-FUNCTION~
-local function like there is with generic functions and methods with
-the local function ~CALL-NEXT-METHOD~.
+feedback from users. Because of this, there is no such
+~CALL-NEXT-FUNCTION~ local function like there is with generic
+functions and methods with the local function ~CALL-NEXT-METHOD~.
 
 * Serialisation
 The serialisation strategy employed in the ~CHAINS~ system is a very
