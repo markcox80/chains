@@ -512,7 +512,8 @@ defined. ~DEFINE-OPTIONS~ is a list of design options that will be
 covered throughout this section. The important argument, ~LEVELS~,
 contains information about the hierarchy of the tree.
 
-A diagram illustrating what ~LEVELS~ in ~DEFINE-DESIGN~ 
+The following diagram is used to illustrate the ~LEVELS~ argument in
+~DEFINE-DESIGN~
 #+begin_src ditaa :file levels.png
                                +--------------+
                                | Root of Tree |
@@ -536,9 +537,9 @@ The first item of ~LEVELS~, level 0, contains information about
 generating the children of the root node. In other words, the children
 of the root node represent the first tasks to be executed in each
 experiment chain. The second item of ~LEVELS~ contains information
-about generating the children for each of the first children in
+about generating the children for /each/ of the children in
 level 0. In essence, a level represents the tasks that are to be added
-to each leaf in the tree constructed from the previous levels.
+to all leaves in the tree constructed from the previous levels.
 
 Each element of ~LEVELS~ is a level definition expression. Examples of
 these forms can be seen in an example design used for the congealing
@@ -576,15 +577,14 @@ for each generate expression have been generated, they are appended
 together to form the list of tasks that are to be appended to each
 leaf in the current experiment tree.
 
-Lets consider what the generate expression in the level 0 definition
-means.
+Lets consider the generate expression used as the level 0 definition
+in the above example.
 #+begin_src lisp
   (image-appearance-and-lighting (:lighting-variation 0 0.1 0.2 0.3 0.4)
                                  (:number-of-subjects 1 2 5 10 20)
                                  (:samples-per-subject 1 5 10))
 #+end_src
-This expression states that the following list of tasks are to be
-generated.
+This states that the following list of tasks are to be generated.
 #+begin_src lisp
   (list (make-instance 'image-appearance-and-lighting
                        :lighting-variation 0
@@ -662,7 +662,7 @@ the ~DEFINE-DESIGN~ macro.
 (defun generate (design-name))
 #+end_src
 This function returns a ~TREE~ containing the entire collection of
-experiments.
+generated experiments.
 * Executing
 Before a tree of experiments is executed, an area to store the results
 must be prepared. The function ~PREPARE-DIRECTORY~ performs this task.
@@ -780,7 +780,7 @@ the correct number of iterations have been executed.
 #+end_src
 
 The operation for the task is then responsible for determining the
-previous iterations output to reprocess.
+previous iteration's output to reprocess.
 
 * Obtaining Results
 Now that all chains in an experiment design have been [[*Execution][executed]] and
