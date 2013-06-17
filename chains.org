@@ -803,3 +803,75 @@ The value of the argument can be one of the following
 - Function :: Find an object in chain for which the function returns
               non-NIL.
 
+* Parallel Execution Environments
+As state previously, when a task in an experiment has completed its
+operation, all of that task's children can be executed in parallel. As
+of writing, there exists no controller which performs this task for
+you within a single lisp machine.
+
+There does exists support for generating input to a command line program that
+can be invoked using the familiar ~xargs~ command line program or
+distributed computing schedulers like the Oracle Grid Engine.
+
+At the heart of this functionality is the ~CHAINS.PEE~ package which
+provides the ability to define a new executable that is customisable.
+#+begin_src lisp
+  (define-program experiments
+    ((number-of-iterations
+      :documentation "The number of congealing algorithm iterations to perform."
+      :argument ("iterations" (integer 0)))))
+#+end_src 
+The above specification defines a program that when generated has the
+following help message
+#+begin_src sh
+  $ ./program --help
+  Usage: [options] [custom options] <tree> <depth> <leaf number>
+  
+  Options:
+    --help                   This helpful message.
+    --force                  Overwrite any existing output.
+  
+  Custom Options:
+    --number-of-iterations <iterations>    The number of congealing algorithm iterations to perform. 
+  
+  <tree> The tree containing the chains that are to be executed.
+  <depth> The depth of the tasks that are to be executed.
+  <leaf number> The index of the leaf at <depth> that is to be executed.
+#+end_src
+
+The ~DEFINE-PROGRAM~ macro provides a very thin wrapper over the
+~LISP-EXECUTABLE:DEFINE-PROGRAM~. With the program defined,
+~LISP-EXECUTABLE~'s integration with ASDF can be used to build the
+executable.
+
+The function ~PREPARE-OGE-SCRIPT~ is used to automatically generate
+the needed files to invoke a program defined with ~DEFINE-PROGRAM~
+#+begin_src lisp
+  (defun prepare-oge-script (directory tree pathname &key (if-exists :error))
+#+end_src
+where ~DIRECTORY~ is the location to store the generated files, ~TREE~
+is the tree to be executed, ~PATHNAME~ is the pathname to the
+generated program. 
+
+The files generated in directory are as follows
+- ~oge.sh~ :: The script to be executed on the job submission host.
+- ~oge-program.sh~ :: A thin wrapper over the executable pathname
+     which extracts information from the grid engine.
+- ~program-arguments.sh~ :: A user editable file for passing command
+     line arguments to the program.
+- ~oge-arguments.sh~ :: A user editable file for passing command line
+     arguments to the grid engine scheduler.
+- ~tree.sexp~ :: The file containing the tree to be executed by the
+                 grid engine.
+
+The keyword argument ~IF-EXISTS~ in ~PREPARE-OGE-SCRIPT~ specifies
+what to do if any of the above files exist. Valid values are
+- ~:ERROR~ :: Signal an error if any of the above files exist.
+- ~:OVERWRITE~ :: Overwrite ~oge.sh~, ~oge-program.sh~ and
+                  ~tree.sexp~. Do not touch ~program-arguments.sh~ and
+                  ~oge-arguments.sh~.
+- ~:OVERWRITE-ALL~ :: Overwrite all of the above files.
+
+The default contents for the files ~program-arguments.sh~ and
+~oge-arguments.sh~ are obtained from the dynamic variables
+~*OGE-PROGRAM-ARGUMENTS-STRING*~ and ~*OGE-ARGUMENTS-STRING*~.
