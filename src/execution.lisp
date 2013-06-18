@@ -152,22 +152,24 @@
 		 :defaults (task-data-directory* area chain)))
 
 (defmethod task-value* ((area prepared-directory) chain)
-  (with-open-file (in (prepared-directory-task-value-pathname area chain))
-    (read in)))
+  (let ((*package* (find-package "COMMON-LISP")))
+    (with-open-file (in (prepared-directory-task-value-pathname area chain))
+      (read in))))
 
 (defmethod (setf task-value*) (value (area prepared-directory) chain)
   (ensure-task-data-directory* area chain)
 
   ;; Record the task used to compute the value.
-  (with-open-file (out (prepared-directory-task-object-pathname area chain)
-		       :if-exists nil
-		       :direction :output)
-    (serialise-object out (car (last chain))))
+  (let ((*package* (find-package "COMMON-LISP")))
+    (with-open-file (out (prepared-directory-task-object-pathname area chain)
+			 :if-exists :supersede
+			 :direction :output)
+      (serialise-object out (car (last chain))))
 
-  (with-open-file (out (prepared-directory-task-value-pathname area chain)
-		       :if-exists :supersede
-		       :direction :output)
-    (serialise-object out value)))
+    (with-open-file (out (prepared-directory-task-value-pathname area chain)
+			 :if-exists :supersede
+			 :direction :output)
+      (serialise-object out value))))
 
 (defmethod task-completed-p* ((area prepared-directory) chain)
   (probe-file (prepared-directory-task-value-pathname area chain)))

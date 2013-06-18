@@ -31,7 +31,7 @@
 (defun serialise-object (stream object)
   (pprint-logical-block (stream nil)
     (write-string "#." stream)
-    (write (object-sexp object) :stream stream :pretty t)))
+    (write (object-sexp object) :stream stream :pretty t :readably t)))
 
 (defun serialise-task (stream task)
   (declare (type task task))
