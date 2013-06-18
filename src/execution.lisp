@@ -162,7 +162,7 @@
   ;; Record the task used to compute the value.
   (let ((*package* (find-package "COMMON-LISP")))
     (with-open-file (out (prepared-directory-task-object-pathname area chain)
-			 :if-exists nil
+			 :if-exists :supersede
 			 :direction :output)
       (serialise-object out (car (last chain))))
 
