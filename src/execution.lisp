@@ -121,6 +121,9 @@
     :initarg :directory
     :reader area-directory)))
 
+(defmethod object-sexp ((object prepared-directory))
+  `(prepare-directory ,(area-directory object) :if-exists :skip))
+
 (defun prepare-directory (directory &key (if-exists :skip))
   (declare (type (member :error :skip) if-exists))
   (multiple-value-bind (pathspec created?) (ensure-directories-exist directory)
