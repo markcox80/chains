@@ -48,7 +48,7 @@
 	(unless created?
 	  (error "Directory ~S already exists." tmp-directory))
 	(unwind-protect
-	     (funcall function pathspec)
+	     (funcall function (parse-namestring pathspec))
 	  (cl-fad:delete-directory-and-files tmp-directory)))))
 
   (defmacro with-temporary-directory ((var) &body body)
