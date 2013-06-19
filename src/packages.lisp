@@ -78,7 +78,9 @@
 	   #:count-leaves
 	   #:replace-leaves
 
-	   #:compute-chains)
+	   #:compute-chains
+	   #:truncate-tree-to-depth
+	   #:compute-chains-to-depth)
 
   ;; Designs and programmatic creation
   (:export #:design

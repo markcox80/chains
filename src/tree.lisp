@@ -55,3 +55,16 @@
       (t
        ;; Root node
        child-chains))))
+
+(defun truncate-tree-to-depth (tree depth)
+  (declare (type (integer 0) depth))
+  (cond
+    ((zerop depth)
+     (make-tree (value tree) nil))
+    (t
+     (make-tree (value tree) (mapcar #'(lambda (child)
+					 (truncate-tree-to-depth child (1- depth)))
+				     (children tree))))))
+
+(defun compute-chains-to-depth (tree depth)
+  (compute-chains (truncate-tree-to-depth tree depth)))
