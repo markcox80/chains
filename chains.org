@@ -825,7 +825,7 @@ The above specification defines a program that when generated has the
 following help message
 #+begin_src sh
   $ ./program --help
-  Usage: [options] [custom options] <tree> <depth> <leaf number>
+  Usage: [options] [custom options] <data> <depth> <leaf number>
   
   Options:
     --help                   This helpful message.
@@ -834,7 +834,7 @@ following help message
   Custom Options:
     --number-of-iterations <iterations>    The number of congealing algorithm iterations to perform. 
   
-  <tree> The tree containing the chains that are to be executed.
+  <data> Information needed to execute a tree of tasks.
   <depth> The depth of the tasks that are to be executed.
   <leaf number> The index of the leaf at <depth> that is to be executed.
 #+end_src
@@ -847,11 +847,11 @@ executable.
 The function ~PREPARE-OGE-SCRIPT~ is used to automatically generate
 the needed files to invoke a program defined with ~DEFINE-PROGRAM~
 #+begin_src lisp
-  (defun prepare-oge-script (directory tree pathname &key (if-exists :error)))
+  (defun prepare-oge-script (directory area tree pathname &key (if-exists :error)))
 #+end_src
-where ~DIRECTORY~ is the location to store the generated files, ~TREE~
-is the tree to be executed, ~PATHNAME~ is the pathname to the
-generated program. 
+where ~DIRECTORY~ is the location to store the generated files, ~AREA~
+is a prepared area, ~TREE~ is the tree to be executed, ~PATHNAME~ is
+the pathname to the generated program.
 
 The files generated in directory are as follows
 - ~oge.sh~ :: The script to be executed on the job submission host.
@@ -861,8 +861,8 @@ The files generated in directory are as follows
      line arguments to the program.
 - ~oge-arguments.sh~ :: A user editable file for passing command line
      arguments to the grid engine scheduler.
-- ~tree.sexp~ :: The file containing the tree to be executed by the
-                 grid engine.
+- ~oge-data.sexp~ :: The file containing the area and tree to be executed
+     by the grid engine.
 
 The keyword argument ~IF-EXISTS~ in ~PREPARE-OGE-SCRIPT~ specifies
 what to do if any of the above files exist. Valid values are

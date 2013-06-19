@@ -131,3 +131,12 @@
 	   #:*chain*
 	   #:task-data-directory
 	   #:task-value))
+
+  ;; Parallel Execution Environments
+(defpackage "CHAINS.PEE"
+  (:use "COMMON-LISP")
+  (:import-from "CHAINS"
+		#:perform-leaf
+		#:compute-chains-to-depth)
+
+  (:export #:define-program))

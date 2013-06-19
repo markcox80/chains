@@ -1,4 +1,10 @@
 (in-package "CHAINS.TESTS")
 
 (defmethod asdf:perform ((op asdf:test-op) (component (eql (asdf:find-system "chains-tests"))))
-  (lisp-unit:run-tests :all "CHAINS.TESTS"))
+  (dolist (pkg (list "CHAINS.TESTS"
+		     "CHAINS.PEE.TESTS"))
+    (fresh-line)
+    (format t "~&;; Running tests in package ~S" pkg)
+    (let ((results (lisp-unit:run-tests :all pkg)))
+      (print-failures results)
+      (print-errors results))))

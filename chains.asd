@@ -1,12 +1,9 @@
 (in-package "ASDF")
 
-(eval-when (:compile-toplevel :load-toplevel :execute)
-  (asdf:load-system "lisp-executable"))
-
 (defsystem "chains"
   :author "Mark Cox"
   :description "A simple set of interfaces for defining experiments."
-  :depends-on ("alexandria" "cl-fad" "closer-mop" "lisp-executable")
+  :depends-on ("alexandria" "cl-fad" "closer-mop" "lisp-executable" "split-sequence")
   :serial t
   :components ((:module "src"
 			:serial t
@@ -20,5 +17,6 @@
 				     (:file "tree")
 				     (:file "design")
 				     (:file "querying")
-				     (:file "execution"))))
+				     (:file "execution")
+				     (:file "programs"))))
   :in-order-to ((test-op (test-op "chains-tests"))))
