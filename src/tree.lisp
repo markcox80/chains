@@ -68,3 +68,7 @@
 
 (defun compute-chains-to-depth (tree depth)
   (compute-chains (truncate-tree-to-depth tree depth)))
+
+(defmethod object-sexp ((object tree))
+  `(make-tree ,(object-sexp (value object)) 
+	      ,(object-sexp (children object))))
