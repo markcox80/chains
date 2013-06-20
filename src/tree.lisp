@@ -61,10 +61,14 @@
   (cond
     ((zerop depth)
      (make-tree (value tree) nil))
+    ((leafp tree)
+     nil)
     (t
-     (make-tree (value tree) (mapcar #'(lambda (child)
-					 (truncate-tree-to-depth child (1- depth)))
-				     (children tree))))))
+     (let ((children (remove nil (mapcar #'(lambda (child)
+					     (truncate-tree-to-depth child (1- depth)))
+					 (children tree)))))
+       (when children
+	 (make-tree (value tree) children))))))
 
 (defun compute-chains-to-depth (tree depth)
   (compute-chains (truncate-tree-to-depth tree depth)))
