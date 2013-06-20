@@ -804,17 +804,25 @@ The value of the argument can be one of the following
               non-NIL.
 
 * Parallel Execution Environments
-As state previously, when a task in an experiment has completed its
-operation, all of that task's children can be executed in parallel. As
-of writing, there exists no controller which performs this task for
-you within a single lisp machine.
+This section outlines the functionality of the ~CHAINS.PEE~ package.
 
-There does exists support for generating input to a command line program that
-can be invoked using the familiar ~xargs~ command line program or
-distributed computing schedulers like the Oracle Grid Engine.
+As stated previously, when a task in an experiment has completed its
+operation, all of that task's children can be executed in
+parallel. The function ~PARALLEL-PERFORM~ performs this task for you
+for a given ~TREE~ and ~AREA~.
+#+begin_src lisp
+  (defun parallel-perform (area tree &rest args &key force &allow-other-keys))
+#+end_src lisp
+The dynamic variable ~*NUMBER-OF-PROCESSES*~ controls the number of
+threads that ~PARALLEL-PERFORM~ uses to execute the ~TREE~.
 
-At the heart of this functionality is the ~CHAINS.PEE~ package which
-provides the ability to define a new executable that is customisable.
+There also exists support for generating a command line program which
+can be invoked by ~xargs~ or a distributed computing schedulers like
+the Oracle Grid Engine.
+
+At the heart of this functionality is the ~DEFINE-PROGRAM~ macro which
+provides the ability to define a new executable which simply invokes
+~PERFORM-LEAF~.
 #+begin_src lisp
   (define-program experiments
     ((number-of-iterations
@@ -844,18 +852,30 @@ The ~DEFINE-PROGRAM~ macro provides a very thin wrapper over
 ~LISP-EXECUTABLE~'s integration with ASDF can be used to build the
 executable.
 
-The function ~PREPARE-OGE-SCRIPT~ is used to automatically generate
-the needed files to invoke a program defined with ~DEFINE-PROGRAM~
+The ~<data>~ argument to the command line program is produced using
+the function ~WRITE-PROGRAM-DATA~.
+#+begin_src lisp
+  (defun write-program-data (pathname area tree))
+#+end_src
+This function requires the ~AREA~ and the values stored in ~TREE~ to
+have implemented the ~OBJECT-SEXP~ method.
+
+One can invoke the above executable manually, however, there are two
+functions ~PREPARE-OGE-SCRIPT~ and ~PREPARE-XARGS-SCRIPT~, which
+generate shell scripts which perform the necessary invocations of the
+program to execute an entire tree. 
+
+The function ~PREPARE-OGE-SCRIPT~ is used to produce scripts which use
+the Oracle Grid Engine to invoke the defined program.
 #+begin_src lisp
   (defun prepare-oge-script (directory area tree program &key (if-exists :error)))
 #+end_src
 where ~DIRECTORY~ is the location to store the generated files, ~AREA~
 is a prepared area, ~TREE~ is the tree to be executed, ~PROGRAM~ is
-the pathname to the generated program or a list containing the name of
-an ASDF system followed by the name of the ASDF components to traverse
-to a ~LISP-EXECUTABLE:EXECUTABLE~ component.
+the pathname to the generated program or a list containing the path to
+a ~LISP-EXECUTABLE:EXECUTABLE~ component in an ASDF system.
 
-The files generated in directory are as follows
+The files generated in ~DIRECTORY~ are as follows
 - ~oge.sh~ :: The script to be executed on the job submission host.
 - ~oge-program.sh~ :: A thin wrapper over the executable pathname
      which extracts information from the grid engine.
@@ -870,10 +890,16 @@ The keyword argument ~IF-EXISTS~ in ~PREPARE-OGE-SCRIPT~ specifies
 what to do if any of the above files exist. Valid values are
 - ~:ERROR~ :: Signal an error if any of the above files exist.
 - ~:SUPERSEDE~ :: Overwrite ~oge.sh~, ~oge-program.sh~ and
-                  ~tree.sexp~. Do not touch ~program-arguments.sh~ and
-                  ~oge-arguments.sh~.
+                  ~tree.sexp~. Do not touch ~program-arguments~ and
+                  ~oge-arguments~.
 - ~:SUPERSEDE-ALL~ :: Overwrite all of the above files.
 
-The default contents for the files ~program-arguments.sh~ and
-~oge-arguments.sh~ are obtained from the dynamic variables
+The default contents for the files ~program-arguments~ and
+~oge-arguments~ are obtained from the dynamic variables
 ~*OGE-PROGRAM-ARGUMENTS-STRING*~ and ~*OGE-ARGUMENTS-STRING*~.
+
+The function ~PREPARE-XARGS-SCRIPT~ is like ~PREPARE-OGE-SCRIPT~, but
+it prepares scripts to be executed with xargs. 
+#+begin_src lisp
+  (defun prepare-xargs-script (directory area tree program &key (if-exists :error)))
+#+end_src
