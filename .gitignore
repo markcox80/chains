@@ -1,9 +1,2 @@
 *.fasl
 *~
-/algorithm-input.png
-/congealing-tasks.png
-/input-data.png
-/parallelism.png
-/levels.png
-bin/*
-chains.html
