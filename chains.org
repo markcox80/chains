@@ -847,19 +847,21 @@ executable.
 The function ~PREPARE-OGE-SCRIPT~ is used to automatically generate
 the needed files to invoke a program defined with ~DEFINE-PROGRAM~
 #+begin_src lisp
-  (defun prepare-oge-script (directory area tree pathname &key (if-exists :error)))
+  (defun prepare-oge-script (directory area tree program &key (if-exists :error)))
 #+end_src
 where ~DIRECTORY~ is the location to store the generated files, ~AREA~
-is a prepared area, ~TREE~ is the tree to be executed, ~PATHNAME~ is
-the pathname to the generated program.
+is a prepared area, ~TREE~ is the tree to be executed, ~PROGRAM~ is
+the pathname to the generated program or a list containing the name of
+an ASDF system followed by the name of the ASDF components to traverse
+to a ~LISP-EXECUTABLE:EXECUTABLE~ component.
 
 The files generated in directory are as follows
 - ~oge.sh~ :: The script to be executed on the job submission host.
 - ~oge-program.sh~ :: A thin wrapper over the executable pathname
      which extracts information from the grid engine.
-- ~program-arguments.sh~ :: A user editable file for passing command
+- ~program-arguments~ :: A user editable file for passing command
      line arguments to the program.
-- ~oge-arguments.sh~ :: A user editable file for passing command line
+- ~oge-arguments~ :: A user editable file for passing command line
      arguments to the grid engine scheduler.
 - ~oge-data.sexp~ :: The file containing the area and tree to be executed
      by the grid engine.
@@ -867,10 +869,10 @@ The files generated in directory are as follows
 The keyword argument ~IF-EXISTS~ in ~PREPARE-OGE-SCRIPT~ specifies
 what to do if any of the above files exist. Valid values are
 - ~:ERROR~ :: Signal an error if any of the above files exist.
-- ~:OVERWRITE~ :: Overwrite ~oge.sh~, ~oge-program.sh~ and
+- ~:SUPERSEDE~ :: Overwrite ~oge.sh~, ~oge-program.sh~ and
                   ~tree.sexp~. Do not touch ~program-arguments.sh~ and
                   ~oge-arguments.sh~.
-- ~:OVERWRITE-ALL~ :: Overwrite all of the above files.
+- ~:SUPERSEDE-ALL~ :: Overwrite all of the above files.
 
 The default contents for the files ~program-arguments.sh~ and
 ~oge-arguments.sh~ are obtained from the dynamic variables

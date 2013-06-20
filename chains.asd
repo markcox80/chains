@@ -18,5 +18,6 @@
 				     (:file "design")
 				     (:file "querying")
 				     (:file "execution")
-				     (:file "programs"))))
+				     (:file "programs")
+				     (:file "pee-oge"))))
   :in-order-to ((test-op (test-op "chains-tests"))))

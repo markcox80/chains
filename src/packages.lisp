@@ -137,6 +137,17 @@
   (:use "COMMON-LISP")
   (:import-from "CHAINS"
 		#:perform-leaf
-		#:compute-chains-to-depth)
+		#:compute-chains-to-depth
 
-  (:export #:define-program))
+		#:leafp
+		#:children
+		#:truncate-tree-to-depth
+		#:count-leaves
+
+		#:serialise-object)
+
+  ;; Command line programs
+  (:export #:define-program)
+
+  ;; Oracle Grid Engine
+  (:export #:prepare-oge-script))
