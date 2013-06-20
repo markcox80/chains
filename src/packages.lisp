@@ -78,9 +78,7 @@
 	   #:count-leaves
 	   #:replace-leaves
 
-	   #:compute-chains
-	   #:truncate-tree-to-depth
-	   #:compute-chains-to-depth)
+	   #:compute-chains)
 
   ;; Designs and programmatic creation
   (:export #:design
@@ -137,11 +135,12 @@
   (:use "COMMON-LISP")
   (:import-from "CHAINS"
 		#:perform-leaf
-		#:compute-chains-to-depth
+		#:compute-chains
 
+		#:make-tree
 		#:leafp
 		#:children
-		#:truncate-tree-to-depth
+		#:value
 		#:count-leaves
 
 		#:serialise-object)

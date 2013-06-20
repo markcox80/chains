@@ -40,6 +40,22 @@
 	 ,(custom-option-documentation custom-option)))
 
 ;; DEFINE-PROGRAM
+(defun truncate-tree-to-depth (tree depth)
+  (declare (type (integer 0) depth))
+  (cond
+    ((zerop depth)
+     (make-tree (value tree) nil))
+    ((leafp tree)
+     nil)
+    (t
+     (let ((children (remove nil (mapcar #'(lambda (child)
+					     (truncate-tree-to-depth child (1- depth)))
+					 (children tree)))))
+       (when children
+	 (make-tree (value tree) children))))))
+
+(defun compute-chains-to-depth (tree depth)
+  (compute-chains (truncate-tree-to-depth tree depth)))
 
 (defun perform-program (tree-pathname depth leaf &rest args &key &allow-other-keys)
   (destructuring-bind (area tree) (with-open-file (in tree-pathname)
