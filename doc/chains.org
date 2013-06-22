@@ -852,7 +852,7 @@ program to execute an entire tree.
 The function ~PREPARE-OGE-SCRIPT~ is used to produce scripts which use
 the Oracle Grid Engine to invoke the defined program.
 #+begin_src lisp
-  (defun prepare-oge-script (directory area tree program &key (if-exists :error)))
+  (defun prepare-oge-script (directory area tree program &key (if-exists :error) (output "stdout/") (error :output)))
 #+end_src
 where ~DIRECTORY~ is the location to store the generated files, ~AREA~
 is a prepared area, ~TREE~ is the tree to be executed, ~PROGRAM~ is
@@ -877,6 +877,15 @@ what to do if any of the above files exist. Valid values are
                   ~tree.sexp~. Do not touch ~program-arguments~ and
                   ~oge-arguments~.
 - ~:SUPERSEDE-ALL~ :: Overwrite all of the above files.
+
+The keyword arguments ~OUTPUT~ and ~ERROR~ specify what to do with the
+data written to standard output and standard error for each task. The
+~OUTPUT~ argument accepts a directory pathname designator which
+represents the directory in which to store the output of each
+task. The ~ERROR~ argument is like the ~OUTPUT~ argument, but it is
+permitted to pass the keyword ~:OUTPUT~. The keyword ~:OUTPUT~ states
+that the standard error stream is /joined/ to the standard output
+stream.
 
 The default contents for the files ~program-arguments~ and
 ~oge-arguments~ are obtained from the dynamic variables

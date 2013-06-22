@@ -23,7 +23,18 @@
      (let ((truncated-tree (truncate-tree-to-depth tree depth)))
        (count-leaves truncated-tree))))
 
-(defun prepare-oge-script (directory area tree program &key (if-exists :error))
+(defgeneric determine-qsub-args (output error directory))
+
+(defmethod determine-qsub-args ((output string) (error string) directory)
+  (format nil "-o ~S -e ~S"
+	  (namestring (merge-pathnames output directory))
+	  (namestring (merge-pathnames error directory))))
+
+(defmethod determine-qsub-args ((output string) (error (eql :output)) directory)
+  (format nil "-o ~S -j y"
+	  (namestring (merge-pathnames output directory))))
+
+(defun prepare-oge-script (directory area tree program &key (if-exists :error) (output "stdout/") (error :output))
   (declare (type (member :error :supersede :supersede-all) if-exists))
   (let ((program-path (if (listp program)
 			  (apply #'lisp-executable-pathname program)
@@ -36,6 +47,12 @@
 	(error "Directory ~S already exists!" directory))
 
       (let ((*default-pathname-defaults* (parse-namestring pathspec)))
+	(when (stringp output)
+	  (ensure-directories-exist (merge-pathnames output)))
+	
+	(when (stringp error)
+	  (ensure-directories-exist (merge-pathnames error)))
+
 	(let ((if-exists (if (eql if-exists :supersede-all) :supersede if-exists)))
 	  (with-open-file (out "oge-data.sexp" :if-exists if-exists :direction :output)
 	    (serialise-object out (list area tree))
@@ -50,12 +67,13 @@
 	  (with-open-file (out "oge.sh":if-exists if-exists :direction :output)
 	    (format out "#!/bin/sh~%")
 	    (format out "set -e~%")
+	    (format out "QSUB_ARGS=~S~%" (determine-qsub-args output error directory))
 	    (let ((counts (leaf-counts-at-depths tree)))
 	      (loop
 		 :for count :in counts
 		 :for depth :from 0
 		 :do
-		 (format out "qsub -t 1-~d `cat ~S` -sync y ~S ~S ~d~%"
+		 (format out "qsub -t 1-~d ${QSUB_ARGS} `cat ~S` -sync y ~S ~S ~d~%"
 			 count
 			 (namestring (merge-pathnames "oge-arguments"))
 			 (namestring (merge-pathnames "oge-program.sh"))
