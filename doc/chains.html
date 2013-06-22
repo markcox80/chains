@@ -1,88 +1,63 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+               "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
 <title>Experiment Chains</title>
-<!-- 2013-06-22 Sat 20:44 -->
-<meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+<meta http-equiv="Content-Type" content="text/html;charset=iso-8859-1"/>
+<meta name="title" content="Experiment Chains"/>
 <meta name="generator" content="Org-mode"/>
+<meta name="generated" content="2013-06-23T08:36+1000"/>
 <meta name="author" content="Mark Cox"/>
+<meta name="description" content=""/>
+<meta name="keywords" content=""/>
 <style type="text/css">
  <!--/*--><![CDATA[/*><!--*/
+  html { font-family: Times, serif; font-size: 12pt; }
   .title  { text-align: center; }
-  .todo   { font-family: monospace; color: red; }
+  .todo   { color: red; }
   .done   { color: green; }
-  .tag    { background-color: #eee; font-family: monospace;
-            padding: 2px; font-size: 80%; font-weight: normal; }
+  .tag    { background-color: #add8e6; font-weight:normal }
+  .target { }
   .timestamp { color: #bebebe; }
   .timestamp-kwd { color: #5f9ea0; }
-  .right  { margin-left: auto; margin-right: 0px;  text-align: right; }
-  .left   { margin-left: 0px;  margin-right: auto; text-align: left; }
-  .center { margin-left: auto; margin-right: auto; text-align: center; }
-  .underline { text-decoration: underline; }
-  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
-  p.verse { margin-left: 3%; }
+  .right  {margin-left:auto; margin-right:0px;  text-align:right;}
+  .left   {margin-left:0px;  margin-right:auto; text-align:left;}
+  .center {margin-left:auto; margin-right:auto; text-align:center;}
+  p.verse { margin-left: 3% }
   pre {
-    border: 1px solid #ccc;
-    box-shadow: 3px 3px 3px #eee;
-    padding: 8pt;
-    font-family: monospace;
-    overflow: auto;
-    margin: 1.2em;
+	border: 1pt solid #AEBDCC;
+	background-color: #F3F5F7;
+	padding: 5pt;
+	font-family: courier, monospace;
+        font-size: 90%;
+        overflow:auto;
   }
-  pre.src {
-    position: relative;
-    overflow: visible;
-    padding-top: 1.2em;
-  }
-  pre.src:before {
-    display: none;
-    position: absolute;
-    background-color: white;
-    top: -10px;
-    right: 10px;
-    padding: 3px;
-    border: 1px solid black;
-  }
-  pre.src:hover:before { display: inline;}
-  pre.src-sh:before    { content: 'sh'; }
-  pre.src-bash:before  { content: 'sh'; }
-  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
-  pre.src-R:before     { content: 'R'; }
-  pre.src-perl:before  { content: 'Perl'; }
-  pre.src-java:before  { content: 'Java'; }
-  pre.src-sql:before   { content: 'SQL'; }
-
-  table { border-collapse:collapse; }
-  td, th { vertical-align:top;  }
-  th.right  { text-align: center;  }
-  th.left   { text-align: center;   }
-  th.center { text-align: center; }
-  td.right  { text-align: right;  }
-  td.left   { text-align: left;   }
-  td.center { text-align: center; }
+  table { border-collapse: collapse; }
+  td, th { vertical-align: top;  }
+  th.right  { text-align:center;  }
+  th.left   { text-align:center;   }
+  th.center { text-align:center; }
+  td.right  { text-align:right;  }
+  td.left   { text-align:left;   }
+  td.center { text-align:center; }
   dt { font-weight: bold; }
-  .footpara:nth-child(2) { display: inline; }
-  .footpara { display: block; }
-  .footdef  { margin-bottom: 1em; }
-  .figure { padding: 1em; }
-  .figure p { text-align: center; }
-  .inlinetask {
-    padding: 10px;
-    border: 2px solid gray;
-    margin: 10px;
+  div.figure { padding: 0.5em; }
+  div.figure p { text-align: center; }
+  div.inlinetask {
+    padding:10px;
+    border:2px solid gray;
+    margin:10px;
     background: #ffffcc;
   }
-  #org-div-home-and-up
-   { text-align: right; font-size: 70%; white-space: nowrap; }
   textarea { overflow-x: auto; }
-  .linenr { font-size: smaller }
-  .code-highlighted { background-color: #ffff00; }
-  .org-info-js_info-navigation { border-style: none; }
-  #org-info-js_console-label
-    { font-size: 10px; font-weight: bold; white-space: nowrap; }
-  .org-info-js_search-highlight
-    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  .linenr { font-size:smaller }
+  .code-highlighted {background-color:#ffff00;}
+  .org-info-js_info-navigation { border-style:none; }
+  #org-info-js_console-label { font-size:10px; font-weight:bold;
+                               white-space:nowrap; }
+  .org-info-js_search-highlight {background-color:#ffff00; color:#000000;
+                                 font-weight:bold; }
   /*]]>*/-->
 </style>
 <script type="text/javascript">
@@ -90,7 +65,7 @@
 @licstart  The following is the entire license notice for the
 JavaScript code in this tag.
 
-Copyright (C) 2012  Free Software Foundation, Inc.
+Copyright (C) 2012-2013 Free Software Foundation, Inc.
 
 The JavaScript code in this tag is free software: you can
 redistribute it and/or modify it under the terms of the GNU
@@ -131,47 +106,53 @@ for the JavaScript code in this tag.
  }
 /*]]>*///-->
 </script>
+
 </head>
 <body>
+
+<div id="preamble">
+
+</div>
+
 <div id="content">
 <h1 class="title">Experiment Chains</h1>
-<div id="table-of-contents">
-<h2>Table of Contents</h2>
-<div id="text-table-of-contents">
-<ul>
-<li><a href="#sec-1">1. A Backstory</a></li>
-<li><a href="#sec-2">2. Concepts and mental models</a></li>
-<li><a href="#sec-3">3. Serialisation</a></li>
-<li><a href="#sec-4">4. Querying</a></li>
-<li><a href="#sec-5">5. Generating</a></li>
-<li><a href="#sec-6">6. Executing</a>
-<ul>
-<li><a href="#sec-6-1">6.1. Execution parameters</a></li>
-</ul>
-</li>
-<li><a href="#sec-7">7. Obtaining Results</a></li>
-<li><a href="#sec-8">8. Parallel Execution Environments</a></li>
-</ul>
-</div>
-</div>
-<p>
-<code>CHAINS</code> is a Common Lisp system for constructing an experiment chain
+
+<p><code>CHAINS</code> is a Common Lisp system for constructing an experiment chain
 in which a number of tasks are executed to produce a result. Its main
 purpose is to accommodate scenarios where the line between a
 scientific experiment and algorithmic experimentation is blurred.
 </p>
 
-<div id="outline-container-sec-1" class="outline-2">
+<div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#sec-1">1 A Backstory</a></li>
+<li><a href="#sec-2">2 Concepts and mental models</a></li>
+<li><a href="#sec-3">3 Serialisation</a></li>
+<li><a href="#sec-4">4 Querying</a></li>
+<li><a href="#sec-5">5 Generating</a></li>
+<li><a href="#sec-6">6 Executing</a>
+<ul>
+<li><a href="#sec-6-1">6.1 Execution parameters</a></li>
+</ul>
+</li>
+<li><a href="#sec-7">7 Obtaining Results</a></li>
+<li><a href="#sec-8">8 Parallel Execution Environments</a></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-1" class="outline-2">
 <h2 id="sec-1"><span class="section-number-2">1</span> A Backstory</h2>
 <div class="outline-text-2" id="text-1">
-<p>
-This section outlines the main use case for the <code>CHAINS</code> system. The
+
+<p>This section outlines the main use case for the <code>CHAINS</code> system. The
 abstraction the <code>CHAINS</code> system employs is rather strange when
 introduced on its own. Hopefully this section aids in understanding
 why. The example presented in this section is real, and is the primary
 reason for the existence of the <code>CHAINS</code> system.
 </p>
-
 <p>
 An important problem in the field of computer vision is that of
 <i>congealing</i>. The task of congealing is very simple, discover the
@@ -182,40 +163,39 @@ each image. A concrete example of congealing would be, given an
 ensemble of images containing faces, find me the bounding box of each
 face.
 </p>
-
 <p>
 When evaluating a congealing algorithm one must evaluate the algorithm
 against the following criteria
-</p>
-<dl class="org-dl">
-<dt> Level of initial misalignment </dt><dd>How far away from the true location
-can then algorithm correctly locate the object?
+</p><dl>
+<dt>Level of initial misalignment</dt><dd>How far away from the true location
+     can then algorithm correctly locate the object?
 </dd>
-<dt> Lighting variation </dt><dd>How does the algorithm handle variation in
-appearance due to illumination conditions?
+<dt>Lighting variation</dt><dd>How does the algorithm handle variation in
+     appearance due to illumination conditions?
 </dd>
-<dt> Image noise </dt><dd>How does the algorithm handle variation in appearance
-due to image noise?
+<dt>Image noise</dt><dd>How does the algorithm handle variation in appearance
+                 due to image noise?
 </dd>
-<dt> Appearance variation </dt><dd>How does the algorithm handle variation in
-appearance of the object? For faces, this would mean male versus
-female, beard versus non-beard, and so on.
+<dt>Appearance variation</dt><dd>How does the algorithm handle variation in
+     appearance of the object? For faces, this would mean male versus
+     female, beard versus non-beard, and so on.
 </dd>
-<dt> Occlusion </dt><dd>How does the algorithm handle cases where the object is
-occluded by another object? e.g. a face occluded by
-hair, glasses or another object.
+<dt>Occlusion</dt><dd>How does the algorithm handle cases where the object is
+               occluded by another object? e.g. a face occluded by
+               hair, glasses or another object.
 </dd>
-<dt> Ensemble size </dt><dd>How does the number of images in the ensemble
-influence performance?
+<dt>Ensemble size</dt><dd>How does the number of images in the ensemble
+                   influence performance?
 </dd>
-<dt> Cross validation on images </dt><dd>Testing performance on another ensemble of
-images with exactly the same statistics.
+<dt>Cross validation on images</dt><dd>Testing performance on another ensemble of
+     images with exactly the same statistics.
 </dd>
-<dt> Cross validation on geometry </dt><dd>Testing performance on the same
-collection of images but with different random starting
-locations.
+<dt>Cross validation on geometry</dt><dd>Testing performance on the same
+     collection of images but with different random starting
+     locations.
 </dd>
 </dl>
+
 
 <p>
 It is fine if you do not understand all of the above. The key point is
@@ -225,21 +205,18 @@ differently depending on the value of each variable. In fact, even a
 different ensemble with the same statistics can cause algorithms to
 behave differently.
 </p>
-
 <p>
 In addition to variables associated with the input data, a congealing
 algorithm typically has a number of parameters that influence its own
 behaviour. These parameters have a range of values that are "worth"
 trying, with the best value selected at the end by some means.
 </p>
-
 <p>
 One also must compare the algorithm against another algorithm on
 <i>exactly</i> the same image ensemble. Having exactly the same ensemble is
 extremely important as a strategically chosen change can have a
 dramatic effect on performance for some algorithms.
 </p>
-
 <p>
 Once all of the algorithms are executed, a results collation process
 begins. The results obtained depend on the report or paper that is
@@ -247,13 +224,11 @@ being written. These results may involve performance conditioned on
 the statistics of the image ensemble, or the amount of influence an
 algorithm parameter has on the overall algorithm performance.
 </p>
-
 <p>
 Everything up to this point is straight forward. You prepare the image
 ensemble to be fed to all congealing algorithms, execute each
 algorithm, prepare the results and then write the report/paper. Easy.
 </p>
-
 <p>
 Unfortunately, this rarely occurs in practice. In practice, one
 implements an algorithm that has been published. Upon experimenting
@@ -265,7 +240,6 @@ in some manner. With this new information, the goal now is to
 empirically confirm the identified problem and design a new algorithm
 that can overcome the identified problem.
 </p>
-
 <p>
 Immediately we see that the algorithm and the experiments to be
 performed are not concrete. One typically creates many algorithms that
@@ -274,13 +248,11 @@ investigating further until it has been implemented and a preliminary
 set of results are obtained. Additionally, the type of results
 required may change depending on the point needed to be made.
 </p>
-
 <p>
 What a scientist wants to work on is the algorithm. That is what is
 important. That is what is publishable. The experiment stuff validates
 the argument for the algorithm, but it is not the primary focus. 
 </p>
-
 <p>
 Saying it is not of primary focus is rather ironic. The experiment
 design partly led to the discovery. The experiment design also
@@ -288,7 +260,6 @@ empirically validates a new discovery. Furthermore, it is the
 experiment design where much of a computer scientist's effort is spent
 and it is to easy to see why.
 </p>
-
 <p>
 The problem with experiments is that they take time to implement and
 to execute. The long execution time is because the number of
@@ -301,7 +272,6 @@ can be executed in parallel. Well, not quite in parallel as described
 later, but the experiment execution problem does belong to the class
 of embarrassingly parallelisable problems.
 </p>
-
 <p>
 Another difficulty is collating results. When writing a report or a
 paper, one typically needs additional graphs (or tables, but who likes
@@ -310,13 +280,11 @@ case, the output of the experiments should be saved in order to save
 (valuable) time. This serialisation not only applies to the algorithm
 output and input, but for all data computed in the experiment.
 </p>
-
 <p>
 This database of serialised experiment data also needs to have the
 ability to be queried. This ability is needed by the results collation
 step mentioned previously.
 </p>
-
 <p>
 All of this is simple to state, but is moderately difficult to
 implement and very easy to make simple mistakes which are hard to
@@ -328,14 +296,12 @@ of attention and care that algorithms receive. In my local minima
 which is termed life, I have not seen released code that just performs
 experiments. Why? Great question.
 </p>
-
 <p>
 The <code>CHAINS</code> system attempts to provide facilities for the above tasks
 in order for the scientist to spend more time on developing an
 understanding of existing algorithms and to develop new algorithms
 that overcome identified issues.
 </p>
-
 <p>
 Lastly, the <code>CHAINS</code> system is not a plug and play work flow optimiser
 where one only performs plumbing. It should not be a dependency in
@@ -345,26 +311,26 @@ performance on different types of data and collating algorithm results
 for some sort of publication.
 </p>
 </div>
+
 </div>
-<div id="outline-container-sec-2" class="outline-2">
+
+<div id="outline-container-2" class="outline-2">
 <h2 id="sec-2"><span class="section-number-2">2</span> Concepts and mental models</h2>
 <div class="outline-text-2" id="text-2">
-<p>
-The background section painted a picture of the aspects of the problem
+
+<p>The background section painted a picture of the aspects of the problem
 the <code>CHAINS</code> system attempts to address. This section illustrates more
 of the core concepts and code that underpin the library.
 </p>
-
 <p>
 Performing a single experiment is really the serial execution of a
 number of tasks. For the congealing problem outlined above, the
 high-level tasks are as follows
 </p>
 
-<div class="figure">
-<p><img src="congealing-tasks.png"  alt="congealing-tasks.png"/></p>
-</div>
-
+<p>
+<img src="congealing-tasks.png"  alt="congealing-tasks.png" />
+</p>
 <p>
 The input data task is responsible for creating the ensemble of images
 fed to the algorithm. Once the algorithm has provided an estimate of
@@ -372,22 +338,19 @@ the object's position, this position is then compared to the ground
 truth using a metric. The metric provides a quantitative measure of
 the algorithm's performance.
 </p>
-
 <p>
 This linking of tasks to be executed is termed a task chain, or just a
 chain.
 </p>
-
 <p>
 A collection of experiments to be executed is really a tree. Consider
 the following figure where there are two congealing algorithms being
 evaluated on two different sets of input data.
 </p>
 
-<div class="figure">
-<p><img src="parallelism.png"  alt="parallelism.png"/></p>
-</div>
-
+<p>
+<img src="parallelism.png"  alt="parallelism.png" />
+</p>
 <p>
 The above figure presents two trees which start from an input data
 task. The <code>CHAINS</code> system inserts a "start here" root task in order to
@@ -395,13 +358,11 @@ produce a single tree. A key property of the above tree is that a path
 from the root task to a leaf represents a single experiment or task
 chain.
 </p>
-
 <p>
 The tree view of the experiments also highlights the parallelism of
 the experiment execution. Once a task is completed, all of its
 children can now be executed in parallel.
 </p>
-
 <p>
 The <code>CHAINS</code> system does not limit the length of the chain, nor is
 there any requirement that all leaves should have the same distance to
@@ -411,7 +372,6 @@ default tasks as tasks are fundamentally problem specific. What the
 constructing a new tree, executing a tree, chain serialisation, chain
 querying and discovering an existing tree.
 </p>
-
 <p>
 Another important characteristic of tasks is the way they
 interact. The <code>CHAINS</code> system assumes that a task can only depend on
@@ -419,10 +379,9 @@ output from previous tasks in the chain. This is shown in the next
 figure for the congealing problem.
 </p>
 
-<div class="figure">
-<p><img src="algorithm-input.png"  alt="algorithm-input.png"/></p>
-</div>
-
+<p>
+<img src="algorithm-input.png"  alt="algorithm-input.png" />
+</p>
 <p>
 As you can see, the input to the algorithm requires data from the
 task(s) that synthesize the image ensemble and the task(s) that
@@ -434,20 +393,19 @@ to encourage the creation of reusable tasks. How tasks form a chain is
 dependent on the experiment design and is by definition not reusable
 across designs.
 </p>
-
 <p>
 We now turn to implementing the above graph. The macro <code>DEFINE-TASK</code>
 is used to create a new task class. The "Algorithm" task in the above
 diagram would be defined using the following code
 </p>
-<div class="org-src-container">
+
 
 <pre class="src src-lisp">(<span style="color: #728a05;">define-task</span> algorithm ()
   ((sigma
     <span style="color: #728a05;">:initarg</span> <span style="color: #728a05;">:sigma</span>
     <span style="color: #728a05;">:reader</span> sigma)))
 </pre>
-</div>
+
 <p>
 where <code>SIGMA</code> is some parameter for the algorithm. The <code>DEFINE-TASK</code>
 macro is like <code>DEFCLASS</code> but with some features removed. Its purpose
@@ -455,13 +413,12 @@ is to hide away the details of how tasks are implemented. Facilities
 for the programmatic creation of new task classes are provided
 e.g. <code>ENSURE-TASK</code>.
 </p>
-
 <p>
 When a task is performed, the task's operation is executed. Before
 outlining how to define a task's operation, lets outline what an
 operation is. An operation can be understood as being a method like so
 </p>
-<div class="org-src-container">
+
 
 <pre class="src src-lisp">(<span style="color: #728a05;">defmethod</span> <span style="color: #2075c7;">perform-task</span> ((task task-class) chain)
   <span style="color: #465a61; font-style: italic;">;; </span><span style="color: #465a61; font-style: italic;">Obtain task inputs</span>
@@ -470,7 +427,7 @@ operation is. An operation can be understood as being a method like so
     <span style="color: #465a61; font-style: italic;">;; </span><span style="color: #465a61; font-style: italic;">Task Body</span>
     ...))
 </pre>
-</div>
+
 <p>
 where <code>CHAIN</code> is a list of tasks that have already been performed. As
 you can see, a task can only have one operation i.e. the performed
@@ -481,12 +438,11 @@ hypothetical function <code>COMPUTE-TASK-INPUT</code>. It is the inputs to the
 task's operation that depend on the already performed tasks. This is
 how the <code>CHAINS</code> system connects tasks to form a graph.
 </p>
-
 <p>
 The operation for the "Algorithm" task would be implemented as follows
 in the <code>CHAINS</code> system.
 </p>
-<div class="org-src-container">
+
 
 <pre class="src src-lisp">(<span style="color: #728a05;">define-task-input</span> ensemble-images) <span style="color: #465a61; font-style: italic;">;; </span><span style="color: #465a61; font-style: italic;">The images fed to the algorithm</span>
 (<span style="color: #728a05;">define-task-input</span> initial-guess)   <span style="color: #465a61; font-style: italic;">;; </span><span style="color: #465a61; font-style: italic;">The initial guess of the object's location</span>
@@ -494,7 +450,7 @@ in the <code>CHAINS</code> system.
 (<span style="color: #728a05;">define-operation</span> (object algorithm) ((images ensemble-images) (guess initial-guess))
   (perorm-congealing images guess <span style="color: #728a05;">:sigma</span> (sigma object)))
 </pre>
-</div>
+
 <p>
 We begin with the <code>DEFINE-OPERATION</code> form where the expression
 <code>(OBJECT ALGORITHM)</code> corresponds to the task specialization in the
@@ -505,7 +461,6 @@ variable the operation body can use to access the value of the task
 input. The second symbol represents the name of the task input that
 the task needs to perform its operation.
 </p>
-
 <p>
 Each task input specified in <code>DEFINE-OPERATION</code> must have been
 declared using <code>DEFINE-TASK-INPUT</code>. It is important to understand that
@@ -513,13 +468,12 @@ a task input is not a class, it is special type of function provided
 by the <code>CHAINS</code> system. This special function dispatches on the tasks
 found in the <code>CHAIN</code> and the task that is about to be performed.
 </p>
-
 <p>
 Before detailing how to add "methods" or <code>TASK-INPUT-FUNCTIONS</code> to a
 <code>TASK-INPUT</code>, we first create the tasks responsible for controlling
 the image ensemble and the initial guess. 
 </p>
-<div class="org-src-container">
+
 
 <pre class="src src-lisp">(<span style="color: #728a05;">define-task</span> basic-ensemble ()
   (number-of-subjects samples-per-subject))
@@ -527,14 +481,14 @@ the image ensemble and the initial guess.
 (<span style="color: #728a05;">define-task</span> initial-guess/similarity-transform ()
   (scale rotation translation))
 </pre>
-</div>
+
 
 <p>
 With the above tasks, we are now ready to define the task input
 functions using <code>DEFINE-TASK-INPUT-FUNCTION</code> for the algorithm
 operation.
 </p>
-<div class="org-src-container">
+
 
 <pre class="src src-lisp">(<span style="color: #728a05;">define-task-input-function</span> ensemble-images
     algorithm ((data basic-ensemble))
@@ -544,7 +498,7 @@ operation.
     algorithm ((data initial-guess/similarity-transform))
   (task-value data))
 </pre>
-</div>
+
 <p>
 The first argument to <code>DEFINE-TASK-INPUT-FUNCTION</code> is the name of the
 task input that the function is to be added to. The second argument
@@ -555,18 +509,15 @@ the third argument represent the body of the task input function. The
 value (values are unsupported) of the last evaluated form is what is
 fed to the operation.  
 </p>
-
 <p>
 The function <code>TASK-VALUE</code> returns the result of executing a tasks'
 operation, in this case the result of
 <code>INITIAL-GUESS/SIMILARITY-TRANSFORM</code> task.
 </p>
-
 <p>
 The rules for computing which task input function is to be used to
 compute a value are currently defined as
-</p>
-<ul class="org-ul">
+</p><ul>
 <li>the most specific target task
 </li>
 <li>the most recent performed task
@@ -574,6 +525,7 @@ compute a value are currently defined as
 <li>the most specific performed task
 </li>
 </ul>
+
 
 <p>
 This is obviously a partial definition. At the time of writing it is
@@ -583,33 +535,34 @@ feedback from users. Because of this, there is no such
 functions and methods with the local function <code>CALL-NEXT-METHOD</code>.
 </p>
 </div>
+
 </div>
-<div id="outline-container-sec-3" class="outline-2">
+
+<div id="outline-container-3" class="outline-2">
 <h2 id="sec-3"><span class="section-number-2">3</span> Serialisation</h2>
 <div class="outline-text-2" id="text-3">
-<p>
-The default serialisation strategy employed in the <code>CHAINS</code> system is
+
+<p>The default serialisation strategy employed in the <code>CHAINS</code> system is
 a very simple system requiring only the lisp pretty printer and files
 and directories on the storage device.
 </p>
-
 <p>
 Each node of an experiment tree has its own directory in order to
 store the task parameters, the task value generated by a task's
 operation and other task specific data. The name of this directory is
 computed using the function <code>TASK-STRING</code>.
 </p>
-<div class="org-src-container">
+
 
 <pre class="src src-lisp">(<span style="color: #728a05;">defgeneric</span> <span style="color: #2075c7;">task-string</span> (task))
 </pre>
-</div>
+
 
 <p>
 A default implementation of <code>TASK-STRING</code> exists for all tasks. Example
 output for the task is as follows
 </p>
-<div class="org-src-container">
+
 
 <pre class="src src-lisp">(<span style="color: #728a05;">define-task</span> example-task ()
   ((sigma
@@ -622,23 +575,22 @@ output for the task is as follows
 (task-string (make-instance 'example-task <span style="color: #728a05;">:sigma</span> 0.5 <span style="color: #728a05;">:rho</span> 1.1))
 <span style="color: #465a61; font-style: italic;">;; </span><span style="color: #465a61; font-style: italic;">"example-task-0.5-1.1"</span>
 </pre>
-</div>
+
 <p>
 Note that the slot values for the task's superclasses precede the slot
 values for the subclass.
 </p>
-
 <p>
 Serialisation of tasks is performed using the function
 <code>SERIALISE-TASK</code>. This function produces a string that when read and
 evaluated creates a new instance of the task which is considered
 <i>equal</i> to the task that was serialised.
 </p>
-<div class="org-src-container">
+
 
 <pre class="src src-lisp">(<span style="color: #728a05;">defun</span> <span style="color: #2075c7;">serialise-task</span> (stream task))
 </pre>
-</div>
+
 
 <p>
 <code>SERIALISE-TASK</code> iterates through all slots of the task,
@@ -646,11 +598,11 @@ transforming each slot value in to an s-expression which evaluates to
 an <i>equal</i> object. Customisation of the generated expression for a
 given object is provided by the <code>OBJECT-SEXP</code> generic function.
 </p>
-<div class="org-src-container">
+
 
 <pre class="src src-lisp">(<span style="color: #728a05;">defgeneric</span> <span style="color: #2075c7;">object-sexp</span> (object))
 </pre>
-</div>
+
 
 <p>
 If no <code>OBJECT-SEXP</code> method exists for <code>OBJECT</code>, then the object will
@@ -658,44 +610,45 @@ be serialised using <code>PRINT-OBJECT</code> with <code>*PRINT-READABLY*</code>
 <code>T</code>.
 </p>
 </div>
+
 </div>
-<div id="outline-container-sec-4" class="outline-2">
+
+<div id="outline-container-4" class="outline-2">
 <h2 id="sec-4"><span class="section-number-2">4</span> Querying</h2>
 <div class="outline-text-2" id="text-4">
-<p>
-Querying a set of experiments is critical to the collation of
+
+<p>Querying a set of experiments is critical to the collation of
 results. 
 </p>
-
 <p>
 The function <code>CONTAINS-TASK-P</code> can be used to determine if a chain
 contains a task that is a subclass of <code>TASK-CLASS</code>.
 </p>
-<div class="org-src-container">
+
 
 <pre class="src src-lisp">(<span style="color: #728a05;">defun</span> <span style="color: #2075c7;">contains-task-p</span> (chain task-class))
 </pre>
-</div>
+
 
 <p>
 The function <code>FIND-CHAINS-WITH-TASK</code> returns all chains in which
 <code>CONTAINS-TASK-P</code> is <code>T</code> for the given task.
 </p>
-<div class="org-src-container">
+
 
 <pre class="src src-lisp">(<span style="color: #728a05;">defun</span> <span style="color: #2075c7;">find-chains-with-task</span> (chains task-class))
 </pre>
-</div>
+
 
 <p>
 Another important function is <code>GROUP-BY</code>, which can group chains
 together according to given a test.
 </p>
-<div class="org-src-container">
+
 
 <pre class="src src-lisp">(<span style="color: #728a05;">defun</span> <span style="color: #2075c7;">group-by</span> (sequence test <span style="color: #a57705;">&amp;key</span> key))
 </pre>
-</div>
+
 
 <p>
 In practice, the <code>GROUP-BY</code> function is needed so frequently and
@@ -703,37 +656,37 @@ coupled so tightly with the tasks, that a special function
 <code>GROUP-CHAINS</code> is provided. The <code>GROUP-CHAINS</code> function works in
 conjunction with information specified when creating a new task class.
 </p>
-<div class="org-src-container">
+
 
 <pre class="src src-lisp">(<span style="color: #728a05;">defun</span> <span style="color: #2075c7;">group-chains</span> (chains expression <span style="color: #a57705;">&amp;key</span> sort inner-sort))
 </pre>
-</div>
+
 <p>
 An <code>EXPRESSION</code> is a form which is used to synthesize a predicate
 which is used to compare two chains. Valid expressions are
-</p>
-<dl class="org-dl">
-<dt> <code>symbol</code> </dt><dd>Group chain items together according to the subclasses
-of <code>SYMBOL</code>. e.g. all congealing algorithm tasks inherit
-from <code>ALGORITHM</code>, thus specifying <code>(quote ALGORITHM)</code>
-would group all chains that use the same algorithm.
+</p><dl>
+<dt><code>symbol</code></dt><dd>Group chain items together according to the subclasses
+              of <code>SYMBOL</code>. e.g. all congealing algorithm tasks inherit
+              from <code>ALGORITHM</code>, thus specifying <code>(quote ALGORITHM)</code>
+              would group all chains that use the same algorithm.
 </dd>
-<dt> <code>(= symbol)</code> </dt><dd>Group chain items together according to the
-subclasses of <code>SYMBOL</code> and ensure every task is
-<i>equal</i>.
+<dt><code>(= symbol)</code></dt><dd>Group chain items together according to the
+                  subclasses of <code>SYMBOL</code> and ensure every task is
+                  <i>equal</i>.
 </dd>
-<dt> <code>(= symbol name)</code> </dt><dd>This expression specifies that the chains
-within a group all have the same value for the slot <code>NAME</code> in the
-task with type <code>SYMBOL</code>.
+<dt><code>(= symbol name)</code></dt><dd>This expression specifies that the chains
+     within a group all have the same value for the slot <code>NAME</code> in the
+     task with type <code>SYMBOL</code>.
 </dd>
 </dl>
+
 
 <p>
 The last two expressions do not explicitly refer to the predicate
 <code>=</code>. The actual predicate used is obtained from the <code>:PREDICATES</code> slot
 definition argument used within <code>DEFINE-TASK</code>
 </p>
-<div class="org-src-container">
+
 
 <pre class="src src-lisp">(<span style="color: #728a05;">define-task</span> geometric-cross-validation ()
   ((sample
@@ -742,71 +695,72 @@ definition argument used within <code>DEFINE-TASK</code>
     <span style="color: #728a05;">:predicates</span> number
     <span style="color: #728a05;">:documentation</span> <span style="color: #259185;">"The index of the random sample."</span>)))
 </pre>
-</div>
+
 <p>
 Predicates represent a collection of comparison functions for a
 specific type of value. The predicates for the built-in <code>NUMBER</code> are
 defined as follows
 </p>
-<div class="org-src-container">
+
 
 <pre class="src src-lisp">(<span style="color: #728a05;">define-predicates</span> number #'= #'&lt; #'&gt;)
 </pre>
-</div>
+
 <p>
 Other built-in predicates are <code>STRING/CASE-SENSITIVE</code> and
 <code>STRING/CASE-INSENSITIVE</code>.
 </p>
-<div class="org-src-container">
+
 
 <pre class="src src-lisp">(<span style="color: #728a05;">define-predicates</span> string/case-sensitive #'string= #'string&lt; #'string&gt;)
 (<span style="color: #728a05;">define-predicates</span> string/case-insensitive #'string-equal #'string-lessp #'string-greaterp)
 </pre>
-</div>
+
 
 <p>
 The keyword arguments <code>SORT</code> and <code>INNER-SORT</code> of the <code>GROUP-CHAINS</code>
 function perform sorting of the groups and the chains within the
 groups respectively according to a specified sort expression. A sort
 expression can be one of
-</p>
-<dl class="org-dl">
-<dt> <code>(&gt; symbol name)</code> </dt><dd>Like the <code>=</code> expression previously, but using
-the <code>TEST&gt;-FUNCTION</code> predicate.
+</p><dl>
+<dt><code>(&gt; symbol name)</code></dt><dd>Like the <code>=</code> expression previously, but using
+     the <code>TEST&gt;-FUNCTION</code> predicate.
 </dd>
-<dt> <code>(&lt; symbol name)</code> </dt><dd>Similar to the <code>&gt;</code> expression.
+<dt><code>(&lt; symbol name)</code></dt><dd>Similar to the <code>&gt;</code> expression.
 </dd>
-<dt> <code>(:classes &amp;rest task-class-names)</code> </dt><dd>Order tasks according to
-their order of appearance in <code>TASK-CLASS-NAMES</code>. It is an error
-if a task is found which does not inherit from any class in
-<code>TASK-CLASS-NAMES</code>.
+<dt><code>(:classes &amp;rest task-class-names)</code></dt><dd>Order tasks according to
+     their order of appearance in <code>TASK-CLASS-NAMES</code>. It is an error
+     if a task is found which does not inherit from any class in
+     <code>TASK-CLASS-NAMES</code>.
 </dd>
 </dl>
+
 
 <p>
 If the same expression and sort expression arguments are being
 repeatedly passed to <code>GROUP-CHAINS</code> consider using the function
 <code>PREPARE-GROUP-CHAINS</code>.
 </p>
-<div class="org-src-container">
+
 
 <pre class="src src-lisp">(<span style="color: #728a05;">defun</span> <span style="color: #2075c7;">prepare-group-chains</span> (expression <span style="color: #a57705;">&amp;key</span> sort inner-sort))
 </pre>
-</div>
+
 <p>
 This function returns a new function that accepts a single argument
 which are the chains to be grouped and sorted.
 </p>
 </div>
+
 </div>
-<div id="outline-container-sec-5" class="outline-2">
+
+<div id="outline-container-5" class="outline-2">
 <h2 id="sec-5"><span class="section-number-2">5</span> Generating</h2>
 <div class="outline-text-2" id="text-5">
-<p>
-This section outlines the process of generating and documenting a set
+
+<p>This section outlines the process of generating and documenting a set
 of experiments.
 </p>
-
 <p>
 Creating a set of experiments requires two steps. The first step is
 specifying the experiment design using the <code>DEFINE-DESIGN</code> macro. The
@@ -815,31 +769,28 @@ second step is generating the experiment tree using the function
 only contains the information needed to generate the tree, it does not
 contain the experiments themselves.
 </p>
-
 <p>
 The macro <code>DEFINE-DESIGN</code> is as follows
 </p>
-<div class="org-src-container">
+
 
 <pre class="src src-lisp">(<span style="color: #728a05;">defmacro</span> <span style="color: #2075c7;">define-design</span> (name design-options <span style="color: #a57705;">&amp;body</span> levels))
 </pre>
-</div>
+
 <p>
 The argument <code>NAME</code> is a symbol naming the design that is being
 defined. <code>DEFINE-OPTIONS</code> is a list of design options that will be
 covered throughout this section. The important argument, <code>LEVELS</code>,
 contains information about the hierarchy of the tree.
 </p>
-
 <p>
 The following diagram is used to illustrate the <code>LEVELS</code> argument in
 <code>DEFINE-DESIGN</code>
 </p>
 
-<div class="figure">
-<p><img src="levels.png"  alt="levels.png"/></p>
-</div>
-
+<p>
+<img src="levels.png"  alt="levels.png" />
+</p>
 <p>
 The first item of <code>LEVELS</code>, level 0, contains information about
 generating the children of the root node. In other words, the children
@@ -849,13 +800,12 @@ about generating the children for <i>each</i> of the children in
 level 0. In essence, a level represents the tasks that are to be added
 to all leaves in the tree constructed from the previous levels.
 </p>
-
 <p>
 Each element of <code>LEVELS</code> is a level definition expression. Examples of
 these forms can be seen in an example design used for the congealing
 problem
 </p>
-<div class="org-src-container">
+
 
 <pre class="src src-lisp">(<span style="color: #728a05;">define-design</span> congealing
   ((<span style="color: #728a05;">:documentation</span> <span style="color: #259185;">"A set of experiments for the paper XYZ."</span>))
@@ -883,7 +833,7 @@ problem
   <span style="color: #465a61; font-style: italic;">;; </span><span style="color: #465a61; font-style: italic;">Results to be computed.</span>
   (alignment-performance))
 </pre>
-</div>
+
 <p>
 A level definition is a list containing generate expressions, where a
 generate expression specifies the tasks to generate. When the tasks
@@ -891,22 +841,21 @@ for each generate expression have been generated, they are appended
 together to form the list of tasks that are to be appended to each
 leaf in the current experiment tree.
 </p>
-
 <p>
 Lets consider the generate expression used as the level 0 definition
 in the above example.
 </p>
-<div class="org-src-container">
+
 
 <pre class="src src-lisp">(image-appearance-and-lighting (<span style="color: #728a05;">:lighting-variation</span> 0 0.1 0.2 0.3 0.4)
                                (<span style="color: #728a05;">:number-of-subjects</span> 1 2 5 10 20)
                                (<span style="color: #728a05;">:samples-per-subject</span> 1 5 10))
 </pre>
-</div>
+
 <p>
 This states that the following list of tasks are to be generated.
 </p>
-<div class="org-src-container">
+
 
 <pre class="src src-lisp">(list (make-instance 'image-appearance-and-lighting
                      <span style="color: #728a05;">:lighting-variation</span> 0
@@ -922,45 +871,42 @@ This states that the following list of tasks are to be generated.
                      <span style="color: #728a05;">:number-of-subjects</span> 20
                      <span style="color: #728a05;">:samples-per-subject</span> 10))
 </pre>
-</div>
+
 <p>
 Thus there exists an instance of the task
 <code>IMAGE-APPEARANCE-AND-LIGHTING</code> for every permutation of the argument
 values for the slots <code>:LIGHTING-VARIATION</code>, <code>:NUMBER-OF-SUBJECTS</code> and
 <code>:SAMPLES-PER-SUBJECT</code>.
 </p>
-
 <p>
 The previous generate expression illustrates some basic
 functionality. The generate expression for level 1 illustrates some
 more advanced capabilities.
 </p>
-<div class="org-src-container">
+
 
 <pre class="src src-lisp">(image-cross-validation (<span style="color: #728a05;">:sample</span> (<span style="color: #728a05;">:splice</span> (<span style="color: #728a05;">loop</span> <span style="color: #728a05;">:for</span> x <span style="color: #728a05;">:from</span> 0 <span style="color: #728a05;">:below</span> 10 <span style="color: #728a05;">:collect</span> x))))
 </pre>
-</div>
+
 
 <p>
-The <code>:SPLICE</code> keyword operator evaluates the form <code>(loop :for x :from
-0 :below 10 :collect x)</code> and splices it in place to produce the
+The <code>:SPLICE</code> keyword operator evaluates the form <code>(loop :for x :from 0 :below 10 :collect x)</code> and splices it in place to produce the
 following equivalent expression.
 </p>
-<div class="org-src-container">
+
 
 <pre class="src src-lisp">(image-cross-validation (<span style="color: #728a05;">:sample</span> 0 1 2 3 4 5 6 7 8 9))
 </pre>
-</div>
+
 <p>
 It should be noted that the evaluation only occurs during <code>GENERATE</code>
 and not when the design is created.
 </p>
-
 <p>
 The expression involving the algorithms represents the following
 children
 </p>
-<div class="org-src-container">
+
 
 <pre class="src src-lisp">(list (make-instance 'learned-miller
                      <span style="color: #728a05;">:deltas</span> '(1 1 0.1 0.1 1 1)
@@ -970,14 +916,14 @@ children
       (make-instance 'rasl
                      <span style="color: #728a05;">:maximum-number-of-iterations</span> 10))
 </pre>
-</div>
+
 
 <p>
 A special generate expression <code>(:design design-name)</code> is provided to
 allow trees with leaves at different depths. For example, the
 <code>CONGEALING</code> design could be written as follows.
 </p>
-<div class="org-src-container">
+
 
 <pre class="src src-lisp">(<span style="color: #728a05;">define-design</span> congealing/input-data
     ...)
@@ -995,122 +941,119 @@ allow trees with leaves at different depths. For example, the
 
   ((<span style="color: #728a05;">:design</span> congealing/results)))
 </pre>
-</div>
+
 
 <p>
 The function <code>GENERATE</code> is used to create the experiments defined with
 the <code>DEFINE-DESIGN</code> macro. 
 </p>
-<div class="org-src-container">
+
 
 <pre class="src src-lisp">(<span style="color: #728a05;">defun</span> <span style="color: #2075c7;">generate</span> (design-name))
 </pre>
-</div>
+
 <p>
 This function returns a <code>TREE</code> containing the entire collection of
 generated experiments.
-</p>
-</div>
+</p></div>
+
 </div>
 
-<div id="outline-container-sec-6" class="outline-2">
+<div id="outline-container-6" class="outline-2">
 <h2 id="sec-6"><span class="section-number-2">6</span> Executing</h2>
 <div class="outline-text-2" id="text-6">
-<p>
-Before a tree of experiments is executed, an area to store the results
+
+<p>Before a tree of experiments is executed, an area to store the results
 must be prepared. The function <code>PREPARE-DIRECTORY</code> performs this task.
 </p>
-<div class="org-src-container">
+
 
 <pre class="src src-lisp">(<span style="color: #728a05;">defgeneric</span> <span style="color: #2075c7;">prepare-directory</span> (directory <span style="color: #a57705;">&amp;key</span> if-exists))
 </pre>
-</div>
+
 <p>
 The argument <code>IF-EXISTS</code> determines what to do if there exists tasks
 in <code>DIRECTORY</code> that would be overwritten. <code>IF-EXISTS</code> can be one of
 <code>:ERROR</code> or <code>:SKIP</code>.
 </p>
-
 <p>
 In order to execute a single task of a chain you use the function
 <code>PERFORM-LEAF</code>.
 </p>
-<div class="org-src-container">
+
 
 <pre class="src src-lisp">(<span style="color: #728a05;">defun</span> <span style="color: #2075c7;">perform-leaf</span> (area chain <span style="color: #a57705;">&amp;key</span> force <span style="color: #a57705;">&amp;allow-other-keys</span>))
 </pre>
-</div>
+
 <p>
 The <code>AREA</code> argument specifies a prepared area in which to store the
 results. The <code>CHAIN</code> argument is the chain whose leaf is to be
 executed. The keyword argument <code>FORCE</code> specifies that the task should
 be executed, overwriting any existing values.
 </p>
-
 <p>
 An operation can obtain the value of the <code>FORCE</code> argument via the
 <code>FORCEDP</code> function. Other keyword arguments passed to <code>PERFORM-LEAF</code>
 can be retrieved using the function <code>OPERATION-PLIST</code>.
 </p>
-<div class="org-src-container">
+
 
 <pre class="src src-lisp">(<span style="color: #728a05;">defun</span> <span style="color: #2075c7;">operation-plist</span> ())
 </pre>
-</div>
+
 
 <p>
 Whilst <code>PERFORM-LEAF</code> is on the call stack, a number of useful
 functions can be used within the body of operations and task input
 functions. These are
 </p>
-<div class="org-src-container">
+
 
 <pre class="src src-lisp">(<span style="color: #728a05;">defun</span> <span style="color: #2075c7;">task-data-directory</span> (task)) <span style="color: #465a61; font-style: italic;">;; </span><span style="color: #465a61; font-style: italic;">The directory where any data for TASK is stored.</span>
 (<span style="color: #728a05;">defun</span> <span style="color: #2075c7;">task-value</span> (task)) <span style="color: #465a61; font-style: italic;">;; </span><span style="color: #465a61; font-style: italic;">The value of the result computed for TASK.</span>
 </pre>
-</div>
+
 <p>
 When an operation is performed, the dynamic variable
 <code>*DEFAULT-PATHNAME-DEFAULTS*</code> is set to the output of
 <code>TASK-DATA-DIRECTORY</code> on the executing task.
 </p>
-
 <p>
 Associated with the <code>PERFORM-LEAF</code> function is the function
 <code>PERFORM</code>. This function executes all tasks in the chain.
 </p>
-<div class="org-src-container">
+
 
 <pre class="src src-lisp">(<span style="color: #728a05;">defun</span> <span style="color: #2075c7;">perform</span> (area chain <span style="color: #a57705;">&amp;key</span> force <span style="color: #a57705;">&amp;allow-other-keys</span>))
 </pre>
-</div>
+
+
+
 </div>
 
-<div id="outline-container-sec-6-1" class="outline-3">
+<div id="outline-container-6-1" class="outline-3">
 <h3 id="sec-6-1"><span class="section-number-3">6.1</span> Execution parameters</h3>
 <div class="outline-text-3" id="text-6-1">
-<p>
-The above execution model works well for most tasks. There is a class
+
+<p>The above execution model works well for most tasks. There is a class
 of tasks which unfortunately do not fit this model and require special
 attention.
 </p>
-
 <p>
 The class of tasks are those that execute an iterative algorithm whose
 output is continually reprocessed until some sort of criteria is met
 e.g. non-linear optimisation.
 </p>
-
 <p>
 It is tempting to define a task class like this
 </p>
-<div class="org-src-container">
+
 
 <pre class="src src-lisp">(<span style="color: #728a05;">define-task</span> iterative-algorithm ()
   ((number-of-iterations
     ...)))
 </pre>
-</div>
+
 <p>
 The problem with this is that you are implicitly assuming that
 <code>NUMBER-OF-ITERATIONS</code> is the maximum number of iterations that you
@@ -1118,36 +1061,34 @@ will ever need to execute. If you change <code>NUMBER-OF-ITERATIONS</code>, then
 the task has to start from the beginning because the <code>TASK-NAME</code> will
 change.
 </p>
-
 <p>
 More importantly, <code>NUMBER-OF-ITERATIONS</code> is not an experiment
 parameter. It does change the result of the task, but it is not a
 measure like the amount of appearance variation experiment measure
 found in congealing.
 </p>
-
 <p>
 The recommended way of implementing these types of tasks is to
 introduce this <i>execution</i> parameter as a dynamic variable.
 </p>
-<div class="org-src-container">
+
 
 <pre class="src src-lisp">(<span style="color: #728a05;">defvar</span> <span style="color: #2075c7;">*number-of-iterations*</span> 10)
 </pre>
-</div>
+
 <p>
 The value of this parameter represents a default value. Alongside this
 dynamic variable should be a function which checks <code>OPERATION-PLIST</code>
 to see if an alternate value is specified, otherwise revert to the
 default.
 </p>
-<div class="org-src-container">
+
 
 <pre class="src src-lisp">(<span style="color: #728a05;">defun</span> <span style="color: #2075c7;">number-of-iterations</span> ()
   (or (getf (operation-plist) <span style="color: #728a05;">:number-of-iterations</span>)
       *number-of-iterations*))
 </pre>
-</div>
+
 
 <p>
 Obviously, specifying the number of iterations to execute impacts the
@@ -1155,97 +1096,118 @@ Obviously, specifying the number of iterations to execute impacts the
 not. The generic function responsible for determining whether a task
 has been completed is the function <code>TASK-COMPLETED-P</code>.
 </p>
-<div class="org-src-container">
+
 
 <pre class="src src-lisp">(<span style="color: #728a05;">defgeneric</span> <span style="color: #2075c7;">task-completed-p</span> (task))
 </pre>
-</div>
-<p>
-Just like <code>PERFORM-LEAF</code>, the value of <code>*DEFAULT-PATHNAME-DEFAULTS*
-~TASK-DATA-DIRECTORY</code> is bound to the value of <code>TASK-DATA-DIRECTORY</code>. 
-</p>
 
+<p>
+Just like <code>PERFORM-LEAF</code>, the value of <code>*DEFAULT-PATHNAME-DEFAULTS* ~TASK-DATA-DIRECTORY</code> is bound to the value of <code>TASK-DATA-DIRECTORY</code>. 
+</p>
 <p>
 This method can be implemented for a specific task which checks that
 the correct number of iterations have been executed.
 </p>
-<div class="org-src-container">
+
 
 <pre class="src src-lisp">(<span style="color: #728a05;">defmethod</span> <span style="color: #2075c7;">task-completed-p</span> ((task iterative-algorithm))
   (and (probe-file (iteration-output task (number-of-iterations)))
        (call-next-method)))
 </pre>
-</div>
+
 
 <p>
 The operation for the task is then responsible for finding the correct
 output to reprocess.
-</p>
-</div>
-</div>
+</p></div>
 </div>
 
-<div id="outline-container-sec-7" class="outline-2">
+</div>
+
+<div id="outline-container-7" class="outline-2">
 <h2 id="sec-7"><span class="section-number-2">7</span> Obtaining Results</h2>
 <div class="outline-text-2" id="text-7">
-<p>
-Now that all chains in an experiment design have been <i>executed</i> and
+
+<p>Now that all chains in an experiment design have been <a href="#Execution">executed</a> and
 <a href="#sec-4">queried and sorted</a>, it is time to retrieve values. This requires an
 <code>AREA</code> object and the two functions <code>TASK-DATA-DIRECTORY</code> and
 <code>TASK-VALUE</code>.
 </p>
-<div class="org-src-container">
+
 
 <pre class="src src-lisp">(<span style="color: #728a05;">defun</span> <span style="color: #2075c7;">task-data-directory</span> (task <span style="color: #a57705;">&amp;optional</span> chain area))
 (<span style="color: #728a05;">defun</span> <span style="color: #2075c7;">task-value</span> (task <span style="color: #a57705;">&amp;optional</span> chain area))
 </pre>
-</div>
+
 <p>
 The dynamic variables <code>*CHAIN*</code> and <code>*AREA*</code> are provided as default
 values for the chain and area arguments respectively.
 </p>
-
 <p>
 The value of the <code>TASK</code> argument can be one of the following
-</p>
-<dl class="org-dl">
-<dt> Instance of type <code>TASK</code> </dt><dd>The instance must be present in the
+</p><dl>
+<dt>Instance of type <code>TASK</code></dt><dd>The instance must be present in the
      <code>CHAIN</code> argument. 
 </dd>
-<dt> Instance of type <code>TASK-CLASS</code> </dt><dd>Find a task instance in chain whose
-type is a subclass of <code>TASK-CLASS</code>.
+<dt>Instance of type <code>TASK-CLASS</code></dt><dd>Find a task instance in chain whose
+     type is a subclass of <code>TASK-CLASS</code>.
 </dd>
-<dt> Symbol </dt><dd>The name of a <code>TASK-CLASS</code>. 
+<dt>Symbol</dt><dd>The name of a <code>TASK-CLASS</code>. 
 </dd>
-<dt> Function </dt><dd>Find an object in chain for which the function returns
-non-NIL.
+<dt>Function</dt><dd>Find an object in chain for which the function returns
+              non-NIL.
 </dd>
 </dl>
+
+
 </div>
+
 </div>
-<div id="outline-container-sec-8" class="outline-2">
+
+<div id="outline-container-8" class="outline-2">
 <h2 id="sec-8"><span class="section-number-2">8</span> Parallel Execution Environments</h2>
 <div class="outline-text-2" id="text-8">
-<p>
-This section outlines the functionality of the <code>CHAINS.PEE</code> package.
-</p>
 
+<p>This section outlines the functionality of the <code>CHAINS.PEE</code> package.
+</p>
 <p>
 As stated previously, when a task in an experiment has completed its
 operation, all of that task's children can be executed in
 parallel. The function <code>PARALLEL-PERFORM</code> performs this task for you
 for a given <code>TREE</code> and <code>AREA</code>.
 </p>
-<div class="org-src-container">
+
 
 <pre class="src src-lisp">(<span style="color: #728a05;">defun</span> <span style="color: #2075c7;">parallel-perform</span> (area tree <span style="color: #a57705;">&amp;rest</span> args <span style="color: #a57705;">&amp;key</span> force <span style="color: #a57705;">&amp;allow-other-keys</span>))
 </pre>
-</div>
+
+<p>
+The dynamic variable <code>*NUMBER-OF-PROCESSES*</code> controls the number of
+threads that <code>PARALLEL-PERFORM</code> uses to execute the <code>TREE</code>.
+</p>
+<p>
+There also exists support for generating a command line program which
+can be invoked by <code>xargs</code> or a distributed computing environments like
+the Oracle Grid Engine.
+</p>
+<p>
+At the heart of this functionality is the <code>DEFINE-PROGRAM</code> macro which
+provides the ability to define a new executable which simply invokes
+<code>PERFORM-LEAF</code>.
+</p>
+
+
+<pre class="src src-lisp">(<span style="color: #728a05;">define-program</span> experiments
+  ((number-of-iterations
+    <span style="color: #728a05;">:documentation</span> <span style="color: #259185;">"The number of congealing algorithm iterations to perform."</span>
+    <span style="color: #728a05;">:argument</span> (<span style="color: #259185;">"iterations"</span> (integer 0)))))
+</pre>
+
 <p>
 The above specification defines a program that when generated has the
 following help message
 </p>
-<div class="org-src-container">
+
 
 <pre class="src src-sh">$ ./program --help
 Usage: [options] [custom options] &lt;data&gt; &lt;depth&gt; &lt;leaf number&gt;
@@ -1261,7 +1223,7 @@ Custom Options:
 &lt;depth&gt; The depth of the tasks that are to be executed.
 &lt;leaf number&gt; The index of the leaf at &lt;depth&gt; that is to be executed.
 </pre>
-</div>
+
 
 <p>
 The <code>DEFINE-PROGRAM</code> macro provides a very thin wrapper over
@@ -1269,78 +1231,74 @@ The <code>DEFINE-PROGRAM</code> macro provides a very thin wrapper over
 <code>LISP-EXECUTABLE</code>'s integration with ASDF can be used to build the
 executable.
 </p>
-
 <p>
 The <code>&lt;data&gt;</code> argument to the command line program is produced using
 the function <code>WRITE-PROGRAM-DATA</code>.
 </p>
-<div class="org-src-container">
+
 
 <pre class="src src-lisp">(<span style="color: #728a05;">defun</span> <span style="color: #2075c7;">write-program-data</span> (pathname area tree))
 </pre>
-</div>
+
 <p>
 This function requires the <code>AREA</code> and the values stored in <code>TREE</code> to
 have implemented the <code>OBJECT-SEXP</code> method.
 </p>
-
 <p>
 One can invoke the above executable manually, however, there are two
 functions <code>PREPARE-OGE-SCRIPT</code> and <code>PREPARE-XARGS-SCRIPT</code>, which
 generate shell scripts which perform the necessary invocations of the
 program to execute an entire tree. 
 </p>
-
 <p>
 The function <code>PREPARE-OGE-SCRIPT</code> is used to produce scripts which use
 the Oracle Grid Engine to invoke the defined program.
 </p>
-<div class="org-src-container">
+
 
 <pre class="src src-lisp">(<span style="color: #728a05;">defun</span> <span style="color: #2075c7;">prepare-oge-script</span> (directory area tree program <span style="color: #a57705;">&amp;key</span> (if-exists <span style="color: #728a05;">:error</span>) (output <span style="color: #259185;">"stdout/"</span>) (<span style="color: #c60007; font-weight: bold;">error</span> <span style="color: #728a05;">:output</span>)))
 </pre>
-</div>
+
 <p>
 where <code>DIRECTORY</code> is the location to store the generated files, <code>AREA</code>
 is a prepared area, <code>TREE</code> is the tree to be executed, <code>PROGRAM</code> is
 the pathname to the generated program or a list containing the path to
 a <code>LISP-EXECUTABLE:EXECUTABLE</code> component in an ASDF system.
 </p>
-
 <p>
 The files generated in <code>DIRECTORY</code> are as follows
-</p>
-<dl class="org-dl">
-<dt> <code>oge.sh</code> </dt><dd>The script to be executed on the job submission host.
+</p><dl>
+<dt><code>oge.sh</code></dt><dd>The script to be executed on the job submission host.
 </dd>
-<dt> <code>oge-program.sh</code> </dt><dd>A thin wrapper over the executable pathname
-which extracts information from the grid engine.
+<dt><code>oge-program.sh</code></dt><dd>A thin wrapper over the executable pathname
+     which extracts information from the grid engine.
 </dd>
-<dt> <code>program-arguments</code> </dt><dd>A user editable file for passing command
-line arguments to the program.
+<dt><code>program-arguments</code></dt><dd>A user editable file for passing command
+     line arguments to the program.
 </dd>
-<dt> <code>oge-arguments</code> </dt><dd>A user editable file for passing command line
-arguments to the grid engine scheduler.
+<dt><code>oge-arguments</code></dt><dd>A user editable file for passing command line
+     arguments to the grid engine scheduler.
 </dd>
-<dt> <code>oge-data.sexp</code> </dt><dd>The file containing the area and tree to be executed
-by the grid engine.
+<dt><code>oge-data.sexp</code></dt><dd>The file containing the area and tree to be executed
+     by the grid engine.
 </dd>
 </dl>
+
 
 <p>
 The keyword argument <code>IF-EXISTS</code> in <code>PREPARE-OGE-SCRIPT</code> specifies
 what to do if any of the above files exist. Valid values are
-</p>
-<dl class="org-dl">
-<dt> <code>:ERROR</code> </dt><dd>Signal an error if any of the above files exist.
+</p><dl>
+<dt><code>:ERROR</code></dt><dd>Signal an error if any of the above files exist.
 </dd>
-<dt> <code>:SUPERSEDE</code> </dt><dd>Overwrite <code>oge.sh</code>, <code>oge-program.sh</code> and
+<dt><code>:SUPERSEDE</code></dt><dd>Overwrite <code>oge.sh</code>, <code>oge-program.sh</code> and
                   <code>tree.sexp</code>. Do not touch <code>program-arguments</code> and
                   <code>oge-arguments</code>.
 </dd>
-<dt> <code>:SUPERSEDE-ALL</code> </dt><dd>Overwrite all of the above files.
+<dt><code>:SUPERSEDE-ALL</code></dt><dd>Overwrite all of the above files.
 </dd>
 </dl>
+
 
 <p>
 The keyword arguments <code>OUTPUT</code> and <code>ERROR</code> specify what to do with the
@@ -1352,30 +1310,30 @@ permitted to pass the keyword <code>:OUTPUT</code>. The keyword <code>:OUTPUT</c
 that the standard error stream is <i>joined</i> to the standard output
 stream.
 </p>
-
 <p>
 The default contents for the files <code>program-arguments</code> and
 <code>oge-arguments</code> are obtained from the dynamic variables
 <code>*OGE-PROGRAM-ARGUMENTS-STRING*</code> and <code>*OGE-ARGUMENTS-STRING*</code>.
 </p>
-
 <p>
 The function <code>PREPARE-XARGS-SCRIPT</code> is like <code>PREPARE-OGE-SCRIPT</code>, but
 it prepares scripts to be executed with xargs. 
 </p>
-<div class="org-src-container">
+
 
 <pre class="src src-lisp">(<span style="color: #728a05;">defun</span> <span style="color: #2075c7;">prepare-xargs-script</span> (directory area tree program <span style="color: #a57705;">&amp;key</span> (if-exists <span style="color: #728a05;">:error</span>)))
 </pre>
+
 </div>
 </div>
 </div>
-</div>
-<div id="postamble" class="status">
+
+<div id="postamble">
+<p class="date">Date: 2013-06-23T08:36+1000</p>
 <p class="author">Author: Mark Cox</p>
-<p class="date">Created: 2013-06-22 Sat 20:44</p>
-<p class="creator"><a href="http://www.gnu.org/software/emacs/">Emacs</a> 24.3.1 (<a href="http://orgmode.org">Org</a> mode 8.0.3)</p>
-<p class="xhtml-validation"><a href="http://validator.w3.org/check?uri=referer">Validate XHTML 1.0</a></p>
+<p class="creator"><a href="http://orgmode.org">Org</a> version 7.9.4 with <a href="http://www.gnu.org/software/emacs/">Emacs</a> version 24</p>
+<a href="http://validator.w3.org/check?uri=referer">Validate XHTML 1.0</a>
+
 </div>
 </body>
 </html>
