@@ -1,5 +1,18 @@
 (in-package "CHAINS.PEE.TESTS")
 
+(import '(chains.pee::truncate-tree-to-depth) "CHAINS.PEE.TESTS")
+
+(define-test truncate-tree-to-depth
+  (let ((tree (make-tree 1 (list (make-tree 2 nil)
+				 (make-tree 3 (list (make-tree 4 (list (make-tree 5 nil)))
+						    (make-tree 6 nil)))
+				 (make-tree 7 nil)))))
+    (assert-true (= 1 (count-leaves (truncate-tree-to-depth tree 0))))
+    (assert-true (= 3 (count-leaves (truncate-tree-to-depth tree 1))))
+    (assert-true (= 2 (count-leaves (truncate-tree-to-depth tree 2))))
+    (assert-true (= 1 (count-leaves (truncate-tree-to-depth tree 3))))
+    (assert-equal nil (truncate-tree-to-depth tree 4))))
+
 (define-program test-program
   ((text
     :documentation "Text for EXECUTION-TASK-3"

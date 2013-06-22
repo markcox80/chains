@@ -14,6 +14,9 @@
 		#:compute-chains
 		#:serialise-object
 		#:chain-completed-p
-		#:task-value)
+		#:task-value
+
+		#:count-leaves
+		#:make-tree)
   (:import-from "CHAINS.TESTS"
 		#:with-temporary-directory))
