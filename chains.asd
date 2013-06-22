@@ -19,5 +19,6 @@
 				     (:file "querying")
 				     (:file "execution")
 				     (:file "pee-programs")
-				     (:file "pee-oge"))))
+				     (:file "pee-oge")
+				     (:file "pee-xargs"))))
   :in-order-to ((test-op (test-op "chains-tests"))))

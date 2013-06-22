@@ -149,4 +149,7 @@
   (:export #:define-program)
 
   ;; Oracle Grid Engine
-  (:export #:prepare-oge-script))
+  (:export #:prepare-oge-script)
+
+  ;; XARGS
+  (:export #:prepare-xargs-script))
