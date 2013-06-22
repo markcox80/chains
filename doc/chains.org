@@ -95,7 +95,7 @@ important. That is what is publishable. The experiment stuff validates
 the argument for the algorithm, but it is not the primary focus. 
 
 Saying it is not of primary focus is rather ironic. The experiment
-design partly lead to the discovery. The experiment design also
+design partly led to the discovery. The experiment design also
 empirically validates a new discovery. Furthermore, it is the
 experiment design where much of a computer scientist's effort is spent
 and it is to easy to see why.
@@ -138,7 +138,7 @@ understanding of existing algorithms and to develop new algorithms
 that overcome identified issues.
 
 Lastly, the ~CHAINS~ system is not a plug and play work flow optimiser
-where one only performs plumping. It should not be a dependency in
+where one only performs plumbing. It should not be a dependency in
 your algorithm implementations. The only place where the ~CHAINS~
 system should be used is in verifying and validating an algorithm's
 performance on different types of data and collating algorithm results
