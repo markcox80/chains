@@ -146,7 +146,9 @@
 		#:serialise-object)
 
   ;; Command line programs
-  (:export #:define-program)
+  (:export #:write-program-data
+	   #:read-program-data
+	   #:define-program)
 
   ;; Oracle Grid Engine
   (:export #:prepare-oge-script)

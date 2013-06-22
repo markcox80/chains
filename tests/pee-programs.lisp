@@ -42,8 +42,7 @@ Custom Options:
 	   (area (prepare-directory dir))
 	   (tree (generate 'chains.tests::execution-design))
 	   (chains (compute-chains tree)))
-      (with-open-file (out "tmp-data.sexp" :direction :output)
-	(serialise-object out (list area tree)))
+      (write-program-data "tmp-data.sexp" area tree)
       
       ;; First Chain
       (assert-false (chain-completed-p area (elt chains 0)))

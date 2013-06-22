@@ -54,9 +54,7 @@
 	  (ensure-directories-exist (merge-pathnames error)))
 
 	(let ((if-exists (if (eql if-exists :supersede-all) :supersede if-exists)))
-	  (with-open-file (out "oge-data.sexp" :if-exists if-exists :direction :output)
-	    (serialise-object out (list area tree))
-	    (terpri out))
+	  (write-program-data "oge-data.sexp" area tree :if-exists if-exists)
 
 	  (with-open-file (out "oge-program.sh" :if-exists if-exists :direction :output)
 	    (format out "#!/bin/sh~%")
