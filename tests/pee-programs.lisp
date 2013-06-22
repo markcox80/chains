@@ -1,6 +1,6 @@
-(in-package "CHAINS.TESTS")
+(in-package "CHAINS.PEE.TESTS")
 
-(chains.pee:define-program test-program
+(define-program test-program
   ((text
     :documentation "Text for EXECUTION-TASK-3"
     :argument ("text" string))))
@@ -27,7 +27,7 @@ Custom Options:
   (with-temporary-directory (dir)
     (let* ((*default-pathname-defaults* dir)
 	   (area (prepare-directory dir))
-	   (tree (generate 'execution-design))
+	   (tree (generate 'chains.tests::execution-design))
 	   (chains (compute-chains tree)))
       (with-open-file (out "tmp-data.sexp" :direction :output)
 	(serialise-object out (list area tree)))
@@ -61,6 +61,6 @@ Custom Options:
       (assert-true (chain-completed-p area (elt chains 1)))
 
       ;; Arguments
-      (assert-equal "laughing-NIL" (task-value 'execution-task-3 (first chains) area))
+      (assert-equal "laughing-NIL" (task-value 'chains.tests::execution-task-3 (first chains) area))
       (lisp-executable:program-funcall 'test-program "tmp-data.sexp" "2" "0" "--force" "--text" "man")
-      (assert-equal "laughing-man" (task-value 'execution-task-3 (first chains) area)))))
+      (assert-equal "laughing-man" (task-value 'chains.tests::execution-task-3 (first chains) area)))))

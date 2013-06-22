@@ -28,6 +28,8 @@
 ;; GENERATE
 (defun generate (design)
   (cond
+    ((null design)
+     (error "Unable to perform GENERATE on object ~A" design))
     ((symbolp design)
      (generate (find-design design)))
     (t
