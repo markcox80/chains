@@ -122,7 +122,8 @@
 
   ;; Make sure PERFORMED-CLASSES contains valid values.
   (assert (every #'(lambda (x)
-		     (typep x 'task-class))
+		     (and (closer-mop:classp x)
+			  (typep x 'task-class)))
 		 performed-classes))
   (assert (functionp function))
   (assert (= (length performed-classes)
