@@ -148,7 +148,8 @@
   ;; Command line programs
   (:export #:write-program-data
 	   #:read-program-data
-	   #:define-program)
+	   #:define-program
+	   #:truncate-tree-to-depth)
 
   ;; Oracle Grid Engine
   (:export #:prepare-oge-script)

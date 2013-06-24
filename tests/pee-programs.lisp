@@ -1,7 +1,5 @@
 (in-package "CHAINS.PEE.TESTS")
 
-(import '(chains.pee::truncate-tree-to-depth) "CHAINS.PEE.TESTS")
-
 (define-test truncate-tree-to-depth
   (let ((tree (make-tree 1 (list (make-tree 2 nil)
 				 (make-tree 3 (list (make-tree 4 (list (make-tree 5 nil)))
