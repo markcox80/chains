@@ -45,33 +45,39 @@
   ;; Invalid TASK-INPUT value. Must be an instance of type TASK-INPUT.
   (assert-error 'error (ensure-task-input-function 'programmatic-task-input
 						   (find-class 'example-task)
-						   nil #'identity))
+						   nil #'identity)
+		"Passing a symbol instead of a TASK-INPUT instance.")
 
   (assert-error 'error (ensure-task-input-function (find-class 'task-input)
 						   (find-class 'example-task)
-						   nil #'identity))
+						   nil #'identity)
+		"Passing a TASK-INPUT-CLASS instance instead of a TASK-INPUT instance.")
 
   ;; Invalid TASK value. Must be a class which inherits from TASK-CLASS.
   (assert-error 'error (ensure-task-input-function (find-task-input 'example-task-input)
 						   'example-task
-						   nil #'identity))
+						   nil #'identity)
+		"Passing a symbol instead of an instance ot TASK-CLASS.")
 
   (assert-error 'error (ensure-task-input-function (find-task-input 'example-task-input)
 						   (find-class 'standard-object)
-						   nil #'identity))
+						   nil #'identity)
+		"Passing a metaclass that is not a subclass of TASK-CLASS.")
 
   ;; Invalid processed tasks value. Must be instances of TASK-CLASS.
   (assert-error 'error (ensure-task-input-function (find-task-input 'example-task-input)
 						   (find-class 'target-task)
 						   (list 'example-task)
-						   #'identity))
+						   #'identity)
+		"Passing a symbol as a performed task value instead of an instance of TASK-CLASS.")
 
   ;; Duplicate performed class.
   (assert-error 'error (ensure-task-input-function (find-task-input 'example-task-input)
 						   (find-class 'target-task)
 						   (list (find-class 'example-task)
 							 (find-class 'example-task))
-						   #'identity))
+						   #'identity)
+		"Passing two instances of the same TASK-CLASS.")
 
   ;; Programmtic creation
   (let* ((ti (find-task-input 'programmatic-task-input))
