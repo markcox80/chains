@@ -145,6 +145,10 @@
 
 		#:serialise-object)
 
+  ;; Parallel execution
+  (:export #:*number-of-processes*
+	   #:parallel-perform)
+
   ;; Command line programs
   (:export #:write-program-data
 	   #:read-program-data

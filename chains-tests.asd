@@ -20,4 +20,5 @@
 				     (:file "design")
 				     (:file "querying")
 				     (:file "execution")
+				     (:file "pee-parallel")
 				     (:file "pee-programs")))))
