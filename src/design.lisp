@@ -72,7 +72,7 @@ function which returns a list of objects. Each object will be used as
 a value for the slot."
   (if (null initarg-generators)
       (lambda ()
-	(make-instance class))
+	(list (make-instance class)))
       (lambda ()
 	(let ((initarg-data (mapcar #'(lambda (x)
 					(cons (car x) (funcall (cdr x))))
