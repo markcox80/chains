@@ -33,7 +33,7 @@
 
 (defmethod task-completed-p ((task execution-task-3))
   (and (call-next-method)
-       (not (eql (getf (operation-plist) :text) "dog"))))
+       (not (string-equal (getf (operation-plist) :text) "dog"))))
 
 (define-design execution-design
     ((:documentation "Designs for execution"))
