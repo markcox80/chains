@@ -2,3 +2,4 @@
 *.fasl
 *.dx64fsl
 *.fas
+*.sse2f
