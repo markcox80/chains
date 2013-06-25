@@ -57,7 +57,8 @@
 					      :documentation (or documentation ""))))
 
 (defun task-input-equal (input-a input-b)
-  (declare (type task-input input-a input-b))
+  (assert (typep input-a 'task-input))
+  (assert (typep input-b 'task-input))
   (equal input-a input-b))
 
 (defmacro define-task-input (name &rest options)
@@ -96,7 +97,8 @@
   (:metaclass closer-mop:funcallable-standard-class))
 
 (defun task-class-equal (class-a class-b)
-  (declare (type task-class class-a class-b))
+  (assert (typep class-a 'task-class))
+  (assert (typep class-b 'task-class))
   (equal class-a class-b))
 
 (defun performed-classes-equal (classes-a classes-b)
@@ -116,9 +118,10 @@
 				(task-input-function-performed-classes function-b))))
 
 (defun ensure-task-input-function (task-input target-class performed-classes function &key documentation)
-  (declare (type task-input task-input)
-	   (type task-class target-class))
   (setf documentation (or documentation ""))
+  (assert (typep task-input 'task-input))
+  (assert (and (closer-mop:classp target-class)
+	       (closer-mop:subclassp target-class (find-class 'task))))
 
   ;; Make sure PERFORMED-CLASSES contains valid values.
   (assert (every #'(lambda (x)
