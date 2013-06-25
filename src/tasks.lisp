@@ -150,6 +150,15 @@ TASK-DIRECT-SLOT-DEFINITION."
 	       ,@(when type `(:type ',type))
 	       ,@(when predicates `(:predicates (find-predicates ',predicates)))))))
 
+(defun canonicalise-define-task-default-initargs (key value)
+  #-cmucl
+  `(list ',key ',value #'(lambda ()
+			   ,value))
+  #+cmucl
+  `(list ',key #'(lambda ()
+		   ,value)
+	 ',value))
+
 (defun canonicalise-define-task-option (option)
   (alexandria:destructuring-case option
     ((:documentation string)
@@ -162,6 +171,5 @@ TASK-DIRECT-SLOT-DEFINITION."
 		       :for key := (first args)
 		       :for value := (second args)
 		       :collect
-		       (prog1 `(list ',key ',value #'(lambda ()
-						       ,value))
+		       (prog1 (canonicalise-define-task-default-initargs key value)
 			 (setf args (cddr args)))))))))
