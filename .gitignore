@@ -3,3 +3,5 @@
 *.dx64fsl
 *.fas
 *.sse2f
+*.lib
+*.abcl
