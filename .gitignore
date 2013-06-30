@@ -5,3 +5,4 @@
 *.sse2f
 *.lib
 *.abcl
+*.DS_Store
