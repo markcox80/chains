@@ -37,9 +37,9 @@ within a macro and the result used in the returned expression.
 
 See DEFINE-OPERATION on how to use this function correctly.
 "
-  (let ((gf (ensure-generic-function 'perform-operation)))
+  (let ((gf #'perform-operation))
     (closer-mop:make-method-lambda
-     (ensure-generic-function 'perform-operation)
+     gf
      (closer-mop:class-prototype (closer-mop:generic-function-method-class gf))
      `(lambda (,task-var ,chain-var)
 	(destructuring-bind ,task-input-vars
@@ -67,7 +67,7 @@ the new method object.
 See the macro DEFINE-OPERATION on how to use this function correctly."
   (declare (type task-class task-class))
   (assert (closer-mop:subclassp task-class (find-class 'task)))
-  (let ((gf (ensure-generic-function 'perform-operation)))
+  (let ((gf #'perform-operation))
     (apply #'make-instance (closer-mop:generic-function-method-class gf)
 	   :specializers (list task-class (find-class t))
 	   :lambda-list `(,task-var ,chain-var)
@@ -76,7 +76,7 @@ See the macro DEFINE-OPERATION on how to use this function correctly."
 
 (defun ensure-operation (method)
   "Add METHOD to the PERFORM-OPERATION generic function."
-  (let ((gf (ensure-generic-function 'perform-operation)))
+  (let ((gf #'perform-operation))
     (add-method gf method)))
 
 (defmacro define-operation ((task-var task-class) (&rest task-inputs) &body body &environment env)
