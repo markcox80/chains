@@ -20,3 +20,6 @@
 		#:make-tree)
   (:import-from "CHAINS.TESTS"
 		#:with-temporary-directory))
+
+(defpackage "CHAINS.CLOSER-MOP-TESTS"
+  (:use "COMMON-LISP"))

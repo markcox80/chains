@@ -12,6 +12,7 @@
 			:serial t
 			:components ((:file "packages")
 				     (:file "asdf")
+				     (:file "closer-mop")
 				     (:file "utilities")
 				     (:file "tasks")
 				     (:file "task-input")
