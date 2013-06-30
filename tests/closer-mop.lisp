@@ -72,3 +72,16 @@
     (lisp-unit:assert-true (typep class 'my-word-class))
     (lisp-unit:assert-true (closer-mop:subclassp class (find-class 'my-word)))
     (lisp-unit:assert-true (find-class 'my-subword))))
+
+;; FUNCALLABLE-STANDARD-CLASS
+(defclass funcallable-something ()
+  ()
+  (:metaclass closer-mop:funcallable-standard-class))
+
+(lisp-unit:define-test funcallable-something
+  (let ((fs (make-instance 'funcallable-something))
+	(offset 3))
+    (closer-mop:set-funcallable-instance-function fs #'(lambda (a)
+							 (+ offset a 2)))
+    (lisp-unit:assert-equal 6 (funcall fs 1))
+    (lisp-unit:assert-equal 10 (funcall fs 5))))
