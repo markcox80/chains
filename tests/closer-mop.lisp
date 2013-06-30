@@ -7,6 +7,8 @@
 ;; this is this code only depends on CLOSER-MOP and not other
 ;; components of CHAINS.
 
+;; Programmatic creation of methods
+
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (closer-mop:defgeneric perform-operation (task chain))
 
@@ -49,3 +51,24 @@
 (lisp-unit:define-test perform-operation
   (let ((task (make-instance 'my-task)))
     (lisp-unit:assert-equal (list task 1 2) (perform-operation task 1))))
+
+;; Programmatic creation of classes
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (closer-mop:defclass my-word-class (closer-mop:standard-class)
+    ()))
+
+(defmethod closer-mop:validate-superclass ((class my-word-class)
+					   (superclass (eql (find-class 'closer-mop:standard-object))))
+  t)
+
+(closer-mop:defclass my-word (closer-mop:standard-object)
+  ()
+  (:metaclass my-word-class))
+
+(lisp-unit:define-test programmatic-my-word
+  (let ((class (closer-mop:ensure-class 'my-subword 
+					:direct-superclasses (list (find-class 'my-word))
+					:metaclass (find-class 'my-word-class))))
+    (lisp-unit:assert-true (typep class 'my-word-class))
+    (lisp-unit:assert-true (closer-mop:subclassp class (find-class 'my-word)))
+    (lisp-unit:assert-true (find-class 'my-subword))))
