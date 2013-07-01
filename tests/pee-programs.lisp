@@ -13,7 +13,7 @@
 
 (define-program test-program
   ((text
-    :documentation "Text for EXECUTION-TASK-3"
+    :documentation "Text for EXECUTION-TASK-3."
     :argument ("text" string))))
 
 (define-test test-program/help
@@ -24,7 +24,7 @@ Options:
   --force    Overwrite any existing output.
   
 Custom Options:
-  --text <text>    Text for EXECUTION-TASK-3
+  --text <text>    Text for EXECUTION-TASK-3.
 
 <data> Information needed to execute a tree of tasks.
 <depth> The depth of the tasks that are to be executed.
