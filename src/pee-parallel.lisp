@@ -44,7 +44,7 @@
     (with-accessors ((job-fifo job-fifo)
 		     (fifo-mutex fifo-mutex)
 		     (fifo-condition fifo-condition)
-		     (number-of-processes number-of-processes)
+	     (number-of-processes number-of-processes)
 		     (processes-waiting processes-waiting))
 	worker-data
       (bordeaux-threads:with-lock-held (fifo-mutex)
@@ -128,14 +128,23 @@
        (assert (eql :quit (first job-fifo)))
        nil))))
 
+(defun wait-until-ready-for-work (queue)
+  (loop
+     :for number-waiting := (bordeaux-threads:with-lock-held ((fifo-mutex (worker-data queue)))
+			      (length (processes-waiting (worker-data queue))))
+     :while (< number-waiting (number-of-processes (worker-data queue))))  
+  (setf (processes-waiting (worker-data queue)) nil))
+
 (defun make-parallel-perform-worker (worker-data)
   (declare (type parallel-perform-queue/worker-data worker-data))
   (let ((area (area worker-data)))
     (lambda ()
       ;; Wait for first notification before beginning
       (bordeaux-threads:with-lock-held ((fifo-mutex worker-data))
+	(push (bordeaux-threads:current-thread) (processes-waiting worker-data))
 	(bordeaux-threads:condition-wait (fifo-condition worker-data)
 					 (fifo-mutex worker-data)))
+
       (loop
 	 :for job := (wait-for-job worker-data)	 
 	 :until (quit-job-p job)
@@ -173,7 +182,10 @@ dynamic variable *NUMBER-OF-PROCESSES*. If an error occurs in any
 task, all currently executing tasks are finished before resignalling
 the error."
   (declare (ignore force))
-  (let ((queue (make-parallel-perform-queue *number-of-processes* area args)))    
+  (let ((queue (make-parallel-perform-queue *number-of-processes* area args)))
+    (wait-until-ready-for-work queue)
+
+    ;; Push stuff on to the queue.
     (if (value tree)
 	(enqueue-job (worker-data queue) nil tree)
 	(dolist (item (children tree))
