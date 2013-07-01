@@ -83,24 +83,23 @@
 		   (format nil "--~A" name)))))
     (let* ((arg-strings (mapcar #'arg-string help-data))
 	   (help-messages (mapcar #'third help-data))
-	   (maximum-width (+ 6 (reduce #'max arg-strings :key #'length))))
+	   (maximum-width (+ 4 (reduce #'max arg-strings :key #'length)))
+	   (control-string (format nil "  ~~~dA" maximum-width)))
       (with-output-to-string (out)
-	(pprint-logical-block (out nil :per-line-prefix "  ")
-	  (loop
-	     :for arg-string :in arg-strings
-	     :for help-message :in help-messages
-	     :for index :from 0
-	     :do
-	     (when (plusp index)
-	       (fresh-line out))
-	     (write-string arg-string out)
-	     (pprint-tab :line maximum-width 1 out)
-	     (pprint-logical-block (out (break-string help-message))
-	       (loop
-		  (write-string (pprint-pop) out)
-		  (pprint-exit-if-list-exhausted)
-		  (write-char #\Space out)
-		  (pprint-newline :fill out)))))))))
+	(loop
+	   :for arg-string :in arg-strings
+	   :for help-message :in help-messages
+	   :for index :from 0
+	   :do
+	   (when (plusp index)
+	     (fresh-line out))
+	   (format out control-string arg-string)
+	   (pprint-logical-block (out (break-string help-message))
+	     (loop
+		(write-string (pprint-pop) out)
+		(pprint-exit-if-list-exhausted)
+		(write-char #\Space out)
+		(pprint-newline :fill out))))))))
 
 (defun print-program-usage (help-data &optional (stream *standard-output*))
   (format stream 
