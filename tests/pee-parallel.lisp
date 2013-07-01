@@ -17,10 +17,12 @@
 	  (numerator (sleep-time task))
 	  (denominator (sleep-time task))))
 
-(chains:define-operation (task parallel-task) ()
-  (format t ";;; Starting ~d: (~{~A~^, ~})~%" (depth task) (mapcar #'sleep-time chains:*chain*))
-  (sleep (sleep-time task))
-  (format t ";;; Finished ~d: (~{~A~^, ~})~%" (depth task) (mapcar #'sleep-time chains:*chain*)))
+(let ((lock (bordeaux-threads:make-lock "operation lock")))
+  (chains:define-operation (task parallel-task) ()
+    (bordeaux-threads:with-lock-held (lock)
+      (format t ";;; Starting ~d: (~{~A~^, ~})~%" (depth task) (mapcar #'sleep-time chains:*chain*))
+      (sleep (sleep-time task))
+      (format t ";;; Finished ~d: (~{~A~^, ~})~%" (depth task) (mapcar #'sleep-time chains:*chain*)))))
 
 (chains:define-operation (task parallel-error-task) ()
   (error "Error signalled."))
@@ -51,9 +53,9 @@
 	(labels ((completedp (chain)
 		   (chains:chain-completed-p area chain)))
 	  (assert-false (every #'completedp chains))
-	  (let ((threads-before (bordeaux-threads:all-threads)))
+	  (let ((threads-before (length (bordeaux-threads:all-threads))))
 	    (parallel-perform area tree)
-	    (assert-equal (length threads-before)
+	    (assert-equal threads-before
 			  (length (bordeaux-threads:all-threads))))
 	  (assert-true (every #'completedp chains)))))))
 
@@ -66,8 +68,8 @@
       (labels ((completedp (chain)
 		 (chains:chain-completed-p area chain)))
 	(assert-false (every #'completedp chains))
-	(let ((threads-before (bordeaux-threads:all-threads)))
+	(let ((threads-before (length (bordeaux-threads:all-threads))))
 	  (assert-error 'error (parallel-perform area tree))
-	  (assert-equal (length threads-before)
+	  (assert-equal threads-before
 			(length (bordeaux-threads:all-threads))))
 	(assert-false (every #'completedp chains))))))
