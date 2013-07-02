@@ -8,9 +8,12 @@
 	  (string-downcase (type-of task))
 	  (mapcar #'(lambda (slot)
 		      (slot-value task (closer-mop:slot-definition-name slot)))
-		  ;; Not sure if this is needed. The text is hazy.
-		  (sort (closer-mop:compute-slots (class-of task)) #'<
-			:key #'closer-mop:slot-definition-location))))
+		  ;; Not sure if this is needed. The text is hazy. 
+		  #-abcl (sort (closer-mop:compute-slots (class-of task)) #'<
+			       :key #'closer-mop:slot-definition-location)
+		  ;; The above does not work on ABCL as
+		  ;; SLOT-DEFINITION-LOCATION returns NIL. (2013/07/03)
+		  #+abcl (closer-mop:compute-slots (class-of task)))))
 
 ;; Serialisation of objects and tasks
 (defgeneric object-sexp (object))
