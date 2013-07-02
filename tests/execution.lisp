@@ -42,14 +42,32 @@
   ((execution-task-3 (:gamma 11 12 13 14 15))))
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
+  (defun ensure-temporary-directory ()
+    (labels ((random-directory-name ()
+	       (merge-pathnames (make-pathname :directory (list :relative
+								(concatenate 'string
+									     "chains-"
+									     (cl-fad::generate-random-string))))
+				(translate-logical-pathname (logical-pathname "TEMPORARY-FILES:"))))
+	     (trial ()
+	       (multiple-value-bind (pathspec created?)
+		   (ensure-directories-exist (random-directory-name))
+		 (when created?
+		   pathspec))))
+      (loop
+	 :for directory := (trial)
+	 :for attempt :from 0 :below 100
+	 :until directory
+	 :finally (progn
+		    (unless directory
+		      (error "Unable to create temporary directory."))
+		    (return (truename directory))))))
+
   (defun do-with-temporary-directory (function)
-    (let ((tmp-directory "/tmp/chains-execution-test/"))
-      (multiple-value-bind (pathspec created?) (ensure-directories-exist tmp-directory)
-	(unless created?
-	  (error "Directory ~S already exists." tmp-directory))
-	(unwind-protect
-	     (funcall function (parse-namestring pathspec))
-	  (cl-fad:delete-directory-and-files tmp-directory)))))
+    (let ((tmp-directory (ensure-temporary-directory)))
+      (unwind-protect
+	   (funcall function tmp-directory)
+	(cl-fad:delete-directory-and-files tmp-directory))))
 
   (defmacro with-temporary-directory ((var) &body body)
     `(do-with-temporary-directory #'(lambda (,var)
