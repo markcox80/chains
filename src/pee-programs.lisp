@@ -63,7 +63,7 @@
     (terpri out)))
 
 (defun read-program-data (pathname &key (if-does-not-exist :error))
-  (with-open-file (in pathname)
+  (with-open-file (in pathname :if-does-not-exist if-does-not-exist)
     (values-list (read in))))
 
 (defun perform-program (data-pathname depth leaf &rest args &key &allow-other-keys)
