@@ -17,6 +17,7 @@
 		#:task-value
 
 		#:count-leaves
+		#:count-leaves-if
 		#:make-tree)
   (:import-from "CHAINS.TESTS"
 		#:with-temporary-directory))

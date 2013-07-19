@@ -36,8 +36,11 @@
 		      :children children)))))
 
 (defun count-leaves (tree)
+  (count-leaves-if (constantly t) tree))
+
+(defun count-leaves-if (predicate tree &key (key #'identity))
   (labels ((process (tree)
-	     (if (leafp tree)
+	     (if (and (leafp tree) (funcall predicate (funcall key tree)))
 		 1
 		 (reduce #'+ (children tree) :key #'process))))
     (process tree)))

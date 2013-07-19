@@ -76,6 +76,7 @@
 	   #:leafp
 	   
 	   #:count-leaves
+	   #:count-leaves-if
 	   #:replace-leaves
 
 	   #:compute-chains)
@@ -141,7 +142,7 @@
 		#:leafp
 		#:children
 		#:value
-		#:count-leaves
+		#:count-leaves-if		
 
 		#:serialise-object)
 
