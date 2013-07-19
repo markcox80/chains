@@ -22,4 +22,5 @@
 				     (:file "querying")
 				     (:file "execution")
 				     (:file "pee-parallel")
-				     (:file "pee-programs")))))
+				     (:file "pee-programs")
+				     (:file "pee-oge")))))

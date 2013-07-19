@@ -36,10 +36,11 @@
 	  (with-open-file (out "xargs.sh":if-exists if-exists :direction :output)
 	    (format out "#!/bin/sh~%")
 	    (format out "set -e~%")
-	    (let ((counts (leaf-counts-at-depths tree)))
+	    (let ((counts (number-of-tasks-at-depths tree)))
 	      (loop
 		 :for count :in counts
 		 :for depth :from 0
+		 :when (plusp count)
 		 :do
 		 (format out "~A | xargs -L 1 `cat ~S` /bin/sh ~S ~S ~d~%"
 			 (xargs-sequence count)

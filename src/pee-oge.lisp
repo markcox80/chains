@@ -16,12 +16,13 @@
 							(recurse child (1+ depth)))))))
     (recurse tree 0)))
 
-(defun leaf-counts-at-depths (tree)
+(defun number-of-tasks-at-depths (tree)
+  "Return the number of tasks at all depths in tree starting from 0."
   (loop
-     :for depth :from 0 :below (maximum-tree-depth tree)
+     :for depth :from 0 :to (maximum-tree-depth tree)
      :collect
      (let ((truncated-tree (truncate-tree-to-depth tree depth)))
-       (count-leaves truncated-tree))))
+       (count-leaves-if (complement #'null) truncated-tree :key #'value))))
 
 (defgeneric determine-qsub-args (output error directory))
 
@@ -66,10 +67,11 @@
 	    (format out "#!/bin/sh~%")
 	    (format out "set -e~%")
 	    (format out "QSUB_ARGS=~S~%" (determine-qsub-args output error directory))
-	    (let ((counts (leaf-counts-at-depths tree)))
+	    (let ((counts (number-of-tasks-at-depths tree)))
 	      (loop
 		 :for count :in counts
 		 :for depth :from 0
+		 :when (plusp count)
 		 :do
 		 (format out "qsub -t 1-~d ${QSUB_ARGS} `cat ~S` -sync y ~S ~S ~d~%"
 			 count
