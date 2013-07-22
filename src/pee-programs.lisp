@@ -58,13 +58,15 @@
   (compute-chains (truncate-tree-to-depth tree depth)))
 
 (defun write-program-data (pathname area tree &key (if-exists :error))
-  (with-open-file (out pathname :direction :output :if-exists if-exists)
-    (serialise-object out (list area tree))
-    (terpri out)))
+  (let ((*package* (find-package "COMMON-LISP")))
+    (with-open-file (out pathname :direction :output :if-exists if-exists)
+      (serialise-object out (list area tree))
+      (terpri out))))
 
 (defun read-program-data (pathname &key (if-does-not-exist :error))
-  (with-open-file (in pathname :if-does-not-exist if-does-not-exist)
-    (values-list (read in))))
+  (let ((*package* (find-package "COMMON-LISP")))
+    (with-open-file (in pathname :if-does-not-exist if-does-not-exist)
+      (values-list (read in)))))
 
 (defun perform-program (data-pathname depth leaf &rest args &key &allow-other-keys)
   (multiple-value-bind (area tree) (read-program-data data-pathname)
