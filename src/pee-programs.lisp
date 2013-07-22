@@ -165,7 +165,7 @@ Options:
 	    (print-program-usage ,help-data)
 	    1)
 	   (t
-	    (perform-program ,tree (1+ ,depth) ,leaf
+	    (perform-program ,tree ,depth ,leaf
 			     :force force
 			     ,@(reduce #'append custom-options :key #'option-perform-arguments))))))))
 
