@@ -66,19 +66,34 @@
 	  (with-open-file (out "oge.sh":if-exists if-exists :direction :output)
 	    (format out "#!/bin/sh~%")
 	    (format out "set -e~%")
-	    (format out "QSUB_ARGS=~S~%" (determine-qsub-args output error directory))
+	    (format out "
+
+submit_tasks () {
+  number_of_tasks=$1
+  shift
+  qsub -t 1-${number_of_tasks} \\
+     ~A \\
+     `cat ~S` \\
+     -N ~S \\
+    -sync y \\
+    -b y \\
+    /bin/sh ~S \\
+    ~S $*
+}
+
+"
+		    (determine-qsub-args output error directory)
+		    (namestring (merge-pathnames "oge-arguments"))
+		    (pathname-name program-path)
+		    (namestring (merge-pathnames "oge-program.sh"))
+		    (namestring (merge-pathnames "oge-data.sexp")))
 	    (let ((counts (number-of-tasks-at-depths tree)))
 	      (loop
 		 :for count :in counts
 		 :for depth :from 0
 		 :when (plusp count)
 		 :do
-		 (format out "qsub -t 1-~d ${QSUB_ARGS} `cat ~S` -sync y ~S ~S ~d~%"
-			 count
-			 (namestring (merge-pathnames "oge-arguments"))
-			 (namestring (merge-pathnames "oge-program.sh"))
-			 (namestring (merge-pathnames "oge-data.sexp"))
-			 depth)))))
+		 (format out "submit_tasks ~d ~d~%" count depth)))))
 	
 	(let ((if-exists (if (eql if-exists :supersede) nil if-exists)))
 	  (with-open-file (out "oge-arguments" :if-exists if-exists :direction :output)
