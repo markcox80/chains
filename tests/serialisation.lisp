@@ -25,3 +25,10 @@
 
   (let ((obj (make-instance 'base-serialisation-task :sigma 0.1)))
     (assert-equal "base-serialisation-task-0.1" (task-string obj))))
+
+(define-task task-with-no-slots ()
+  ())
+
+(define-test task-string/no-slots
+  (let ((object (make-instance 'task-with-no-slots)))
+    (assert-equal "task-with-no-slots" (task-string object))))

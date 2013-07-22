@@ -4,16 +4,17 @@
 (defgeneric task-string (task))
 
 (defmethod task-string ((task task))
-  (format nil "~A-~{~A~^-~}"
-	  (string-downcase (type-of task))
-	  (mapcar #'(lambda (slot)
-		      (slot-value task (closer-mop:slot-definition-name slot)))
-		  ;; Not sure if this is needed. The text is hazy. 
-		  #-abcl (sort (closer-mop:compute-slots (class-of task)) #'<
-			       :key #'closer-mop:slot-definition-location)
-		  ;; The above does not work on ABCL as
-		  ;; SLOT-DEFINITION-LOCATION returns NIL. (2013/07/03)
-		  #+abcl (closer-mop:compute-slots (class-of task)))))
+  (let ((slots (mapcar #'(lambda (slot)
+			   (slot-value task (closer-mop:slot-definition-name slot)))
+		       ;; Not sure if this is needed. The text is hazy. 
+		       #-abcl (sort (closer-mop:compute-slots (class-of task)) #'<
+				    :key #'closer-mop:slot-definition-location)
+		       ;; The above does not work on ABCL as
+		       ;; SLOT-DEFINITION-LOCATION returns NIL. (2013/07/03)
+		       #+abcl (closer-mop:compute-slots (class-of task)))))
+    (if slots
+	(format nil "~A-~{~A~^-~}" (string-downcase (type-of task)) slots)
+	(string-downcase (type-of task)))))
 
 ;; Serialisation of objects and tasks
 (defgeneric object-sexp (object))
