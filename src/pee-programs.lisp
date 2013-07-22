@@ -101,7 +101,13 @@
 		(write-char #\Space out)
 		(pprint-newline :fill out))))))))
 
-(defun print-program-usage (help-data &optional (stream *standard-output*))
+(defun print-program-usage/suffix ()
+  "<data> Information needed to execute a tree of tasks.
+<depth> The depth of the tasks that are to be executed.
+<leaf number> The index of the leaf at <depth> that is to be executed.
+")
+
+(defun print-program-usage/custom-options (help-data &optional (stream *standard-output*))
   (format stream 
 	  "Usage: [options] [custom options] <data> <depth> <leaf number>
 
@@ -111,14 +117,30 @@ Options:
 Custom Options:
 ~A
 
-<data> Information needed to execute a tree of tasks.
-<depth> The depth of the tasks that are to be executed.
-<leaf number> The index of the leaf at <depth> that is to be executed.
-
+~A
 "
 	  (print-program-usage/option-text '(("help" nil "This helpful message.")
 					     ("force" nil "Overwrite any existing output.")))
-	  (print-program-usage/option-text help-data)))
+	  (print-program-usage/option-text help-data)
+	  (print-program-usage/suffix)))
+
+(defun print-program-usage/no-custom-options (&optional (stream *standard-output*))
+  (format stream 
+	  "Usage: [options] <data> <depth> <leaf number>
+
+Options:
+~A
+  
+~A
+"
+	  (print-program-usage/option-text '(("help" nil "This helpful message.")
+					     ("force" nil "Overwrite any existing output.")))
+	  (print-program-usage/suffix)))
+
+(defun print-program-usage (help-data &optional (stream *standard-output*))
+  (if help-data
+      (print-program-usage/custom-options help-data stream)
+      (print-program-usage/no-custom-options stream)))
 
 (defun do-define-program (name custom-options)
   (let ((tree (gensym "TREE"))

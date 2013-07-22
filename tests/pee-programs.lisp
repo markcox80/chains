@@ -88,3 +88,21 @@ Custom Options:
       (assert-equal "laughing-NIL" (task-value 'chains.tests::execution-task-3 (first chains) area))
       (lisp-executable:program-funcall 'test-program "tmp-data.sexp" "2" "0" "--force" "--text" "man")
       (assert-equal "laughing-man" (task-value 'chains.tests::execution-task-3 (first chains) area)))))
+
+(define-program test-program-with-no-options
+  ())
+
+(define-test test-program-with-no-options
+  (let ((expected-help "Usage: [options] <data> <depth> <leaf number>
+
+Options:
+  --help     This helpful message.
+  --force    Overwrite any existing output.
+  
+<data> Information needed to execute a tree of tasks.
+<depth> The depth of the tasks that are to be executed.
+<leaf number> The index of the leaf at <depth> that is to be executed.
+
+"))
+    (assert-equal expected-help (with-output-to-string (*standard-output*)
+				  (lisp-executable:program-funcall 'test-program-with-no-options "--help")))))
