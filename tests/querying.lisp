@@ -65,6 +65,47 @@
       (assert-false (funcall fn chains-1 chains-3))
       (assert-false (funcall fn chains-1 chains-other)))))
 
+(define-task query-data ()
+  ((fold
+    :initarg :fold
+    :reader fold
+    :predicates number)))
+
+(define-task query-preparation ()
+  ((operation
+    :initarg :operation
+    :reader operation)))
+
+(define-design compound-query-design
+  ((:documentation "The set of chains used in PREPARE-GROUP-CHAINS-TEST/COMPOUND."))
+  ((query-data (:fold 0 1 2 3 4)))
+  ((query-preparation (:operation :paper :scissors :rock)))
+  ((query-algorithm-1 (:sigma 1 2)
+		      (:rho 1 2))))
+
+(define-test prepare-group-chains-test/compound
+  (let* ((tree (generate 'compound-query-design))
+	 (chains (compute-chains tree))
+	 (groups (group-chains chains '(and (= query-preparation)
+					    (= query-algorithm-1)))))
+    (assert-equal 12 (length groups))
+    (labels ((chain-fold (chain)
+	       (fold (first chain)))
+	     (chain-op-sigma-rho (chain)
+	       (destructuring-bind (data preparation algorithm) chain
+		 (declare (ignore data))
+		 (list (operation preparation) (sigma algorithm) (rho algorithm)))))
+      (let ((op-sigma-rhos nil))
+	(dolist (group groups)
+	  (assert-equal 5 (length group))
+	  (let ((op-sigma-rho (chain-op-sigma-rho (first group))))	  
+	    (assert-false (find op-sigma-rho op-sigma-rhos :test #'equal))
+	    (push op-sigma-rho op-sigma-rhos)
+	    (dolist (chain group)
+	      (assert-equal op-sigma-rho (chain-op-sigma-rho chain))))
+	  (dotimes (fold-number 5)
+	    (assert-equal 1 (count fold-number group :test #'= :key (alexandria:compose #'fold #'first)))))))))
+
 (define-test prepare-group-chains-sort-test
   ;; (< TASK-CLASS SLOT)
   (dolist (exp (list `(< query-algorithm sigma)

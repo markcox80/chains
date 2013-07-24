@@ -120,6 +120,13 @@ EXPRESSION can be one of:
       ;; (= symbol slot-name)
       ((equal-exp-with-length-p 2)
        (chain-task-slot-predicate (second expression) (third expression) #'test=-function))
+      
+      ;; (AND &REST EXPRESSIONS)
+      ((eql 'and (first expression))
+       (if (rest expression)
+	   (apply #'alexandria:conjoin (mapcar #'prepare-group-chains-test (rest expression)))
+	   (constantly t)))
+
       (t
        (error "Unsupported expression ~A for PREPARE-GROUP-CHAINS-TEST." EXPRESSION)))))
 

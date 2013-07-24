@@ -443,6 +443,8 @@ which is used to compare two chains. Valid expressions are
 - ~(= symbol name)~ :: This expression specifies that the chains
      within a group all have the same value for the slot ~NAME~ in the
      task with type ~SYMBOL~.
+- ~(and &rest expressions)~ :: This expression specifies that all the
+     chains in a single group satisfy all ~EXPRESSIONS~.
 
 The last two expressions do not explicitly refer to the predicate
 ~=~. The actual predicate used is obtained from the ~:PREDICATES~ slot
