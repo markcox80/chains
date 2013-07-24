@@ -119,7 +119,9 @@ EXPRESSION can be one of:
       ;; (= TASK-CLASS TASK-DIRECT-SLOT-DEFINITION)
       ;; (= symbol slot-name)
       ((equal-exp-with-length-p 2)
-       (chain-task-slot-predicate (second expression) (third expression) #'test=-function)))))
+       (chain-task-slot-predicate (second expression) (third expression) #'test=-function))
+      (t
+       (error "Unsupported expression ~A for PREPARE-GROUP-CHAINS-TEST." EXPRESSION)))))
 
 (defun position-of-one-of-classes (chain task-classes)
   "Find the first task in CHAIN (starting from the end) whose class is
