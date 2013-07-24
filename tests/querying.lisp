@@ -188,3 +188,13 @@
 		  (group-chains chains '(= query-algorithm sigma)
 				:sort '(< query-algorithm sigma)
 				:sort-inner '(:classes input-data-2 input-data-1)))))
+
+(define-test find-chains-with-task
+  (let* ((chain-a (list (make-instance 'query-algorithm-1 :rho 1 :sigma 1)))
+	 (chain-b (list (make-instance 'query-algorithm-2 :rho 2 :sigma 1)))
+	 (chains (list chain-a chain-b)))
+    (assert-equal chains (find-chains-with-task chains 'query-algorithm))    
+    (assert-equal (list chain-a) (find-chains-with-task chains 'query-algorithm-1))
+    (assert-equal (list chain-a) (find-chains-with-task chains (find-class 'query-algorithm-1)))
+    (assert-equal (list chain-b) (find-chains-with-task chains 'query-algorithm-2))
+    (assert-equal (list chain-b) (find-chains-with-task chains (find-class 'query-algorithm-2)))))

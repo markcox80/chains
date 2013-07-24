@@ -3,11 +3,23 @@
 (defun contains-task-p (chain task-class)
   "Search the list CHAIN for an instances whose class is a subclass of
 TASK-CLASS."
-  (declare (type list chain))
-  (find-if #'(lambda (class)
-	       (closer-mop:subclassp class task-class))
-	   chain
-	   :key #'class-of))
+  (check-type chain list)
+  (check-type task-class (or symbol task-class))
+  (let ((task-class (if (symbolp task-class)
+			(find-class task-class)
+			task-class)))
+    (find-if #'(lambda (class)
+		 (closer-mop:subclassp class task-class))
+	     chain
+	     :key #'class-of)))
+
+(defun find-chains-with-task (chains task-class)
+  (check-type task-class (or symbol task-class))
+  (if (symbolp task-class)
+      (find-chains-with-task chains (find-class task-class))
+      (remove-if-not #'(lambda (chain)
+			 (contains-task-p chain task-class))
+		     chains)))
 
 (defun chain-task-slot-predicate (task-class slot task-slot-definition-function)
   "This is a helper function for PREPARE-GROUP-CHAINS-TEST and

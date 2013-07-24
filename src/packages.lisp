@@ -101,7 +101,10 @@
   (:export #:prepare-group-chains-test
 	   #:prepare-group-chains-sort-test
 	   #:prepare-group-chains
-	   #:group-chains)
+	   #:group-chains
+
+	   #:contains-task-p
+	   #:find-chains-with-task)
 
   ;; Execution
   (:export ;; Area protocol
