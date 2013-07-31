@@ -49,7 +49,7 @@
 
 (defun find-task-input (name)
   (or (get name 'task-input)
-      (error "Unable to no TASK-INPUT with name ~A" name)))
+      (error "Unable to find TASK-INPUT with name ~A" name)))
 
 (defun ensure-task-input (name &key documentation)
   (setf (get name 'task-input) (make-instance 'task-input
