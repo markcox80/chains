@@ -37,6 +37,9 @@ within a macro and the result used in the returned expression.
 
 See DEFINE-OPERATION on how to use this function correctly.
 "
+  (assert (every #'(lambda (task-input)
+		     (closer-mop:subclassp (class-of task-input) (find-class 'task-input)))
+		 task-inputs))
   (let ((gf #'perform-operation))
     (closer-mop:make-method-lambda
      gf
@@ -89,7 +92,7 @@ Example of DEFINE-OPERATION:
 "
   (let ((task-input-vars (mapcar #'first task-inputs))
 	(task-inputs (mapcar #'(lambda (x)
-				 `(find-task-input ',(second x)))
+				 (find-task-input (second x)))
 			     task-inputs))
 	(chain-var (gensym)))
     (multiple-value-bind (method-lambda initialisation-arguments)
