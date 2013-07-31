@@ -66,7 +66,12 @@
 	     (ecase (first option)
 	       (:documentation
 		(list :documentation (second option))))))
-    `(ensure-task-input ',name ,@(reduce #'append options :key #'canonicalise-option))))
+    `(eval-when (:compile-toplevel :load-toplevel :execute)
+       (ensure-task-input ',name ,@(reduce #'append options :key #'canonicalise-option)))))
+
+(defmethod make-load-form ((object task-input) &optional environment)
+  (declare (ignore environment))
+  `(find-task-input ',(task-input-name object)))
 
 ;; Class TASK-INPUT-FUNCTION
 ;;
