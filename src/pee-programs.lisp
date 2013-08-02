@@ -154,7 +154,8 @@ Options:
 	   (lisp-executable:&options help force
 				     ,@(mapcar #'option-definition custom-options)
 				     lisp-executable:&arguments ,tree ,depth ,leaf)
-	 (declare (lisp-executable:conversion-function (integer 0) ,depth ,leaf)
+	 (declare (lisp-executable:conversion-function (integer 1) ,depth)
+		  (lisp-executable:conversion-function (integer 0) ,leaf)
 		  ,@(reduce #'append custom-options :key #'option-declarations)
 		  (ignorable force ,@(mapcar #'custom-option-name custom-options)))
 	 (cond
