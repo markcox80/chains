@@ -10,7 +10,7 @@
     :initarg :performed-classes))
   (:report (lambda (condition stream)
 	     (with-slots (task-input target-class performed-classes) condition
-	       (format stream "No applicable TASK-INPUT-FUNCTION exists for TASK-INPUT ~S, target class ~S and performed classes ~A."
+	       (format stream "No applicable TASK-INPUT-FUNCTION exists for task input ~S, target class ~S and performed classes ~A."
 		       task-input target-class performed-classes)))))
 
 ;; Class TASK-INPUT
