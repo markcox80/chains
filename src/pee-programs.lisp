@@ -168,7 +168,8 @@ Options:
 	   (t
 	    (perform-program ,tree ,depth ,leaf
 			     :force force
-			     ,@(reduce #'append custom-options :key #'option-perform-arguments))))))))
+			     ,@(reduce #'append custom-options :key #'option-perform-arguments))
+	    0))))))
 
 (defmacro define-program (name custom-options)
   (do-define-program name (mapcar #'custom-option-from-sexp custom-options)))
