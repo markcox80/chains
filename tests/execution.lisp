@@ -172,8 +172,10 @@
       (assert-false (chain-completed-p area (list task-1 task-2 task-3) :text "dog")))))
 
 (define-test perform
+
   (with-temporary-directory (dir)
     (let ((*area* (prepare-directory dir))
+	  (*chain* nil)
 	  (chains (compute-chains (generate 'execution-design))))
       (dolist (chain chains)
 	(perform *area* chain))
