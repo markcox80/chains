@@ -73,7 +73,7 @@ EXPRESSION can be one of:
 
  TASK-CLASS
 
-   Find two tasks, one from each chain, whose class is EQUAL and is a
+   Find two tasks, one from each chain, whose classes are EQUAL and a
    CLOSER-MOP:SUBCLASSP of TASK-CLASS. If found return non-NIL,
    otherwise NIL.
 
@@ -81,9 +81,22 @@ EXPRESSION can be one of:
 
    The symbol denotes a name of a task class. See (= TASK-CLASS)  
 
+ (= TASK-CLASS :static)
+
+   Find two tasks, one from each chain, whose classes are a
+   CLOSER-MOP:SUBCLASSP of TASK-CLASS and are equal according to the
+   TEST=-FUNCTION for TASK-CLASS.
+
+ (= TASK-CLASS :dynamic)
+
+   Find two tasks, one from each chain, whose classes are EQUAL and a
+   CLOSER-MOP:SUBCLASSP of TASK-CLASS and are equal according to the
+   TEST=-FUNCTION for the found class.
+
  (= TASK-CLASS)
-   Find two tasks, one from each chain, which are EQUAL according to
-   the TEST=-FUNCTION for TASK-CLASS.
+  
+   Like (= TASK-CLASS :static) except it is an error to encounter a
+   subclass of TASK-CLASS.
 
  (= symbol name)
   
@@ -110,9 +123,8 @@ EXPRESSION can be one of:
 	 (lambda (chain-a chain-b)
 	   (let ((a-task (contains-task-p chain-a task-class))
 		 (b-task (contains-task-p chain-b task-class)))
-	     (when (and (closer-mop:subclassp (class-of a-task) task-class)
-			(closer-mop:subclassp (class-of b-task) task-class))
-	       (task-class-equal (class-of a-task) (class-of b-task)))))))
+	     (and a-task b-task
+		  (task-class-equal (class-of a-task) (class-of b-task)))))))
 
       ;; (= TASK-CLASS)
       ;; (= symbol)
@@ -125,8 +137,44 @@ EXPRESSION can be one of:
 	 (lambda (chain-a chain-b)
 	   (let ((a-task (contains-task-p chain-a task-class))
 		 (b-task (contains-task-p chain-b task-class)))
+	     (unless (and (equal (class-of a-task) task-class)
+			  (equal (class-of b-task) task-class))
+	       (error "Encountered a subclass of ~A. Please specify :static or :dynamic in CHAINS:GROUP-CHAINS expression." task-class))
+	     (and a-task b-task (funcall fn a-task b-task))))))
+
+      ;; (= TASK-CLASS :static)
+      ;; (= symbol :static)
+      ((and (equal-exp-with-length-p 2)
+	    (eql :static (third expression)))
+       (let* ((task-class (if (symbolp (second expression))
+			      (find-class (second expression))
+			      (second expression)))
+	      (fn (test=-function task-class)))
+	 (declare (type task-class task-class))
+	 (lambda (chain-a chain-b)
+	   (let ((a-task (contains-task-p chain-a task-class))
+		 (b-task (contains-task-p chain-b task-class)))
 	     (when (and a-task b-task)
 	       (funcall fn a-task b-task))))))
+
+      ;; (= TASK-CLASS :dynamic)
+      ;; (= symbol :dynamic)
+      ((and (equal-exp-with-length-p 2)
+	    (eql :dynamic (third expression)))
+       (let* ((task-class (if (symbolp (second expression))
+			      (find-class (second expression))
+			      (second expression))))
+	 (declare (type task-class task-class))
+	 (lambda (chain-a chain-b)
+	   (let ((a-task (contains-task-p chain-a task-class))
+		 (b-task (contains-task-p chain-b task-class)))
+	     (and a-task b-task
+		  (let ((a-task-class (class-of a-task))
+			(b-task-class (class-of b-task)))
+		    (and (closer-mop:subclassp a-task-class task-class)
+			 (closer-mop:subclassp b-task-class task-class)
+			 (equal a-task-class b-task-class)
+			 (funcall (test=-function a-task-class) a-task b-task))))))))
       
       ;; (= TASK-CLASS TASK-DIRECT-SLOT-DEFINITION)
       ;; (= symbol slot-name)

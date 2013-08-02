@@ -24,9 +24,8 @@
     :reader gamma
     :predicates number)))
 
-(define-test prepare-group-chains-test
+(define-test prepare-group-chains-test/subclass
   (let ((chains-1   (list (make-instance 'query-algorithm-1 :rho 1 :sigma 2)))
-	(chains-1-other (list (make-instance 'query-algorithm-1 :rho 1 :sigma 2)))
 	(chains-1-2 (list (make-instance 'query-algorithm-1 :rho 1 :sigma 3)))
 	(chains-2 (list (make-instance 'query-algorithm-2 :rho 1 :sigma 2)))
 	(chains-3 (list (make-instance 'query-algorithm-3 :gamma 3 :sigma 3)))
@@ -40,18 +39,54 @@
       (assert-true (funcall fn chains-1 chains-1-2))
       (assert-false (funcall fn chains-1 chains-2))
       (assert-false (funcall fn chains-1 chains-3))
-      (assert-false (funcall fn chains-1 chains-other)))
+      (assert-false (funcall fn chains-1 chains-other)))))
 
-    ;; (= TASK-CLASS)
-    ;; (= symbol)
-    (dolist (fn (list (prepare-group-chains-test '(= query-algorithm))
-		      (prepare-group-chains-test `(= ,(find-class 'query-algorithm)))))
+(define-test prepare-group-chains-test/static
+  (let ((chains-1   (list (make-instance 'query-algorithm-1 :rho 1 :sigma 2)))
+	(chains-1-other (list (make-instance 'query-algorithm-1 :rho 1 :sigma 2)))
+	(chains-1-2 (list (make-instance 'query-algorithm-1 :rho 1 :sigma 3)))
+	(chains-2 (list (make-instance 'query-algorithm-2 :rho 1 :sigma 2)))
+	(chains-3 (list (make-instance 'query-algorithm-3 :gamma 3 :sigma 3)))
+	(chains-other (list (make-instance 'example-task))))
+
+    ;; (= TASK-CLASS :static)
+    ;; (= symbol :static)
+    (dolist (fn (list (prepare-group-chains-test '(= query-algorithm :static))
+		      (prepare-group-chains-test `(= ,(find-class 'query-algorithm) :static))))
       (assert-true (funcall fn chains-1 chains-1))
       (assert-true (funcall fn chains-1 chains-1-other))
       (assert-false (funcall fn chains-1 chains-1-2))
       (assert-true (funcall fn chains-1 chains-2))
       (assert-false (funcall fn chains-1 chains-3))
-      (assert-false (funcall fn chains-1 chains-other)))
+      (assert-false (funcall fn chains-1 chains-other)))))
+
+(define-test prepare-group-chains-test/dynamic
+  (let ((chains-1   (list (make-instance 'query-algorithm-1 :rho 1 :sigma 2)))
+	(chains-1-other (list (make-instance 'query-algorithm-1 :rho 1 :sigma 2)))
+	(chains-1-other-2 (list (make-instance 'query-algorithm-1 :rho 2 :sigma 2)))
+	(chains-1-2 (list (make-instance 'query-algorithm-1 :rho 1 :sigma 3)))
+	(chains-2 (list (make-instance 'query-algorithm-2 :rho 1 :sigma 2)))
+	(chains-3 (list (make-instance 'query-algorithm-3 :gamma 3 :sigma 3)))
+	(chains-other (list (make-instance 'example-task))))
+
+    ;; (= TASK-CLASS :dynamic)
+    ;; (= symbol :dynamic)
+    (dolist (fn (list (prepare-group-chains-test '(= query-algorithm :dynamic))
+		      (prepare-group-chains-test `(= ,(find-class 'query-algorithm) :dynamic))))
+      (assert-true (funcall fn chains-1 chains-1))
+      (assert-true (funcall fn chains-1 chains-1-other))
+      (assert-false (funcall fn chains-1 chains-1-other-2))
+      (assert-false (funcall fn chains-1 chains-1-2))
+      (assert-false (funcall fn chains-1 chains-2))
+      (assert-false (funcall fn chains-1 chains-3))
+      (assert-false (funcall fn chains-1 chains-other)))))
+
+(define-test prepare-group-chains-test/slots
+  (let ((chains-1   (list (make-instance 'query-algorithm-1 :rho 1 :sigma 2)))
+	(chains-1-2 (list (make-instance 'query-algorithm-1 :rho 1 :sigma 3)))
+	(chains-2 (list (make-instance 'query-algorithm-2 :rho 1 :sigma 2)))
+	(chains-3 (list (make-instance 'query-algorithm-3 :gamma 3 :sigma 3)))
+	(chains-other (list (make-instance 'example-task))))
 
     ;; (= TASK-CLASS TASK-DIRECT-SLOT-DEFINITION)
     ;; (= symbol slot-name)
