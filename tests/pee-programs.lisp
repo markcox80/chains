@@ -56,37 +56,37 @@ Custom Options:
 	   (chains (compute-chains tree)))
       (write-program-data "tmp-data.sexp" area tree)
       
-      ;; First Chain
-      (assert-false (chain-completed-p area (elt chains 0)))
-      (lisp-executable:program-funcall 'test-program
-				       "tmp-data.sexp" "0" "0")
-      (assert-false (chain-completed-p area (elt chains 0)))
+      (assert-error 'error (lisp-executable:program-funcall 'test-program "tmp-data.sexp" "0" "0"))
 
+      ;; First Chain
       (lisp-executable:program-funcall 'test-program
 				       "tmp-data.sexp" "1" "0")
       (assert-false (chain-completed-p area (elt chains 0)))
 
       (lisp-executable:program-funcall 'test-program
 				       "tmp-data.sexp" "2" "0")
+      (assert-false (chain-completed-p area (elt chains 0)))
+
+      (lisp-executable:program-funcall 'test-program
+				       "tmp-data.sexp" "3" "0")
       (assert-true (chain-completed-p area (elt chains 0)))
 
       ;; Second Chain
-      (assert-false (chain-completed-p area (elt chains 1)))
-      (lisp-executable:program-funcall 'test-program
-				       "tmp-data.sexp" "0" "1")
-      (assert-false (chain-completed-p area (elt chains 1)))
-
       (lisp-executable:program-funcall 'test-program
 				       "tmp-data.sexp" "1" "1")
       (assert-false (chain-completed-p area (elt chains 1)))
 
       (lisp-executable:program-funcall 'test-program
 				       "tmp-data.sexp" "2" "1")
+      (assert-false (chain-completed-p area (elt chains 1)))
+
+      (lisp-executable:program-funcall 'test-program
+				       "tmp-data.sexp" "3" "1")
       (assert-true (chain-completed-p area (elt chains 1)))
 
       ;; Arguments
       (assert-equal "laughing-NIL" (task-value 'chains.tests::execution-task-3 (first chains) area))
-      (lisp-executable:program-funcall 'test-program "tmp-data.sexp" "2" "0" "--force" "--text" "man")
+      (lisp-executable:program-funcall 'test-program "tmp-data.sexp" "3" "0" "--force" "--text" "man")
       (assert-equal "laughing-man" (task-value 'chains.tests::execution-task-3 (first chains) area)))))
 
 (define-program test-program-with-no-options
