@@ -47,6 +47,10 @@
   (:default-initargs
    :functions nil))
 
+(defmethod print-object ((object task-input) stream)
+  (print-unreadable-object (object stream :type t :identity t)
+    (write (task-input-name object) :stream stream)))
+
 (defun find-task-input (name)
   (or (get name 'task-input)
       (error "Unable to find TASK-INPUT with name ~A" name)))
