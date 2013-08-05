@@ -119,7 +119,8 @@ TASK-DIRECT-SLOT-DEFINITION."
 	    writers
 	    type
 	    initform initfunction
-	    predicates)
+	    predicates
+	    documentation)
 	(assert (zerop (mod (length (rest spec)) 2)))
 	(do* ((slot-options (rest spec) (cddr slot-options))
 	      (key (first slot-options) (first slot-options))
@@ -141,14 +142,17 @@ TASK-DIRECT-SLOT-DEFINITION."
 	    (:type
 	     (setf type value))
 	    (:predicates
-	     (setf predicates value))))
+	     (setf predicates value))
+	    (:documentation
+	     (setf documentation value))))
 	`(list :name ',name
 	       ,@(when initfunction `(:initform ,initform :initfunction ,initfunction))
 	       ,@(when initargs `(:initargs ',(reverse initargs)))
 	       ,@(when readers  `(:readers ',(reverse readers)))
 	       ,@(when writers  `(:writers ',(reverse writers)))
 	       ,@(when type `(:type ',type))
-	       ,@(when predicates `(:predicates (find-predicates ',predicates)))))))
+	       ,@(when predicates `(:predicates (find-predicates ',predicates)))
+	       ,@(when documentation `(:documentation ,documentation))))))
 
 (defun canonicalise-define-task-default-initargs (key value)
   #-cmucl

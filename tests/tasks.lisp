@@ -13,7 +13,8 @@
     :accessor name
     :initform "Example Task"
     :type string
-    :predicates string/case-sensitive))
+    :predicates string/case-sensitive
+    :documentation "The name of the EXAMPLE-TASK instance."))
   (:documentation "Example usage of the DEFINE-TASK macro.")
   (:default-initargs
    :mean 0
@@ -38,6 +39,8 @@
     (assert-equal #'string< (test<-function name-slot))
     (assert-equal #'string> (test>-function name-slot))
     
+    (assert-equal "The name of the EXAMPLE-TASK instance."
+		  (documentation name-slot t))
     (assert-equal "Example usage of the DEFINE-TASK macro."
 		  (documentation c t))))
 
