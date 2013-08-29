@@ -4,6 +4,9 @@
   ((name
     :initarg :name
     :reader custom-option-name)
+   (plist-key
+    :initarg :plist-key
+    :reader custom-option-plist-key)
    (documentation
     :initarg :documentation
     :reader custom-option-documentation)
@@ -17,22 +20,46 @@
     :initarg :argument-var
     :reader custom-option-argument-var))
   (:default-initargs
+   :argument-label nil
+   :argument-type nil
    :argument-var (gensym)
    :documentation ""))
 
 (defun option-definition (custom-option)
-  `(,(custom-option-name custom-option)
-    ,(custom-option-argument-var custom-option)))
+  (with-accessors ((custom-option-argument-type custom-option-argument-type)
+		   (custom-option-argument-var custom-option-argument-var)
+		   (custom-option-argument-label custom-option-argument-label)
+		   (custom-option-name custom-option-name))
+      custom-option
+    (cond
+      (custom-option-argument-label
+       `(,custom-option-name ,custom-option-argument-var))
+      (t
+       custom-option-name))))
 
 (defun option-declarations (custom-option)
-  (list `(lisp-executable:conversion-function ,(custom-option-argument-type custom-option)
-					      ,(custom-option-argument-var custom-option))
-	`(type (or null ,(custom-option-argument-type custom-option))
-	       ,(custom-option-argument-var custom-option))))
+  (with-accessors ((custom-option-argument-type custom-option-argument-type)
+		   (custom-option-argument-var custom-option-argument-var)
+		   (custom-option-argument-label custom-option-argument-label))
+      custom-option
+    (when custom-option-argument-label
+      (list `(lisp-executable:conversion-function ,(custom-option-argument-type custom-option)
+						  ,(custom-option-name custom-option))
+	    `(type (or null ,(custom-option-argument-type custom-option))
+		   ,(custom-option-argument-var custom-option))))))
 
 (defun option-perform-arguments (custom-option)
-  (list (intern (symbol-name (custom-option-name custom-option)) "KEYWORD")
-	(custom-option-argument-var custom-option)))
+  (with-accessors ((custom-option-argument-type custom-option-argument-type)
+		   (custom-option-argument-var custom-option-argument-var)
+		   (custom-option-argument-label custom-option-argument-label)
+		   (custom-option-plist-key custom-option-plist-key)
+		   (custom-option-name custom-option-name))
+      custom-option
+    (cond
+      (custom-option-argument-label       
+       (list custom-option-plist-key custom-option-argument-var))
+      (t
+       (list custom-option-plist-key custom-option-name)))))
 
 (defun help-data (custom-option)
   `(list ,(string-downcase (custom-option-name custom-option))
@@ -175,10 +202,11 @@ Options:
   (do-define-program name (mapcar #'custom-option-from-sexp custom-options)))
 
 (defun custom-option-from-sexp (sexp)
-  (destructuring-bind (name &key documentation argument) sexp
-    (destructuring-bind (argument-label argument-type) argument
+  (destructuring-bind (name &key documentation argument plist-key) sexp
+    (destructuring-bind (&optional argument-label argument-type) argument
       (make-instance 'custom-option
 		     :name name
+		     :plist-key (or plist-key (intern (symbol-name name) "KEYWORD"))
 		     :documentation documentation
 		     :argument-label argument-label
 		     :argument-type argument-type))))

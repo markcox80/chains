@@ -28,7 +28,9 @@
 (define-program test-program
   ((text
     :documentation "Text for EXECUTION-TASK-3."
-    :argument ("text" string))))
+    :argument ("text" string))
+   (verbose
+    :documentation "Output more information.")))
 
 (define-test test-program/help
   (let ((expected-help "Usage: [options] [custom options] <data> <depth> <leaf number>
@@ -39,6 +41,7 @@ Options:
   
 Custom Options:
   --text <text>    Text for EXECUTION-TASK-3.
+  --verbose        Output more information.
 
 <data> Information needed to execute a tree of tasks.
 <depth> The depth of the tasks that are to be executed.
