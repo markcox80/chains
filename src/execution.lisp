@@ -86,11 +86,22 @@
     (unless (apply #'chain-completed-p area performed-tasks :force nil *operation-plist*)
       (error "Not all tasks in chain ~A have been completed." chain))
 
-    (when (or force (not (task-completed-p task)))      
-      (let* ((*default-pathname-defaults* (ensure-task-data-directory* *area* chain))
-	     (v (perform-operation task performed-tasks)))
-	(setf (task-value* *area* chain) v)))
-    (task-value task)))
+    (cond
+      ((or force (not (task-completed-p task)))
+       (let* ((*default-pathname-defaults* (ensure-task-data-directory* *area* chain))
+	      (v (perform-operation task performed-tasks)))
+	 (setf (task-value* *area* chain) v)
+	 (values v t)))
+      (t
+       (values (task-value task) nil)))))
+
+(defmethod task-completed-p :around ((task task))
+  (let ((pos (position task *chain*)))
+    (unless pos
+      (error "Unable to find task ~A in chain ~A" task *chain*))
+    (let ((*default-pathname-defaults* (or (probe-file (task-data-directory* *area* (subseq *chain* 0 (1+ pos))))
+					   *default-pathname-defaults*)))
+      (call-next-method))))
 
 (defmethod task-completed-p ((task task))
   (let ((pos (position task *chain*)))
@@ -102,13 +113,16 @@
   (ensure-directories-exist (task-data-directory* area chain)))
 
 (defun perform (area chain &rest args &key force &allow-other-keys)
-  (declare (ignore force))
+  (alexandria:remove-from-plistf args :force)
   (let* ((chains (loop
 		    :for x :from 1 :to (length chain)
 		    :collect
 		    (subseq chain 0 x)))
 	 (results (mapcar #'(lambda (chain)
-			      (apply #'perform-leaf area chain args))
+			      (multiple-value-bind (task-value performed?) (apply #'perform-leaf area chain :force force args)
+				(when performed?
+				  (setf force t))
+				task-value))
 			  chains)))
     (values (car (last results))
 	    results)))
