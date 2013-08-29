@@ -171,7 +171,7 @@ Options:
       (print-program-usage/custom-options help-data stream)
       (print-program-usage/no-custom-options stream)))
 
-(defun do-define-program (name custom-options)
+(defun do-define-program (name custom-options &key prologue)
   (let ((tree (gensym "TREE"))
 	(depth (gensym "DEPTH"))
 	(leaf (gensym "LEAF"))
@@ -193,13 +193,21 @@ Options:
 	    (print-program-usage ,help-data)
 	    1)
 	   (t
+	    ,(when prologue
+	      `(progn
+		 ,@prologue))	    
 	    (perform-program ,tree ,depth ,leaf
 			     :force force
 			     ,@(reduce #'append custom-options :key #'option-perform-arguments))
 	    0))))))
 
-(defmacro define-program (name custom-options)
-  (do-define-program name (mapcar #'custom-option-from-sexp custom-options)))
+(defmacro define-program (name custom-options &body options)
+  (apply #'do-define-program name (mapcar #'custom-option-from-sexp custom-options)
+	 (reduce #'append options
+		 :key #'(lambda (option)		     
+			  (alexandria:destructuring-case option
+			    ((:prologue &rest body)
+			     (list :prologue body)))))))
 
 (defun custom-option-from-sexp (sexp)
   (destructuring-bind (name &key documentation argument plist-key) sexp

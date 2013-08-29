@@ -844,18 +844,28 @@ The ~DEFINE-PROGRAM~ macro provides a very thin wrapper over
 ~LISP-EXECUTABLE~'s integration with ASDF can be used to build the
 executable.
 
-The ~<data>~ argument to the command line program is produced using
-the function ~WRITE-PROGRAM-DATA~.
+~DEFINE-PROGRAM~ also accepts option arguments. The only option
+supported at present is the ~:PROLOGUE~ option. This option allows for
+some arbitrary code to be executed prior to performing the task.
+#+begin_src lisp
+  (define-program example-of-prologue
+    ()
+    (:prologue
+     (setf *random-state* (make-random-state t))))
+#+end_src
+
+The ~<data>~ argument to the command line program produced by
+~DEFINE-PROGRAM~ is created using the function ~WRITE-PROGRAM-DATA~.
 #+begin_src lisp
   (defun write-program-data (pathname area tree))
 #+end_src
 This function requires the ~AREA~ and the values stored in ~TREE~ to
 have implemented the ~OBJECT-SEXP~ method.
 
-One can invoke the above executable manually, however, there are two
-functions ~PREPARE-OGE-SCRIPT~ and ~PREPARE-XARGS-SCRIPT~, which
+One can invoke the generated executable manually, however, there are
+two functions ~PREPARE-OGE-SCRIPT~ and ~PREPARE-XARGS-SCRIPT~, which
 generate shell scripts which perform the necessary invocations of the
-program to execute an entire tree. 
+program to execute an entire tree.
 
 The function ~PREPARE-OGE-SCRIPT~ is used to produce scripts which use
 the Oracle Grid Engine to invoke the defined program.
