@@ -212,13 +212,14 @@
 (defmethod task-completed-p ((task task-complete-p-t1))
   (let ((iterations (or (getf (operation-plist) :iterations)
 			0)))
-    (loop
-       :for iteration :from 0 :to iterations
-       :while (probe-file (format nil "~d.sexp" iteration))
-       :finally (return (and (if (> iteration iterations)
+    (and (loop
+	    :for iteration :from 0 :to iterations
+	    :while (probe-file (format nil "~d.sexp" iteration))
+	    :finally (return (if (> iteration iterations)
 				 t
-				 nil)
-			     (call-next-method))))))
+				 nil)))
+	 (= iterations (task-value task))
+	 (call-next-method))))
 
 (define-task task-complete-p-t2 ()
   ())
@@ -235,4 +236,7 @@
 	(assert-equal 0 (task-value 'task-complete-p-t2 chain area))
 
 	(perform area chain :iterations 1)
-	(assert-equal 1 (task-value 'task-complete-p-t2 chain area))))))
+	(assert-equal 1 (task-value 'task-complete-p-t2 chain area))
+
+	(perform area chain :iterations 0)
+	(assert-equal 0 (task-value 'task-complete-p-t2 chain area))))))
