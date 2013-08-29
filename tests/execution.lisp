@@ -192,3 +192,47 @@
 	(assert-equal :task-1 (task-value 'execution-task-1))
 	(assert-equal "hello-world" (task-value 'execution-task-2))
 	(assert-equal "laughing-NIL" (task-value 'execution-task-3))))))
+
+
+(define-task task-complete-p-t1 ()
+  ())
+
+(define-operation (task task-complete-p-t1) ()
+  (let ((iterations (or (getf (operation-plist) :iterations)
+			0)))
+    (loop
+       :for iteration :from 0 :to iterations
+       :do       
+       (with-open-file (out (format nil "~d.sexp" iteration) :direction :output :if-exists nil)
+	 (when out
+	   (write iteration :stream out)
+	   (terpri out))))
+    iterations))
+
+(defmethod task-completed-p ((task task-complete-p-t1))
+  (let ((iterations (or (getf (operation-plist) :iterations)
+			0)))
+    (loop
+       :for iteration :from 0 :to iterations
+       :while (probe-file (format nil "~d.sexp" iteration))
+       :finally (return (and (if (> iteration iterations)
+				 t
+				 nil)
+			     (call-next-method))))))
+
+(define-task task-complete-p-t2 ()
+  ())
+
+(define-operation (task task-complete-p-t2) ()
+  (task-value (contains-task-p *chain* 'task-complete-p-t1)))
+
+(define-test task-completed-p/iterations
+  (let ((chain (list (make-instance 'task-complete-p-t1)
+		     (make-instance 'task-complete-p-t2))))
+    (with-temporary-directory (dir)
+      (let ((area (prepare-directory dir)))
+	(perform area chain)
+	(assert-equal 0 (task-value 'task-complete-p-t2 chain area))
+
+	(perform area chain :iterations 1)
+	(assert-equal 1 (task-value 'task-complete-p-t2 chain area))))))
