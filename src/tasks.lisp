@@ -87,10 +87,11 @@
 			   :documentation documentation))
 
 (defmacro define-task (name superclasses direct-slots &rest options)
-  `(ensure-task ',name
-		:direct-superclasses ,(canonicalise-direct-superclasses superclasses)
-		:direct-slots ,(canonicalise-direct-slots direct-slots)
-		,@(reduce #'append options :key #'canonicalise-define-task-option)))
+  `(eval-when (:compile-toplevel :load-toplevel :execute)
+     (ensure-task ',name
+		  :direct-superclasses ,(canonicalise-direct-superclasses superclasses)
+		  :direct-slots ,(canonicalise-direct-slots direct-slots)
+		  ,@(reduce #'append options :key #'canonicalise-define-task-option))))
 
 ;; Canonicalise functions
 ;; Most of these are taken from the book
