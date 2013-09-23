@@ -1,0 +1,280 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+               "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<title>Notes and things to be done.</title>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+<meta name="title" content="Notes and things to be done."/>
+<meta name="generator" content="Org-mode"/>
+<meta name="generated" content="2013-09-23T10:48+1000"/>
+<meta name="author" content="Mark Cox"/>
+<meta name="description" content=""/>
+<meta name="keywords" content=""/>
+<style type="text/css">
+ <!--/*--><![CDATA[/*><!--*/
+  html { font-family: Times, serif; font-size: 12pt; }
+  .title  { text-align: center; }
+  .todo   { color: red; }
+  .done   { color: green; }
+  .tag    { background-color: #add8e6; font-weight:normal }
+  .target { }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .right  {margin-left:auto; margin-right:0px;  text-align:right;}
+  .left   {margin-left:0px;  margin-right:auto; text-align:left;}
+  .center {margin-left:auto; margin-right:auto; text-align:center;}
+  p.verse { margin-left: 3% }
+  pre {
+	border: 1pt solid #AEBDCC;
+	background-color: #F3F5F7;
+	padding: 5pt;
+	font-family: courier, monospace;
+        font-size: 90%;
+        overflow:auto;
+  }
+  table { border-collapse: collapse; }
+  td, th { vertical-align: top;  }
+  th.right  { text-align:center;  }
+  th.left   { text-align:center;   }
+  th.center { text-align:center; }
+  td.right  { text-align:right;  }
+  td.left   { text-align:left;   }
+  td.center { text-align:center; }
+  dt { font-weight: bold; }
+  div.figure { padding: 0.5em; }
+  div.figure p { text-align: center; }
+  div.inlinetask {
+    padding:10px;
+    border:2px solid gray;
+    margin:10px;
+    background: #ffffcc;
+  }
+  textarea { overflow-x: auto; }
+  .linenr { font-size:smaller }
+  .code-highlighted {background-color:#ffff00;}
+  .org-info-js_info-navigation { border-style:none; }
+  #org-info-js_console-label { font-size:10px; font-weight:bold;
+                               white-space:nowrap; }
+  .org-info-js_search-highlight {background-color:#ffff00; color:#000000;
+                                 font-weight:bold; }
+  /*]]>*/-->
+</style>
+<script type="text/javascript">
+/*
+@licstart  The following is the entire license notice for the
+JavaScript code in this tag.
+
+Copyright (C) 2012-2013 Free Software Foundation, Inc.
+
+The JavaScript code in this tag is free software: you can
+redistribute it and/or modify it under the terms of the GNU
+General Public License (GNU GPL) as published by the Free Software
+Foundation, either version 3 of the License, or (at your option)
+any later version.  The code is distributed WITHOUT ANY WARRANTY;
+without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE.  See the GNU GPL for more details.
+
+As additional permission under GNU GPL version 3 section 7, you
+may distribute non-source (e.g., minimized or compacted) forms of
+that code without the copy of the GNU GPL normally required by
+section 4, provided you include this license notice and a URL
+through which recipients can access the Corresponding Source.
+
+
+@licend  The above is the entire license notice
+for the JavaScript code in this tag.
+*/
+<!--/*--><![CDATA[/*><!--*/
+ function CodeHighlightOn(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(null != target) {
+     elem.cacheClassElem = elem.className;
+     elem.cacheClassTarget = target.className;
+     target.className = "code-highlighted";
+     elem.className   = "code-highlighted";
+   }
+ }
+ function CodeHighlightOff(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(elem.cacheClassElem)
+     elem.className = elem.cacheClassElem;
+   if(elem.cacheClassTarget)
+     target.className = elem.cacheClassTarget;
+ }
+/*]]>*///-->
+</script>
+
+</head>
+<body>
+
+<div id="preamble">
+
+</div>
+
+<div id="content">
+<h1 class="title">Notes and things to be done.</h1>
+
+
+<div id="table-of-contents">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#sec-1">1 Best practices document.</a></li>
+<li><a href="#sec-2">2 Composition of task input functions</a></li>
+<li><a href="#sec-3">3 Iterative execution parameters.</a></li>
+</ul>
+</div>
+</div>
+
+<div id="outline-container-1" class="outline-2">
+<h2 id="sec-1"><span class="section-number-2">1</span> Best practices document.</h2>
+<div class="outline-text-2" id="text-1">
+
+<p>Produce a best practices document which outlines what I know about how
+to use the <code>CHAINS</code> system so far.
+</p>
+<p>
+Include things such as
+</p><ul>
+<li>A global <code>designs.lisp</code> file that contains all experiment designs.
+</li>
+<li>Each design should begin with a separate package. This avoids being
+  tempted to over design. Experience shows that it is highly likely
+  for two tasks to have the same name, but have different operations.
+</li>
+</ul>
+
+
+</div>
+
+</div>
+
+<div id="outline-container-2" class="outline-2">
+<h2 id="sec-2"><span class="section-number-2">2</span> Composition of task input functions</h2>
+<div class="outline-text-2" id="text-2">
+
+<p>One of the problems with the <code>CHAINS</code> system is that it is not
+possible to easily do something like the following.
+</p>
+
+
+<pre class="src src-lisp">(<span style="color: #728a05;">define-task-input</span> image-pathnames)
+(<span style="color: #728a05;">define-task-input</span> images)
+
+(<span style="color: #728a05;">define-task-input-function</span> image-pathnames task ((task select-subject))
+  <span style="color: #81908f; font-style: italic;">;; </span><span style="color: #81908f; font-style: italic;">Some code that produces image pathnames.</span>
+  )
+
+(<span style="color: #728a05;">define-task-input-function</span> images task ((task select-subject))
+  (mapcar #'load-images (image-pathnames)))
+</pre>
+
+
+<p>
+It needs to be investigated whether this is a good idea. Perhaps it
+could also be written as
+</p>
+
+
+<pre class="src src-lisp">(<span style="color: #728a05;">defgeneric</span> <span style="color: #2075c7;">image-pathnames</span> (task))
+(<span style="color: #728a05;">defgeneric</span> <span style="color: #2075c7;">images</span> (task))
+
+(images (task-value (contains-task-p 'select-subject chain)))
+</pre>
+
+
+<p>
+There is an argument for the making task inputs functions themselves
+as it would make it easier to implement result produce functions. For
+example
+</p>
+
+
+<pre class="src src-lisp">(<span style="color: #728a05;">defun</span> <span style="color: #2075c7;">output-results</span> (directory chain area)
+  (<span style="color: #728a05;">let*</span> ((images (images chain area)))
+    (save-images-to-directory directory images)))
+</pre>
+
+
+<p>
+An upshot of this is the simplification of the
+<code>DEFINE-OPERATION</code>. Consider an example of <code>DEFINE-OPERATION</code> using
+the chains system as currently defined.
+</p>
+
+
+<pre class="src src-lisp">(<span style="color: #728a05;">define-operation</span> (task compute-task) ((images images))
+  (compute-stuff images))
+</pre>
+
+<p>
+If task input functions were functions themselves. It would no longer
+be required to specify the task inputs to the operation. i.e.
+</p>
+
+
+<pre class="src src-lisp">(<span style="color: #728a05;">define-operation</span> (task compute-task)
+  (compute-stuff (images)))
+</pre>
+
+
+<p>
+Further more, the <code>DEFINE-OPERATION</code> macro could be removed entirely. 
+</p>
+
+
+<pre class="src src-lisp">(<span style="color: #728a05;">defmethod</span> <span style="color: #2075c7;">perform-operation</span> ((task compute-task))
+  (compute-stuff (images)))
+</pre>
+
+
+<p>
+The prototypes for the task input functions would be as follows.
+</p>
+
+
+<pre class="src src-lisp">(<span style="color: #728a05;">defun</span> <span style="color: #2075c7;">images</span> (<span style="color: #a57705;">&amp;optional</span> current-task performed-tasks area))
+</pre>
+
+<p>
+The above is contrary to the example involving the implementation of
+result producing functions. An alternative would be
+</p>
+
+
+<pre class="src src-lisp">(<span style="color: #728a05;">defun</span> <span style="color: #2075c7;">images</span> (<span style="color: #a57705;">&amp;optional</span> chain area))
+</pre>
+
+<p>
+where it is implied that the last task in the chain is the target task
+and the other tasks are the performed tasks. The later seems more
+inline with the result use case. When <code>CHAIN</code> and <code>AREA</code> are nil, they
+can be assigned the values of the <code>*CHAIN*</code> and <code>*AREA*</code> variables.
+</p>
+</div>
+
+</div>
+
+<div id="outline-container-3" class="outline-2">
+<h2 id="sec-3"><span class="section-number-2">3</span> Iterative execution parameters.</h2>
+<div class="outline-text-2" id="text-3">
+
+<p>Repeatedly executing the same operation with different <i>execution</i>
+parameters is occurring more frequently than anticipated. Consider
+adding support for it as a another package.
+</p></div>
+</div>
+</div>
+
+<div id="postamble">
+<p class="date">Date: 2013-09-23T10:48+1000</p>
+<p class="author">Author: Mark Cox</p>
+<p class="creator"><a href="http://orgmode.org">Org</a> version 7.9.4 with <a href="http://www.gnu.org/software/emacs/">Emacs</a> version 24</p>
+<a href="http://validator.w3.org/check?uri=referer">Validate XHTML 1.0</a>
+
+</div>
+</body>
+</html>

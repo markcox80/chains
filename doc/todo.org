@@ -1,0 +1,84 @@
+#+TITLE: Notes and things to be done.
+#+AUTHOR: Mark Cox
+
+* Best practices document.
+Produce a best practices document which outlines what I know about how
+to use the ~CHAINS~ system so far.
+
+Include things such as
+- A global ~designs.lisp~ file that contains all experiment designs.
+- Each design should begin with a separate package. This avoids being
+  tempted to over design. Experience shows that it is highly likely
+  for two tasks to have the same name, but have different operations.
+
+* Composition of task input functions
+One of the problems with the ~CHAINS~ system is that it is not
+possible to easily do something like the following.
+#+begin_src lisp
+  (define-task-input image-pathnames)
+  (define-task-input images)
+  
+  (define-task-input-function image-pathnames task ((task select-subject))
+    ;; Some code that produces image pathnames.
+    )
+  
+  (define-task-input-function images task ((task select-subject))
+    (mapcar #'load-images (image-pathnames)))
+#+end_src
+
+It needs to be investigated whether this is a good idea. Perhaps it
+could also be written as
+#+begin_src lisp
+  (defgeneric image-pathnames (task))
+  (defgeneric images (task))
+  
+  (images (task-value (contains-task-p 'select-subject chain)))
+#+end_src
+
+There is an argument for the making task inputs functions themselves
+as it would make it easier to implement result produce functions. For
+example
+#+begin_src lisp
+  (defun output-results (directory chain area)
+    (let* ((images (images chain area)))
+      (save-images-to-directory directory images)))
+#+end_src
+
+An upshot of this is the simplification of the
+~DEFINE-OPERATION~. Consider an example of ~DEFINE-OPERATION~ using
+the chains system as currently defined.
+#+begin_src lisp
+(define-operation (task compute-task) ((images images))
+  (compute-stuff images))
+#+end_src
+If task input functions were functions themselves. It would no longer
+be required to specify the task inputs to the operation. i.e.
+#+begin_src lisp
+  (define-operation (task compute-task)
+    (compute-stuff (images)))
+#+end_src
+
+Further more, the ~DEFINE-OPERATION~ macro could be removed entirely. 
+#+begin_src lisp
+  (defmethod perform-operation ((task compute-task))
+    (compute-stuff (images)))
+#+end_src
+
+The prototypes for the task input functions would be as follows.
+#+begin_src lisp
+  (defun images (&optional current-task performed-tasks area))
+#+end_src
+The above is contrary to the example involving the implementation of
+result producing functions. An alternative would be
+#+begin_src lisp
+  (defun images (&optional chain area))
+#+end_src
+where it is implied that the last task in the chain is the target task
+and the other tasks are the performed tasks. The later seems more
+inline with the result use case. When ~CHAIN~ and ~AREA~ are nil, they
+can be assigned the values of the ~*CHAIN*~ and ~*AREA*~ variables.
+
+* Iterative execution parameters.
+Repeatedly executing the same operation with different /execution/
+parameters is occurring more frequently than anticipated. Consider
+adding support for it as a another package.
