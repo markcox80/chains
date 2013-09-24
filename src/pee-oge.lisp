@@ -63,7 +63,7 @@
 		    (namestring program-path)
 		    (namestring (merge-pathnames "oge-program-arguments"))))
 
-	  (with-open-file (out "oge.sh":if-exists if-exists :direction :output)
+	  (with-open-file (out "oge.sh" :if-exists if-exists :direction :output)
 	    (format out "#!/bin/sh~%")
 	    (format out "set -e~%")
 	    (format out "
