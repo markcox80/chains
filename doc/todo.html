@@ -1,13 +1,13 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="iso-8859-1"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
                "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
 <title>Notes and things to be done.</title>
-<meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+<meta http-equiv="Content-Type" content="text/html;charset=iso-8859-1"/>
 <meta name="title" content="Notes and things to be done."/>
 <meta name="generator" content="Org-mode"/>
-<meta name="generated" content="2013-09-23T10:48+1000"/>
+<meta name="generated" content="2013-10-01T09:19+1000"/>
 <meta name="author" content="Mark Cox"/>
 <meta name="description" content=""/>
 <meta name="keywords" content=""/>
@@ -125,6 +125,7 @@ for the JavaScript code in this tag.
 <li><a href="#sec-1">1 Best practices document.</a></li>
 <li><a href="#sec-2">2 Composition of task input functions</a></li>
 <li><a href="#sec-3">3 Iterative execution parameters.</a></li>
+<li><a href="#sec-4">4 Destructuring chains</a></li>
 </ul>
 </div>
 </div>
@@ -266,11 +267,32 @@ can be assigned the values of the <code>*CHAIN*</code> and <code>*AREA*</code> v
 parameters is occurring more frequently than anticipated. Consider
 adding support for it as a another package.
 </p></div>
+
+</div>
+
+<div id="outline-container-4" class="outline-2">
+<h2 id="sec-4"><span class="section-number-2">4</span> Destructuring chains</h2>
+<div class="outline-text-2" id="text-4">
+
+<p>Add a macro <code>WITH-TASKS</code> which establishes lexical bindings
+for particular tasks in the chain.
+</p>
+
+
+<pre class="src src-lisp">(<span style="color: #728a05;">let</span> ((chain (list (make-instance 'task-1) (make-instance 'task-2) (make-instance 'task-3))))
+  (<span style="color: #728a05;">with-tasks</span> ((task-1 'task-1)
+               (task-3 'task-3))
+      chain
+    (print task-1)
+    (print task-3)))
+</pre>
+
+</div>
 </div>
 </div>
 
 <div id="postamble">
-<p class="date">Date: 2013-09-23T10:48+1000</p>
+<p class="date">Date: 2013-10-01T09:19+1000</p>
 <p class="author">Author: Mark Cox</p>
 <p class="creator"><a href="http://orgmode.org">Org</a> version 7.9.4 with <a href="http://www.gnu.org/software/emacs/">Emacs</a> version 24</p>
 <a href="http://validator.w3.org/check?uri=referer">Validate XHTML 1.0</a>

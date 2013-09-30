@@ -82,3 +82,14 @@ can be assigned the values of the ~*CHAIN*~ and ~*AREA*~ variables.
 Repeatedly executing the same operation with different /execution/
 parameters is occurring more frequently than anticipated. Consider
 adding support for it as a another package.
+* Destructuring chains
+Add a macro ~WITH-TASKS~ which establishes lexical bindings
+for particular tasks in the chain.
+#+begin_src lisp
+  (let ((chain (list (make-instance 'task-1) (make-instance 'task-2) (make-instance 'task-3))))
+    (with-tasks ((task-1 'task-1)
+                 (task-3 'task-3))
+        chain
+      (print task-1)
+      (print task-3)))
+#+end_src
