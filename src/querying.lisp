@@ -1,6 +1,6 @@
 (in-package "CHAINS")
 
-(defun contains-task-p (chain task-class)
+(defun contains-task-p (chain task-class &key (from-end t))
   "Search the list CHAIN for an instances whose class is a subclass of
 TASK-CLASS."
   (check-type chain list)
@@ -11,7 +11,8 @@ TASK-CLASS."
     (find-if #'(lambda (class)
 		 (closer-mop:subclassp class task-class))
 	     chain
-	     :key #'class-of)))
+	     :key #'class-of
+	     :from-end from-end)))
 
 (defun find-chains-with-task (chains task-class)
   (check-type task-class (or symbol task-class))
