@@ -166,3 +166,12 @@
     (multiple-value-bind (arg1 arg2) (evaluate-task-input-function tif chain)
       (assert-equal 'input-data-1-1 arg1)
       (assert-equal 3 arg2))))
+
+(define-test evaluate-task-input-function/many
+  (let* ((chain (list (make-instance 'input-data-1-1 :sigma 2)
+		      (make-instance 'input-data-1-1 :sigma 3)))
+	 (ti (find-task-input 'algorithm-input-data))
+	 (tif   (compute-task-input-function ti (find-class 'algorithm-1) (list (find-class 'input-data-1-1)))))
+    (multiple-value-bind (arg1 arg2) (evaluate-task-input-function tif chain)
+      (assert-equal 'input-data-1-1 arg1)
+      (assert-equal 4 arg2))))
