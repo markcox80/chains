@@ -88,7 +88,7 @@ Custom Options:
       (assert-true (chain-completed-p area (elt chains 1)))
 
       ;; Arguments
-      (assert-equal "laughing-NIL" (task-value 'chains.tests::execution-task-3 (first chains) area))
+      (assert-equal "laughing-at-nothing" (task-value 'chains.tests::execution-task-3 (first chains) area))
       (lisp-executable:program-funcall 'test-program "tmp-data.sexp" "3" "0" "--force" "--text" "man")
       (assert-equal "laughing-man" (task-value 'chains.tests::execution-task-3 (first chains) area)))))
 

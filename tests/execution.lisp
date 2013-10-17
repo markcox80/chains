@@ -29,7 +29,8 @@
     :reader gamma)))
 
 (define-operation (task execution-task-3) ()
-  (format nil "laughing-~A" (getf (operation-plist) :text)))
+  (format nil "laughing-~A" (or (getf (operation-plist) :text)
+				"at-nothing")))
 
 (defmethod task-completed-p ((task execution-task-3))
   (and (call-next-method)
@@ -185,13 +186,13 @@
 	(assert-true (chain-completed-p *area* chain))
 	(assert-equal :task-1 (task-value 'execution-task-1 chain))
 	(assert-equal "hello-world" (task-value 'execution-task-2 chain))
-	(assert-equal "laughing-NIL" (task-value 'execution-task-3 chain)))
+	(assert-equal "laughing-at-nothing" (task-value 'execution-task-3 chain)))
 
       (assert-true (null *chain*))
       (dolist (*chain* chains)
 	(assert-equal :task-1 (task-value 'execution-task-1))
 	(assert-equal "hello-world" (task-value 'execution-task-2))
-	(assert-equal "laughing-NIL" (task-value 'execution-task-3))))))
+	(assert-equal "laughing-at-nothing" (task-value 'execution-task-3))))))
 
 
 (define-task task-complete-p-t1 ()
