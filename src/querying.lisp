@@ -256,7 +256,10 @@ equal to one of the classes in TASK-CLASSES."
        (lambda (chain-a chain-b)
 	 (let ((pos-a (position-of-one-of-classes chain-a task-classes))
 	       (pos-b (position-of-one-of-classes chain-b task-classes)))
-	   (assert (and pos-a pos-b))
+	   (unless pos-a
+	     (error "The chain ~A does not contain a task whose class is one of ~A." chain-a task-classes))
+	   (unless pos-b
+	     (error "The chain ~A does not contain a task whose class is one of ~A." chain-b task-classes))
 	   (< pos-a pos-b)))))
     (t
      (error "Unable to process expression ~A" expression))))
