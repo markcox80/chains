@@ -93,3 +93,12 @@ for particular tasks in the chain.
       (print task-1)
       (print task-3)))
 #+end_src
+* Interrupting PARALLEL-PERFORM
+Sending an interrupt during CHAINS.PEE:PARALLEL-PERFORM does not kill
+the threads/processes that are executing the tasks.
+
+The code does not catch any conditions that are signalled whilst the
+following is code from PARALLEL-PERFORM is being executed.
+#+begin_src lisp
+  (map nil #'bordeaux-threads:join-thread (processes queue))
+#+end_src
