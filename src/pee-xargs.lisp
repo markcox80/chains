@@ -25,7 +25,7 @@
 
       (let ((*default-pathname-defaults* (parse-namestring pathspec)))
 	(let ((if-exists (if (eql if-exists :supersede-all) :supersede if-exists)))
-	  (write-program-data "xargs-data.sexp" area tree)
+	  (write-program-data "xargs-data.sexp" area tree :if-exists if-exists)
 
 	  (with-open-file (out "xargs-program.sh" :if-exists if-exists :direction :output)
 	    (format out "#!/bin/sh~%")
