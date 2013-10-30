@@ -102,3 +102,7 @@ following is code from PARALLEL-PERFORM is being executed.
 #+begin_src lisp
   (map nil #'bordeaux-threads:join-thread (processes queue))
 #+end_src
+* Evaluating task inputs for a given chain outside of PERFORM.
+The ability to compute the task input for a given chain is
+particularly useful for computing results. No such function exists in
+chains at present.
