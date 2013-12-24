@@ -3,4 +3,5 @@ which a number of tasks are executed to produce a result. Its main
 purpose is to accommodate scenarios where the line between a
 scientific experiment and algorithmic experimentation is blurred.
 
-More documentation can be found in doc/chains.html.
+More documentation can be found in doc/chains.html or
+[online](http://markcox80.github.io/chains).
