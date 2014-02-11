@@ -12,9 +12,10 @@
 		       ;; The above does not work on ABCL as
 		       ;; SLOT-DEFINITION-LOCATION returns NIL. (2013/07/03)
 		       #+abcl (closer-mop:compute-slots (class-of task)))))
-    (if slots
-	(format nil "~A-~{~A~^-~}" (string-downcase (type-of task)) slots)
-	(string-downcase (type-of task)))))
+    (substitute #\. #\/
+		(if slots
+		    (format nil "~A-~{~A~^-~}" (string-downcase (type-of task)) slots)
+		    (string-downcase (type-of task))))))
 
 ;; Serialisation of objects and tasks
 (defgeneric object-sexp (object))
