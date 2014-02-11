@@ -35,8 +35,8 @@ could also be written as
   (images (task-value (contains-task-p 'select-subject chain)))
 #+end_src
 
-There is an argument for the making task inputs functions themselves
-as it would make it easier to implement result produce functions. For
+There is an argument for making task inputs functions themselves as it
+would make it easier to implement result produce functions. For
 example
 #+begin_src lisp
   (defun output-results (directory chain area)
