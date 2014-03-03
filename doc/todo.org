@@ -106,3 +106,34 @@ following is code from PARALLEL-PERFORM is being executed.
 The ability to compute the task input for a given chain is
 particularly useful for computing results. No such function exists in
 chains at present.
+* Queries
+Consider the following two sequences of chains.
+#+begin_src lisp
+  (let ((chains-1 (list (list task-1 task-2 task-3 task-4) ...))
+        (chains-2 (list (list task-1 task-2 task-3 OTHER task-4) ..)))
+    )
+#+end_src
+
+It is common to treat the output of task-4 to be of interest, but
+grouped according the other tasks as being equal. i.e.
+
+#+begin_src lisp
+  (let ((groups (chains:group-chains chains-1 '(and (= task-1) (= task-2) (= task-3)))))
+    ...)
+#+end_src
+
+The grouping expression passed to ~CHAINS:GROUP-CHAINS~ would need to
+change for the second chain above.
+#+begin_src lisp
+  (let ((groups (chains:group-chains chains-2 '(and (= task-1) (= task-2) (= task-3) (= other)))))
+    ...)
+#+end_src
+
+Consider adding a ~BEFORE-TASK~ sort expression such that:
+#+begin_src lisp
+  (let ((groups (chains:group-chains chains-1 '(= (before-task other)))))
+    ...)
+#+end_src
+
+It is probably worth consider providing the ability to extend the
+language of the expressions supported by ~GROUP-CHAINS~.
