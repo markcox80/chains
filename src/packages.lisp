@@ -163,4 +163,9 @@
   (:export #:prepare-oge-script)
 
   ;; XARGS
-  (:export #:prepare-xargs-script))
+  (:export #:prepare-xargs-script)
+
+  ;; PBS / Torque
+  (:export #:*pbs-arguments-string*
+	   #:*pbs-program-arguments-string*
+	   #:prepare-pbs-script))
