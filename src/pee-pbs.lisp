@@ -18,7 +18,13 @@
       (let ((*default-pathname-defaults* (parse-namestring pathspec)))
 	(ensure-directories-exist (merge-pathnames output))       
 
-	(let ((if-exists (if (eql if-exists :supersede-all) :supersede if-exists)))
+	(let ((if-exists (cond
+			   ((eql if-exists :supersede-all)
+			    :supersede)
+			   (if-exists-p
+			    if-exists)
+			   (t
+			    :error))))
 	  (write-program-data "pbs-data.sexp" area tree :if-exists if-exists)
 
 	  (with-open-file (out "pbs-program.sh" :if-exists if-exists :direction :output)
@@ -70,9 +76,15 @@ sh ~S ~S ~d~%"
 		       (namestring (merge-pathnames "pbs-data.sexp"))
 		       depth))))
 	
-	(let ((if-exists (if if-exists-p
-			     if-exists
-			     :error)))
+	(let ((if-exists (case if-exists
+			   (:supersede-all
+			    :supersede)
+			   (:supersede
+			    nil)
+			   (t
+			    (if if-exists-p
+				if-exists
+				:error)))))
 	  (with-open-file (out "pbs-arguments" :if-exists if-exists :direction :output)
 	    (when out
 	      (write-string *pbs-arguments-string* out)))
