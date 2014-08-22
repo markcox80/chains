@@ -3,7 +3,17 @@
 (defvar *pbs-arguments-string* "")
 (defvar *pbs-program-arguments-string* "")
 
-(defun prepare-pbs-script (directory area tree program &key (if-exists :error if-exists-p) (output "stdout/"))
+(defun determine-pbs-qsub-output-arguments (directory output error)
+  (assert (stringp output))
+  (format nil "~{~A~^ ~}"
+	  (list (format nil "-o ~S" (namestring (merge-pathnames output directory)))
+		(cond
+		    ((eql error :output)		     
+		     "-j oe")
+		    (t
+		     (format nil "-e ~S" (namestring (merge-pathnames error directory))))))))
+
+(defun prepare-pbs-script (directory area tree program &key (if-exists :error if-exists-p) (output "stdout/") (error :output))
   (declare (type (member :error :supersede :supersede-all) if-exists))
   (let ((program-path (if (listp program)
 			  (apply #'lisp-executable-pathname program)
@@ -16,7 +26,9 @@
 	(error "Directory ~S already exists!" directory))
 
       (let ((*default-pathname-defaults* (parse-namestring pathspec)))
-	(ensure-directories-exist (merge-pathnames output))       
+	(ensure-directories-exist (merge-pathnames output))
+	(when (stringp error)
+	  (ensure-directories-exist (merge-pathnames error)))
 
 	(let ((if-exists (cond
 			   ((eql if-exists :supersede-all)
@@ -45,7 +57,7 @@
 		 :do		 
 		 (format out "
 LEVEL~d=`qsub -t 1-~d \\
-     -j oe -o ~S \\
+     ~A \\
      -N ~S \\
      $(cat ~S) \\
     ~A \\
@@ -55,7 +67,7 @@ echo ${LEVEL~d}
 "
 			 depth
 			 count
-			 (namestring (merge-pathnames output))
+			 (determine-pbs-qsub-output-arguments directory output error)
 			 (pathname-name program-path)
 			 (namestring (merge-pathnames "pbs-arguments"))
 			 (if (> depth 1)
