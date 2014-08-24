@@ -11,7 +11,7 @@
   #- (or darwin linux)
   (error "XARGS-SEQUENCE is not supported on your operating system."))
 
-(defun prepare-xargs-script (directory area tree program &key (if-exists :error))
+(defun prepare-xargs-script (directory area tree program &key (if-exists :error if-exists-p))
   (declare (type (member :error :supersede :supersede-all) if-exists))
   (let ((program-path (if (listp program)
 			  (apply #'lisp-executable-pathname program)
@@ -24,7 +24,13 @@
 	(error "Directory ~S already exists!" directory))
 
       (let ((*default-pathname-defaults* (parse-namestring pathspec)))
-	(let ((if-exists (if (eql if-exists :supersede-all) :supersede if-exists)))
+	(let ((if-exists (cond			   
+			   ((eql if-exists :supersede-all)
+			    :supersede)
+			   (if-exists-p
+			    if-exists)
+			   (t
+			    :error))))
 	  (write-program-data "xargs-data.sexp" area tree :if-exists if-exists)
 
 	  (with-open-file (out "xargs-program.sh" :if-exists if-exists :direction :output)
@@ -49,7 +55,15 @@
 			 (namestring (merge-pathnames "xargs-data.sexp"))
 			 depth)))))
 	
-	(let ((if-exists (if (eql if-exists :supersede) nil if-exists)))
+	(let ((if-exists (case if-exists
+			   (:supersede-all
+			    :supersede)
+			   (:supersede
+			    nil)
+			   (t
+			    (if if-exists-p
+				if-exists
+				:error)))))
 	  (with-open-file (out "xargs-arguments" :if-exists if-exists :direction :output)
 	    (when out
 	      (write-string *xargs-arguments-string* out)))
