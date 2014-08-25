@@ -7,7 +7,7 @@
 <meta http-equiv="Content-Type" content="text/html;charset=iso-8859-1"/>
 <meta name="title" content="Experiment Chains"/>
 <meta name="generator" content="Org-mode"/>
-<meta name="generated" content="2013-12-24T11:40+1000"/>
+<meta name="generated" content="2014-08-25T10:42+1000"/>
 <meta name="author" content="Mark Cox"/>
 <meta name="description" content=""/>
 <meta name="keywords" content=""/>
@@ -212,7 +212,13 @@ scientific experiment and algorithmic experimentation is blurred.
 </ul>
 </li>
 <li><a href="#sec-7">7 Obtaining Results</a></li>
-<li><a href="#sec-8">8 Parallel Execution Environments</a></li>
+<li><a href="#sec-8">8 Parallel Execution Environments</a>
+<ul>
+<li><a href="#sec-8-1">8.1 Sun / Oracle Grid Engine</a></li>
+<li><a href="#sec-8-2">8.2 xargs</a></li>
+<li><a href="#sec-8-3">8.3 PBS / Torque</a></li>
+</ul>
+</li>
 <li><a href="#sec-9">9 Acknowledgments</a></li>
 </ul>
 </div>
@@ -496,10 +502,10 @@ operation is. An operation can be understood as being a method like so
 
 
 <pre class="src src-lisp">(<span style="color: #728a05;">defmethod</span> <span style="color: #2075c7;">perform-task</span> ((task task-class) chain)
-  <span style="color: #465a61; font-style: italic;">;; </span><span style="color: #465a61; font-style: italic;">Obtain task inputs</span>
+  <span style="color: #81908f; font-style: italic;">;; </span><span style="color: #81908f; font-style: italic;">Obtain task inputs</span>
   (<span style="color: #728a05;">let</span> ((var-a (compute-task-input <span style="color: #728a05;">:input-a</span> (find-class 'task-class) chain))
         (var-b (compute-task-input <span style="color: #728a05;">:input-b</span> (find-class 'task-class) chain)))
-    <span style="color: #465a61; font-style: italic;">;; </span><span style="color: #465a61; font-style: italic;">Task Body</span>
+    <span style="color: #81908f; font-style: italic;">;; </span><span style="color: #81908f; font-style: italic;">Task Body</span>
     ...))
 </pre>
 
@@ -519,8 +525,8 @@ in the <code>CHAINS</code> system.
 </p>
 
 
-<pre class="src src-lisp">(<span style="color: #728a05;">define-task-input</span> ensemble-images) <span style="color: #465a61; font-style: italic;">;; </span><span style="color: #465a61; font-style: italic;">The images fed to the algorithm</span>
-(<span style="color: #728a05;">define-task-input</span> initial-guess)   <span style="color: #465a61; font-style: italic;">;; </span><span style="color: #465a61; font-style: italic;">The initial guess of the object's location</span>
+<pre class="src src-lisp">(<span style="color: #728a05;">define-task-input</span> ensemble-images) <span style="color: #81908f; font-style: italic;">;; </span><span style="color: #81908f; font-style: italic;">The images fed to the algorithm</span>
+(<span style="color: #728a05;">define-task-input</span> initial-guess)   <span style="color: #81908f; font-style: italic;">;; </span><span style="color: #81908f; font-style: italic;">The initial guess of the object's location</span>
 
 (<span style="color: #728a05;">define-operation</span> (object algorithm) ((images ensemble-images) (guess initial-guess))
   (perorm-congealing images guess <span style="color: #728a05;">:sigma</span> (sigma object)))
@@ -648,7 +654,7 @@ output for the task is as follows
     <span style="color: #728a05;">:reader</span> rho)))
 
 (task-string (make-instance 'example-task <span style="color: #728a05;">:sigma</span> 0.5 <span style="color: #728a05;">:rho</span> 1.1))
-<span style="color: #465a61; font-style: italic;">;; </span><span style="color: #465a61; font-style: italic;">"example-task-0.5-1.1"</span>
+<span style="color: #81908f; font-style: italic;">;; </span><span style="color: #81908f; font-style: italic;">"example-task-0.5-1.1"</span>
 </pre>
 
 <p>
@@ -899,7 +905,7 @@ problem
 <pre class="src src-lisp">(<span style="color: #728a05;">define-design</span> congealing
   ((<span style="color: #728a05;">:documentation</span> <span style="color: #259185;">"A set of experiments for the paper XYZ."</span>))
 
-  <span style="color: #465a61; font-style: italic;">;; </span><span style="color: #465a61; font-style: italic;">Images</span>
+  <span style="color: #81908f; font-style: italic;">;; </span><span style="color: #81908f; font-style: italic;">Images</span>
   ((image-appearance-and-lighting (<span style="color: #728a05;">:lighting-variation</span> 0 0.1 0.2 0.3 0.4)
                                   (<span style="color: #728a05;">:number-of-subjects</span> 1 2 5 10 20)
                                   (<span style="color: #728a05;">:samples-per-subject</span> 1 5 10)))
@@ -909,17 +915,17 @@ problem
   ((synthetic-occlusion (<span style="color: #728a05;">:count</span> 0 1 2)
                         (<span style="color: #728a05;">:size</span> 0.5 0.1 0.2)))
 
-  <span style="color: #465a61; font-style: italic;">;; </span><span style="color: #465a61; font-style: italic;">Initial guess of object location</span>
+  <span style="color: #81908f; font-style: italic;">;; </span><span style="color: #81908f; font-style: italic;">Initial guess of object location</span>
   ((distance-away-from-ground-truth (<span style="color: #728a05;">:distance</span> 2 5 10 15)))
 
   ((geometric-cross-validation (<span style="color: #728a05;">:sample</span> 0 1 2)))
 
-  <span style="color: #465a61; font-style: italic;">;; </span><span style="color: #465a61; font-style: italic;">Algorithms to be executed</span>
+  <span style="color: #81908f; font-style: italic;">;; </span><span style="color: #81908f; font-style: italic;">Algorithms to be executed</span>
   ((learned-miller (<span style="color: #728a05;">:deltas</span> '(1 1 0.1 0.1 1 1)))
    least-squares-congealing
    rasl)
 
-  <span style="color: #465a61; font-style: italic;">;; </span><span style="color: #465a61; font-style: italic;">Results to be computed.</span>
+  <span style="color: #81908f; font-style: italic;">;; </span><span style="color: #81908f; font-style: italic;">Results to be computed.</span>
   (alignment-performance))
 </pre>
 
@@ -1098,8 +1104,8 @@ functions. These are
 </p>
 
 
-<pre class="src src-lisp">(<span style="color: #728a05;">defun</span> <span style="color: #2075c7;">task-data-directory</span> (task)) <span style="color: #465a61; font-style: italic;">;; </span><span style="color: #465a61; font-style: italic;">The directory where any data for TASK is stored.</span>
-(<span style="color: #728a05;">defun</span> <span style="color: #2075c7;">task-value</span> (task)) <span style="color: #465a61; font-style: italic;">;; </span><span style="color: #465a61; font-style: italic;">The value of the result computed for TASK.</span>
+<pre class="src src-lisp">(<span style="color: #728a05;">defun</span> <span style="color: #2075c7;">task-data-directory</span> (task)) <span style="color: #81908f; font-style: italic;">;; </span><span style="color: #81908f; font-style: italic;">The directory where any data for TASK is stored.</span>
+(<span style="color: #728a05;">defun</span> <span style="color: #2075c7;">task-value</span> (task)) <span style="color: #81908f; font-style: italic;">;; </span><span style="color: #81908f; font-style: italic;">The value of the result computed for TASK.</span>
 </pre>
 
 <p>
@@ -1277,7 +1283,7 @@ threads that <code>PARALLEL-PERFORM</code> uses to execute the <code>TREE</code>
 <p>
 There also exists support for generating a command line program which
 can be invoked by <code>xargs</code> or a distributed computing environments like
-the Oracle Grid Engine.
+the Oracle Grid Engine or PBS/Torque.
 </p>
 <p>
 At the heart of this functionality is the <code>DEFINE-PROGRAM</code> macro which
@@ -1349,24 +1355,30 @@ have implemented the <code>OBJECT-SEXP</code> method.
 </p>
 <p>
 One can invoke the generated executable manually, however, there are
-two functions <code>PREPARE-OGE-SCRIPT</code> and <code>PREPARE-XARGS-SCRIPT</code>, which
-generate shell scripts which perform the necessary invocations of the
-program to execute an entire tree.
+functions which generate shell scripts which perform the necessary
+invocations of the program to execute an entire tree.
 </p>
-<p>
-The function <code>PREPARE-OGE-SCRIPT</code> is used to produce scripts which use
-the Oracle Grid Engine to invoke the defined program.
+
+</div>
+
+<div id="outline-container-8-1" class="outline-3">
+<h3 id="sec-8-1"><span class="section-number-3">8.1</span> Sun / Oracle Grid Engine</h3>
+<div class="outline-text-3" id="text-8-1">
+
+<p>The function <code>PREPARE-OGE-SCRIPT</code> is used to produce scripts which use
+the Oracle Grid Engine to invoke a specified program.
 </p>
 
 
 <pre class="src src-lisp">(<span style="color: #728a05;">defun</span> <span style="color: #2075c7;">prepare-oge-script</span> (directory area tree program <span style="color: #a57705;">&amp;key</span> (if-exists <span style="color: #728a05;">:error</span>) (output <span style="color: #259185;">"stdout/"</span>) (<span style="color: #c60007; font-weight: bold;">error</span> <span style="color: #728a05;">:output</span>)))
 </pre>
 
+
 <p>
-where <code>DIRECTORY</code> is the location to store the generated files, <code>AREA</code>
-is a prepared area, <code>TREE</code> is the tree to be executed, <code>PROGRAM</code> is
-the pathname to the generated program or a list containing the path to
-a <code>LISP-EXECUTABLE:EXECUTABLE</code> component in an ASDF system.
+<code>DIRECTORY</code> is the location to store the generated files, <code>AREA</code> is a
+prepared area, <code>TREE</code> is the tree to be executed and <code>PROGRAM</code> is the
+pathname to the generated program or a list containing the path to a
+<code>LISP-EXECUTABLE:EXECUTABLE</code> component in an ASDF system.
 </p>
 <p>
 The files generated in <code>DIRECTORY</code> are as follows
@@ -1376,7 +1388,7 @@ The files generated in <code>DIRECTORY</code> are as follows
 <dt><code>oge-program.sh</code></dt><dd>A thin wrapper over the executable pathname
      which extracts information from the grid engine.
 </dd>
-<dt><code>program-arguments</code></dt><dd>A user editable file for passing command
+<dt><code>oge-program-arguments</code></dt><dd>A user editable file for passing command
      line arguments to the program.
 </dd>
 <dt><code>oge-arguments</code></dt><dd>A user editable file for passing command line
@@ -1395,8 +1407,8 @@ what to do if any of the above files exist. Valid values are
 <dt><code>:ERROR</code></dt><dd>Signal an error if any of the above files exist.
 </dd>
 <dt><code>:SUPERSEDE</code></dt><dd>Overwrite <code>oge.sh</code>, <code>oge-program.sh</code> and
-                  <code>tree.sexp</code>. Do not touch <code>program-arguments</code> and
-                  <code>oge-arguments</code>.
+                  <code>oge-data.sexp</code>. Do not touch
+                  <code>oge-program-arguments</code> and <code>oge-arguments</code>.
 </dd>
 <dt><code>:SUPERSEDE-ALL</code></dt><dd>Overwrite all of the above files.
 </dd>
@@ -1414,13 +1426,21 @@ that the standard error stream is <i>joined</i> to the standard output
 stream.
 </p>
 <p>
-The default contents for the files <code>program-arguments</code> and
+The default contents for the files <code>oge-program-arguments</code> and
 <code>oge-arguments</code> are obtained from the dynamic variables
-<code>*OGE-PROGRAM-ARGUMENTS-STRING*</code> and <code>*OGE-ARGUMENTS-STRING*</code>.
+<code>*OGE-PROGRAM-ARGUMENTS-STRING*</code> and <code>*OGE-ARGUMENTS-STRING*</code>
+respectively.
 </p>
-<p>
-The function <code>PREPARE-XARGS-SCRIPT</code> is like <code>PREPARE-OGE-SCRIPT</code>, but
-it prepares scripts to be executed with xargs. 
+</div>
+
+</div>
+
+<div id="outline-container-8-2" class="outline-3">
+<h3 id="sec-8-2"><span class="section-number-3">8.2</span> xargs</h3>
+<div class="outline-text-3" id="text-8-2">
+
+<p>The function <code>PREPARE-XARGS-SCRIPT</code> is like <code>PREPARE-OGE-SCRIPT</code>, but
+it prepares a script that uses <code>xargs(1)</code> as the scheduler.
 </p>
 
 
@@ -1428,7 +1448,129 @@ it prepares scripts to be executed with xargs.
 </pre>
 
 
+<p>
+<code>DIRECTORY</code> is the location to store the generated files, <code>AREA</code> is a
+prepared area, <code>TREE</code> is the tree of experiments to be executed and
+<code>PROGRAM</code> is the pathname to the generated program or a list
+containing the path to a <code>LISP-EXECUTABLE:EXECUTABLE</code> component in an
+ASDF system.
+</p>
+<p>
+The files generated in <code>DIRECTORY</code> are as follows
+</p><dl>
+<dt><code>xargs.sh</code></dt><dd>The script which invokes <code>xargs(1)</code> to run all of the
+                experiments.
+</dd>
+<dt><code>xargs-program.sh</code></dt><dd>A shell script which incorporates any
+     arguments in <code>xargs-program-arguments</code> in to the invocation of
+     <code>PROGRAM</code>.
+</dd>
+<dt><code>xargs-program-arguments</code></dt><dd>A user editable file for passing
+     command line arguments to <code>PROGRAM</code>.
+</dd>
+<dt><code>xargs-arguments</code></dt><dd>A user editable file for passing command line
+     arguments to <code>xargs</code>.
+</dd>
+<dt><code>xargs-data.sexp</code></dt><dd>A file containing the area and tree
+     to be executed.
+</dd>
+</dl>
 
+
+<p>
+The keyword argument <code>IF-EXISTS</code> in <code>PREPARE-XARGS-SCRIPT</code> specifies
+what to do if any of the above files exist. Valid values are
+</p><dl>
+<dt><code>:ERROR</code></dt><dd>Signal an error if any of the above files exist.
+</dd>
+<dt><code>:SUPERSEDE</code></dt><dd>Overwrite <code>xargs.sh</code>, <code>xargs-program.sh</code> and
+                  <code>xargs-data.sexp</code>. Do not touch
+                  <code>xargs-program-arguments</code> and <code>xargs-arguments</code>.
+</dd>
+<dt><code>:SUPERSEDE-ALL</code></dt><dd>Overwrite all of the above files.
+</dd>
+</dl>
+
+
+<p>
+The default contents for the files <code>xargs-program-arguments</code> and
+<code>xargs-arguments</code> are obtained from the dynamic variables
+<code>*XARGS-PROGRAM-ARGUMENTS-STRING*</code> and <code>*XARGS-ARGUMENTS-STRING*</code>
+respectively.
+</p>
+</div>
+
+</div>
+
+<div id="outline-container-8-3" class="outline-3">
+<h3 id="sec-8-3"><span class="section-number-3">8.3</span> PBS / Torque</h3>
+<div class="outline-text-3" id="text-8-3">
+
+<p>The function <code>PREPARE-PBS-SCRIPT</code> is like <code>PREPARE-OGE-SCRIPT</code>, but it
+prepares a script that invokes the PBS command <code>qsub</code>.
+</p>
+
+
+<pre class="src src-lisp">(<span style="color: #728a05;">defun</span> <span style="color: #2075c7;">prepare-pbs-script</span> (directory area tree program <span style="color: #a57705;">&amp;key</span> (if-exists <span style="color: #728a05;">:error</span>) (output <span style="color: #259185;">"stdout/"</span>) (<span style="color: #c60007; font-weight: bold;">error</span> <span style="color: #728a05;">:output</span>)))
+</pre>
+
+
+<p>
+<code>DIRECTORY</code> is the location to store the generated files, <code>AREA</code> is a
+prepared area, <code>TREE</code> is the tree of experiments to be executed and
+<code>PROGRAM</code> is the pathname to the generated program or a list
+containing the path to a <code>LISP-EXECUTABLE:EXECUTABLE</code> component in an
+ASDF system.
+</p>
+<p>
+The files generated in <code>DIRECTORY</code> are as follows
+</p><dl>
+<dt><code>pbs.sh</code></dt><dd>The script which invokes <code>qsub</code> .
+</dd>
+<dt><code>pbs-program.sh</code></dt><dd>A shell script which incorporates any
+     arguments in <code>pbs-program-arguments</code> in to the invocation of
+     <code>PROGRAM</code>.
+</dd>
+<dt><code>pbs-program-arguments</code></dt><dd>A user editable file for passing
+     command line arguments to <code>PROGRAM</code>.
+</dd>
+<dt><code>pbs-arguments</code></dt><dd>A user editable file for passing command line
+     arguments to <code>qsub</code>.
+</dd>
+<dt><code>pbs-data.sexp</code></dt><dd>A file containing the area and tree
+     to be executed.
+</dd>
+<dt><code>pbs-script-*.sh</code></dt><dd>An intermediary shell script which invokes
+     <code>pbs-program.sh</code> for a specific depth of <code>TREE</code>. These shell
+     scripts are required due to limitations in Torque's
+     implementation of PBS.
+</dd>
+</dl>
+
+
+<p>
+The keyword argument <code>IF-EXISTS</code> in <code>PREPARE-PBS-SCRIPT</code> specifies
+what to do if any of the above files exist. Valid values are
+</p><dl>
+<dt><code>:ERROR</code></dt><dd>Signal an error if any of the above files exist.
+</dd>
+<dt><code>:SUPERSEDE</code></dt><dd>Overwrite <code>pbs.sh</code>, <code>pbs-program.sh</code> and
+                  <code>pbs-data.sexp</code>. Do not touch
+                  <code>pbs-program-arguments</code> and <code>pbs-arguments</code>.
+</dd>
+<dt><code>:SUPERSEDE-ALL</code></dt><dd>Overwrite all of the above files.
+</dd>
+</dl>
+
+
+<p>
+The default contents for the files <code>pbs-program-arguments</code> and
+<code>pbs-arguments</code> are obtained from the dynamic variables
+<code>*PBS-PROGRAM-ARGUMENTS-STRING*</code> and <code>*PBS-ARGUMENTS-STRING*</code>
+respectively.
+</p>
+
+</div>
 </div>
 
 </div>
@@ -1446,9 +1588,9 @@ Lastly, big thanks to the Lisp community for all their excellent work.
 </div>
 
 <div id="postamble">
-<p class="date">Date: 2013-12-24T11:40+1000</p>
+<p class="date">Date: 2014-08-25T10:42+1000</p>
 <p class="author">Author: Mark Cox</p>
-<p class="creator"><a href="http://orgmode.org">Org</a> version 7.9.4 with <a href="http://www.gnu.org/software/emacs/">Emacs</a> version 24</p>
+<p class="creator"><a href="http://orgmode.org">Org</a> version 7.9.3f with <a href="http://www.gnu.org/software/emacs/">Emacs</a> version 24</p>
 <a href="http://validator.w3.org/check?uri=referer">Validate XHTML 1.0</a>
 
 </div>

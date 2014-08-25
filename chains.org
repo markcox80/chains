@@ -810,7 +810,7 @@ threads that ~PARALLEL-PERFORM~ uses to execute the ~TREE~.
 
 There also exists support for generating a command line program which
 can be invoked by ~xargs~ or a distributed computing environments like
-the Oracle Grid Engine.
+the Oracle Grid Engine or PBS/Torque.
 
 At the heart of this functionality is the ~DEFINE-PROGRAM~ macro which
 provides the ability to define a new executable which simply invokes
@@ -863,25 +863,26 @@ This function requires the ~AREA~ and the values stored in ~TREE~ to
 have implemented the ~OBJECT-SEXP~ method.
 
 One can invoke the generated executable manually, however, there are
-two functions ~PREPARE-OGE-SCRIPT~ and ~PREPARE-XARGS-SCRIPT~, which
-generate shell scripts which perform the necessary invocations of the
-program to execute an entire tree.
+functions which generate shell scripts which perform the necessary
+invocations of the program to execute an entire tree.
 
+** Sun / Oracle Grid Engine
 The function ~PREPARE-OGE-SCRIPT~ is used to produce scripts which use
-the Oracle Grid Engine to invoke the defined program.
+the Oracle Grid Engine to invoke a specified program.
 #+begin_src lisp
   (defun prepare-oge-script (directory area tree program &key (if-exists :error) (output "stdout/") (error :output)))
 #+end_src
-where ~DIRECTORY~ is the location to store the generated files, ~AREA~
-is a prepared area, ~TREE~ is the tree to be executed, ~PROGRAM~ is
-the pathname to the generated program or a list containing the path to
-a ~LISP-EXECUTABLE:EXECUTABLE~ component in an ASDF system.
+
+~DIRECTORY~ is the location to store the generated files, ~AREA~ is a
+prepared area, ~TREE~ is the tree to be executed and ~PROGRAM~ is the
+pathname to the generated program or a list containing the path to a
+~LISP-EXECUTABLE:EXECUTABLE~ component in an ASDF system.
 
 The files generated in ~DIRECTORY~ are as follows
 - ~oge.sh~ :: The script to be executed on the job submission host.
 - ~oge-program.sh~ :: A thin wrapper over the executable pathname
      which extracts information from the grid engine.
-- ~program-arguments~ :: A user editable file for passing command
+- ~oge-program-arguments~ :: A user editable file for passing command
      line arguments to the program.
 - ~oge-arguments~ :: A user editable file for passing command line
      arguments to the grid engine scheduler.
@@ -892,8 +893,8 @@ The keyword argument ~IF-EXISTS~ in ~PREPARE-OGE-SCRIPT~ specifies
 what to do if any of the above files exist. Valid values are
 - ~:ERROR~ :: Signal an error if any of the above files exist.
 - ~:SUPERSEDE~ :: Overwrite ~oge.sh~, ~oge-program.sh~ and
-                  ~tree.sexp~. Do not touch ~program-arguments~ and
-                  ~oge-arguments~.
+                  ~oge-data.sexp~. Do not touch
+                  ~oge-program-arguments~ and ~oge-arguments~.
 - ~:SUPERSEDE-ALL~ :: Overwrite all of the above files.
 
 The keyword arguments ~OUTPUT~ and ~ERROR~ specify what to do with the
@@ -905,12 +906,88 @@ permitted to pass the keyword ~:OUTPUT~. The keyword ~:OUTPUT~ states
 that the standard error stream is /joined/ to the standard output
 stream.
 
-The default contents for the files ~program-arguments~ and
+The default contents for the files ~oge-program-arguments~ and
 ~oge-arguments~ are obtained from the dynamic variables
-~*OGE-PROGRAM-ARGUMENTS-STRING*~ and ~*OGE-ARGUMENTS-STRING*~.
+~*OGE-PROGRAM-ARGUMENTS-STRING*~ and ~*OGE-ARGUMENTS-STRING*~
+respectively.
 
+** xargs
 The function ~PREPARE-XARGS-SCRIPT~ is like ~PREPARE-OGE-SCRIPT~, but
-it prepares scripts to be executed with xargs. 
+it prepares a script that uses ~xargs(1)~ as the scheduler.
 #+begin_src lisp
   (defun prepare-xargs-script (directory area tree program &key (if-exists :error)))
 #+end_src
+
+~DIRECTORY~ is the location to store the generated files, ~AREA~ is a
+prepared area, ~TREE~ is the tree of experiments to be executed and
+~PROGRAM~ is the pathname to the generated program or a list
+containing the path to a ~LISP-EXECUTABLE:EXECUTABLE~ component in an
+ASDF system.
+
+The files generated in ~DIRECTORY~ are as follows
+- ~xargs.sh~ :: The script which invokes ~xargs(1)~ to run all of the
+                experiments.
+- ~xargs-program.sh~ :: A shell script which incorporates any
+     arguments in ~xargs-program-arguments~ in to the invocation of
+     ~PROGRAM~.
+- ~xargs-program-arguments~ :: A user editable file for passing
+     command line arguments to ~PROGRAM~.
+- ~xargs-arguments~ :: A user editable file for passing command line
+     arguments to ~xargs~.
+- ~xargs-data.sexp~ :: A file containing the area and tree
+     to be executed.
+
+The keyword argument ~IF-EXISTS~ in ~PREPARE-XARGS-SCRIPT~ specifies
+what to do if any of the above files exist. Valid values are
+- ~:ERROR~ :: Signal an error if any of the above files exist.
+- ~:SUPERSEDE~ :: Overwrite ~xargs.sh~, ~xargs-program.sh~ and
+                  ~xargs-data.sexp~. Do not touch
+                  ~xargs-program-arguments~ and ~xargs-arguments~.
+- ~:SUPERSEDE-ALL~ :: Overwrite all of the above files.
+
+The default contents for the files ~xargs-program-arguments~ and
+~xargs-arguments~ are obtained from the dynamic variables
+~*XARGS-PROGRAM-ARGUMENTS-STRING*~ and ~*XARGS-ARGUMENTS-STRING*~
+respectively.
+
+** PBS / Torque
+The function ~PREPARE-PBS-SCRIPT~ is like ~PREPARE-OGE-SCRIPT~, but it
+prepares a script that invokes the PBS command ~qsub~.
+#+begin_src lisp
+  (defun prepare-pbs-script (directory area tree program &key (if-exists :error) (output "stdout/") (error :output)))
+#+end_src
+
+~DIRECTORY~ is the location to store the generated files, ~AREA~ is a
+prepared area, ~TREE~ is the tree of experiments to be executed and
+~PROGRAM~ is the pathname to the generated program or a list
+containing the path to a ~LISP-EXECUTABLE:EXECUTABLE~ component in an
+ASDF system.
+
+The files generated in ~DIRECTORY~ are as follows
+- ~pbs.sh~ :: The script which invokes ~qsub~ .
+- ~pbs-program.sh~ :: A shell script which incorporates any
+     arguments in ~pbs-program-arguments~ in to the invocation of
+     ~PROGRAM~.
+- ~pbs-program-arguments~ :: A user editable file for passing
+     command line arguments to ~PROGRAM~.
+- ~pbs-arguments~ :: A user editable file for passing command line
+     arguments to ~qsub~.
+- ~pbs-data.sexp~ :: A file containing the area and tree
+     to be executed.
+- ~pbs-script-*.sh~ :: An intermediary shell script which invokes
+     ~pbs-program.sh~ for a specific depth of ~TREE~. These shell
+     scripts are required due to limitations in Torque's
+     implementation of PBS.
+
+The keyword argument ~IF-EXISTS~ in ~PREPARE-PBS-SCRIPT~ specifies
+what to do if any of the above files exist. Valid values are
+- ~:ERROR~ :: Signal an error if any of the above files exist.
+- ~:SUPERSEDE~ :: Overwrite ~pbs.sh~, ~pbs-program.sh~ and
+                  ~pbs-data.sexp~. Do not touch
+                  ~pbs-program-arguments~ and ~pbs-arguments~.
+- ~:SUPERSEDE-ALL~ :: Overwrite all of the above files.
+
+The default contents for the files ~pbs-program-arguments~ and
+~pbs-arguments~ are obtained from the dynamic variables
+~*PBS-PROGRAM-ARGUMENTS-STRING*~ and ~*PBS-ARGUMENTS-STRING*~
+respectively.
