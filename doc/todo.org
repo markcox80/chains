@@ -137,3 +137,4 @@ Consider adding a ~BEFORE-TASK~ sort expression such that:
 
 It is probably worth consider providing the ability to extend the
 language of the expressions supported by ~GROUP-CHAINS~.
+* OUTPUT and ERROR arguments for PREPARE-XARGS-SCRIPT.
