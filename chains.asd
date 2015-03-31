@@ -22,5 +22,6 @@
 				     (:file "pee-programs")
 				     (:file "pee-oge")
 				     (:file "pee-xargs")
-				     (:file "pee-pbs"))))
+				     (:file "pee-pbs")
+				     (:file "pee-slurm"))))
   :in-order-to ((test-op (test-op "chains-tests"))))

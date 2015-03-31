@@ -168,4 +168,9 @@
   ;; PBS / Torque
   (:export #:*pbs-arguments-string*
 	   #:*pbs-program-arguments-string*
-	   #:prepare-pbs-script))
+	   #:prepare-pbs-script)
+
+  ;; SLURM
+  (:export #:*slurm-arguments-string*
+	   #:*slurm-program-arguments-string*
+	   #:prepare-slurm-script))
