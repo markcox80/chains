@@ -95,10 +95,20 @@
     (with-open-file (in pathname :if-does-not-exist if-does-not-exist)
       (values-list (read in)))))
 
-(defun perform-program (data-pathname depth leaf &rest args &key &allow-other-keys)
-  (multiple-value-bind (area tree) (read-program-data data-pathname)
-    (let ((chains (compute-chains-to-depth tree depth)))
-      (apply #'perform-leaf area (elt chains leaf) args))))
+(defun perform-program (data-pathname depth leaf &rest args &key chains-group-size chains-verbose &allow-other-keys)
+  (alexandria:remove-from-plistf args :chains-group-size)
+  (let* ((chains-group-size (or chains-group-size 1)))
+    (multiple-value-bind (area tree) (read-program-data data-pathname)
+      (let ((chains (compute-chains-to-depth tree depth)))
+	(loop
+	   with number-of-chains = (length chains)
+	   for index from (* leaf chains-group-size) below (min number-of-chains (* (1+ leaf) chains-group-size))
+	   do
+	     (when chains-verbose
+	       (format t "~&;;;; Starting leaf ~d at depth ~d~%" index depth))
+	     (handler-case (apply #'perform-leaf area (elt chains index) args)
+	       (error (c)
+		 (format *error-output* "~&;;;; Encountered error whilst executing leaf ~d for depth ~d:~%~A~%" index depth c))))))))
 
 (defun break-string (string)
   (split-sequence:split-sequence #\Space string))
@@ -149,7 +159,9 @@ Custom Options:
 ~A
 "
 	  (print-program-usage/option-text '(("help" nil "This helpful message.")
-					     ("force" nil "Overwrite any existing output.")))
+					     ("force" nil "Overwrite any existing output.")
+					     ("chains-verbose" nil "Output information which leaf is being executed.")
+					     ("chains-group-size" "size" "Execute <size> leaves starting at <leaf>*<size>.")))
 	  (print-program-usage/option-text help-data)
 	  (print-program-usage/suffix)))
 
@@ -163,7 +175,9 @@ Options:
 ~A
 "
 	  (print-program-usage/option-text '(("help" nil "This helpful message.")
-					     ("force" nil "Overwrite any existing output.")))
+					     ("force" nil "Overwrite any existing output.")
+					     ("chains-verbose" nil "Output information which leaf is being executed.")
+					     ("chains-group-size" "size" "Execute <size> leaves starting at <leaf>*<size>.")))
 	  (print-program-usage/suffix)))
 
 (defun print-program-usage (help-data &optional (stream *standard-output*))
@@ -178,13 +192,15 @@ Options:
 	(help-data (gensym "HELP-DATA")))
     `(let ((,help-data (list ,@(mapcar #'help-data custom-options))))
        (lisp-executable:define-program ,name
-	   (lisp-executable:&options help force
+	   (lisp-executable:&options help force chains-verbose (chains-group-size chains-group-size-value)
 				     ,@(mapcar #'option-definition custom-options)
 				     lisp-executable:&arguments ,tree ,depth ,leaf)
 	 (declare (lisp-executable:conversion-function (integer 1) ,depth)
 		  (lisp-executable:conversion-function (integer 0) ,leaf)
+		  (lisp-executable:conversion-function (integer 1) chains-group-size)
 		  ,@(reduce #'append custom-options :key #'option-declarations)
-		  (ignorable force ,@(mapcar #'custom-option-name custom-options)))
+		  (ignorable force ,@(mapcar #'custom-option-name custom-options))
+		  (ignore chains-group-size))
 	 (cond
 	   (help
 	    (print-program-usage ,help-data)
@@ -198,6 +214,8 @@ Options:
 		 ,@prologue))	    
 	    (perform-program ,tree ,depth ,leaf
 			     :force force
+			     :chains-group-size (or chains-group-size-value 1)
+			     :chains-verbose chains-verbose
 			     ,@(reduce #'append custom-options :key #'option-perform-arguments))
 	    0))))))
 
