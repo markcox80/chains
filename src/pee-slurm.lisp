@@ -17,7 +17,7 @@
 									   :defaults error)
 									  directory))))))
 
-(defun prepare-slurm-script (directory area tree program &key (if-exists :error if-exists-p) (output "stdout/") (error :output))
+(defun prepare-slurm-script (directory area tree program &key (if-exists :error if-exists-p) (output "stdout/") (error :output) (group-size 1))
   (declare (type (member :error :supersede :supersede-all) if-exists))
   (let ((program-path (if (listp program)
 			  (apply #'lisp-executable-pathname program)
@@ -45,8 +45,9 @@
 
 	  (with-open-file (out "slurm-program.sh" :if-exists if-exists :direction :output)
 	    (format out "#!/bin/sh~%")
-	    (format out "~S `cat ~S` $1 $2 $(( ${SLURM_ARRAY_TASK_ID} - 1 ))~%"
+	    (format out "~S --chains-group-size ~d `cat ~S` $1 $2 $(( ${SLURM_ARRAY_TASK_ID} - 1 ))~%"
 		    (namestring program-path)
+		    group-size
 		    (namestring (merge-pathnames "slurm-program-arguments"))))
 
 	  (with-open-file (out "slurm.sh" :if-exists if-exists :direction :output)
@@ -71,7 +72,7 @@ LEVEL~d=`sbatch --array 1-~d \\
 echo ${LEVEL~d}
 "
 			 depth
-			 count
+			 (floor count group-size)
 			 (determine-slurm-output-arguments directory output error)
 			 (pathname-name program-path)
 			 (namestring (merge-pathnames "slurm-arguments"))
