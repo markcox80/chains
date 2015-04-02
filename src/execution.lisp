@@ -176,8 +176,9 @@
 (defmethod (setf task-value*) (value (area prepared-directory) chain)
   (ensure-task-data-directory* area chain)
 
-  ;; Record the task used to compute the value.
   (let ((*package* (find-package "COMMON-LISP")))
+    ;; Record the task used to compute the value.
+    #- (and)
     (with-open-file (out (prepared-directory-task-object-pathname area chain)
 			 :if-exists :supersede
 			 :direction :output)
