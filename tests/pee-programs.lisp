@@ -36,8 +36,11 @@
   (let ((expected-help "Usage: [options] [custom options] <data> <depth> <leaf number>
 
 Options:
-  --help     This helpful message.
-  --force    Overwrite any existing output.
+  --help                        This helpful message.
+  --force                       Overwrite any existing output.
+  --chains-verbose              Output information about which leaf is being
+                                executed.
+  --chains-group-size <size>    Execute <size> leaves starting at <leaf>*<size>.
   
 Custom Options:
   --text <text>    Text for EXECUTION-TASK-3.
@@ -99,8 +102,11 @@ Custom Options:
   (let ((expected-help "Usage: [options] <data> <depth> <leaf number>
 
 Options:
-  --help     This helpful message.
-  --force    Overwrite any existing output.
+  --help                        This helpful message.
+  --force                       Overwrite any existing output.
+  --chains-verbose              Output information about which leaf is being
+                                executed.
+  --chains-group-size <size>    Execute <size> leaves starting at <leaf>*<size>.
   
 <data> Information needed to execute a tree of tasks.
 <depth> The depth of the tasks that are to be executed.
