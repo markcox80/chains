@@ -11,7 +11,7 @@
   #- (or darwin linux)
   (error "XARGS-SEQUENCE is not supported on your operating system."))
 
-(defun prepare-xargs-script (directory area tree program &key (if-exists :error if-exists-p))
+(defun prepare-xargs-script (directory area tree program &key (if-exists :error if-exists-p) (group-size 1))
   (declare (type (member :error :supersede :supersede-all) if-exists))
   (let ((program-path (if (listp program)
 			  (apply #'lisp-executable-pathname program)
@@ -35,8 +35,9 @@
 
 	  (with-open-file (out "xargs-program.sh" :if-exists if-exists :direction :output)
 	    (format out "#!/bin/sh~%")
-	    (format out "~S `cat ~S` $1 $2 $3~%"
+	    (format out "~S --chains-group-size ~d `cat ~S` $1 $2 $3~%"
 		    (namestring program-path)
+                    group-size
 		    (namestring (merge-pathnames "xargs-program-arguments"))))
 
 	  (with-open-file (out "xargs.sh":if-exists if-exists :direction :output)
@@ -49,7 +50,7 @@
 		 :when (plusp count)
 		 :do
 		 (format out "~A | xargs -L 1 `cat ~S` /bin/sh ~S ~S ~d~%"
-			 (xargs-sequence count)
+			 (xargs-sequence (floor count group-size))
 			 (namestring (merge-pathnames "xargs-arguments"))
 			 (namestring (merge-pathnames "xargs-program.sh"))
 			 (namestring (merge-pathnames "xargs-data.sexp"))
