@@ -160,7 +160,7 @@ Custom Options:
 "
 	  (print-program-usage/option-text '(("help" nil "This helpful message.")
 					     ("force" nil "Overwrite any existing output.")
-					     ("chains-verbose" nil "Output information which leaf is being executed.")
+					     ("chains-verbose" nil "Output information about which leaf is being executed.")
 					     ("chains-group-size" "size" "Execute <size> leaves starting at <leaf>*<size>.")))
 	  (print-program-usage/option-text help-data)
 	  (print-program-usage/suffix)))
@@ -176,7 +176,7 @@ Options:
 "
 	  (print-program-usage/option-text '(("help" nil "This helpful message.")
 					     ("force" nil "Overwrite any existing output.")
-					     ("chains-verbose" nil "Output information which leaf is being executed.")
+					     ("chains-verbose" nil "Output information about which leaf is being executed.")
 					     ("chains-group-size" "size" "Execute <size> leaves starting at <leaf>*<size>.")))
 	  (print-program-usage/suffix)))
 
