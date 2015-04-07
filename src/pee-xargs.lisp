@@ -50,7 +50,7 @@
 		 :when (plusp count)
 		 :do
 		 (format out "~A | xargs -L 1 `cat ~S` /bin/sh ~S ~S ~d~%"
-			 (xargs-sequence (floor count group-size))
+			 (xargs-sequence (ceiling count group-size))
 			 (namestring (merge-pathnames "xargs-arguments"))
 			 (namestring (merge-pathnames "xargs-program.sh"))
 			 (namestring (merge-pathnames "xargs-data.sexp"))
