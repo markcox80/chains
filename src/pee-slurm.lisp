@@ -72,7 +72,7 @@ LEVEL~d=`sbatch --array 1-~d \\
 echo ${LEVEL~d}
 "
 			 depth
-			 (floor count group-size)
+			 (ceiling count group-size)
 			 (determine-slurm-output-arguments directory output error)
 			 (pathname-name program-path)
 			 (namestring (merge-pathnames "slurm-arguments"))
