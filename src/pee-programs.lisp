@@ -97,7 +97,8 @@
 
 (defun perform-program (data-pathname depth leaf &rest args &key chains-group-size chains-verbose &allow-other-keys)
   (alexandria:remove-from-plistf args :chains-group-size)
-  (let* ((chains-group-size (or chains-group-size 1)))
+  (let* ((chains-group-size (or chains-group-size 1))
+         (succeeded? t))
     (multiple-value-bind (area tree) (read-program-data data-pathname)
       (let ((chains (compute-chains-to-depth tree depth)))
 	(loop
@@ -108,7 +109,9 @@
 	       (format t "~&;;;; Starting leaf ~d at depth ~d~%" index depth))
 	     (handler-case (apply #'perform-leaf area (elt chains index) args)
 	       (error (c)
-		 (format *error-output* "~&;;;; Encountered error whilst executing leaf ~d for depth ~d:~%~A~%" index depth c))))))))
+		 (format *error-output* "~&;;;; Encountered error whilst executing leaf ~d for depth ~d:~%~A~%" index depth c)
+                 (setf succeeded? nil))))
+        succeeded?))))
 
 (defun break-string (string)
   (split-sequence:split-sequence #\Space string))
@@ -212,12 +215,13 @@ Options:
 	    ,(when prologue
 	      `(progn
 		 ,@prologue))	    
-	    (perform-program ,tree ,depth ,leaf
-			     :force force
-			     :chains-group-size (or chains-group-size-value 1)
-			     :chains-verbose chains-verbose
-			     ,@(reduce #'append custom-options :key #'option-perform-arguments))
-	    0))))))
+	    (if (perform-program ,tree ,depth ,leaf
+                                 :force force
+                                 :chains-group-size (or chains-group-size-value 1)
+                                 :chains-verbose chains-verbose
+                                 ,@(reduce #'append custom-options :key #'option-perform-arguments))
+                0
+                1)))))))
 
 (defmacro define-program (name custom-options &body options)
   (apply #'do-define-program name (mapcar #'custom-option-from-sexp custom-options)
