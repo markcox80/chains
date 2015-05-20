@@ -35,9 +35,14 @@
     (t
      (reduce #'(lambda (tree level)
 		 (let ((children (generate-children-from-level level)))
-		   (replace-leaves #'(lambda (leaf)
-				       (make-tree (value leaf) children))
-				   tree)))
+		   (remove-duplicates-in-tree #'(lambda (a b)
+                                                  (check-type a task)
+                                                  (check-type b task)
+                                                  (let ((test-fn (test=-function (class-of a))))
+                                                    (funcall test-fn a b)))
+                                              (replace-leaves #'(lambda (leaf)
+                                                                  (make-tree (value leaf) children))
+                                                              tree))))
 	     (design-levels design)
 	     :initial-value (make-tree)))))
 

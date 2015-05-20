@@ -75,3 +75,46 @@
   (let ((tree (generate 'nested-design)))
     (assert-equal 28  (length (children tree)))
     (assert-equal 280 (count-leaves tree))))
+
+
+;;;; Duplicate samples in design
+(define-design nested-design-with-duplicates/1
+    ()
+  ((example-input-data (:number-of-subjects 1 2)
+                       (:samples-per-subject 1)))
+  ((example-input-data2 (:subject-id 1 5)
+                        (:lighting-variation 0 1))))
+
+(define-design nested-design-with-duplicates/2
+    ()
+  ((example-input-data (:number-of-subjects 1)
+                       (:samples-per-subject 1)))
+  ((example-input-data2 (:subject-id 5)
+                        (:lighting-variation 1))))
+
+(define-design nested-design-with-duplicates
+    ()
+  ((:design nested-design-with-duplicates/1)
+   (:design nested-design-with-duplicates/2)))
+
+(define-test nested-design-with-duplicates
+  ;; Design 1
+  ;; example-input-data -> example-input-data2
+  ;;   (1 1)                  (1 0)    
+  ;;   (1 1)                  (5 0)    
+  ;;   (1 1)                  (1 1)    
+  ;;   (1 1)                  (5 1)    
+  ;;   (2 1)                  (1 0)
+  ;;   (2 1)                  (5 0)
+  ;;   (2 1)                  (1 1)
+  ;;   (2 1)                  (5 1)
+  ;;
+  ;; Design 2
+  ;; example-input-data -> example-input-data2
+  ;;   (1 1)                  (5 1)
+  ;;
+  ;; Therefore
+  ;;   8 chains after removing duplicates.
+  (let* ((tree (generate 'nested-design-with-duplicates))
+         (chains (compute-chains tree)))
+    (assert-equal 8 (length chains))))

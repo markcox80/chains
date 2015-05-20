@@ -35,6 +35,21 @@
 		      :value (value tree)
 		      :children children)))))
 
+(defun remove-duplicates-in-tree (test-function tree)
+  (cond
+    ((leafp tree)
+     tree)
+    (t
+     (let* ((children (children tree))
+            (groups (group-by test-function children :key #'value)))
+       (make-tree (value tree)
+                  (loop
+                     for group in groups
+                     for group-children = (reduce #'append group :key #'children)
+                     for exemplar-value = (value (first group))
+                     collect
+                       (remove-duplicates-in-tree test-function (make-tree exemplar-value group-children))))))))
+
 (defun count-leaves (tree)
   (count-leaves-if (constantly t) tree))
 
