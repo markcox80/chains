@@ -164,6 +164,7 @@ Custom Options:
 	  (print-program-usage/option-text '(("help" nil "This helpful message.")
 					     ("force" nil "Overwrite any existing output.")
 					     ("chains-verbose" nil "Output information about which leaf is being executed.")
+                                             ("chains-succeed-on-error" nil "Return success if an error occurs.")
 					     ("chains-group-size" "size" "Execute <size> leaves starting at <leaf>*<size>.")))
 	  (print-program-usage/option-text help-data)
 	  (print-program-usage/suffix)))
@@ -180,6 +181,7 @@ Options:
 	  (print-program-usage/option-text '(("help" nil "This helpful message.")
 					     ("force" nil "Overwrite any existing output.")
 					     ("chains-verbose" nil "Output information about which leaf is being executed.")
+                                             ("chains-succeed-on-error" nil "Return success if an error occurs.")
 					     ("chains-group-size" "size" "Execute <size> leaves starting at <leaf>*<size>.")))
 	  (print-program-usage/suffix)))
 
@@ -195,7 +197,7 @@ Options:
 	(help-data (gensym "HELP-DATA")))
     `(let ((,help-data (list ,@(mapcar #'help-data custom-options))))
        (lisp-executable:define-program ,name
-	   (lisp-executable:&options help force chains-verbose (chains-group-size chains-group-size-value)
+	   (lisp-executable:&options help force chains-verbose chains-succeed-on-error (chains-group-size chains-group-size-value)
 				     ,@(mapcar #'option-definition custom-options)
 				     lisp-executable:&arguments ,tree ,depth ,leaf)
 	 (declare (lisp-executable:conversion-function (integer 1) ,depth)
@@ -215,11 +217,12 @@ Options:
 	    ,(when prologue
 	      `(progn
 		 ,@prologue))	    
-	    (if (perform-program ,tree ,depth ,leaf
-                                 :force force
-                                 :chains-group-size (or chains-group-size-value 1)
-                                 :chains-verbose chains-verbose
-                                 ,@(reduce #'append custom-options :key #'option-perform-arguments))
+	    (if (or (perform-program ,tree ,depth ,leaf
+                                     :force force
+                                     :chains-group-size (or chains-group-size-value 1)
+                                     :chains-verbose chains-verbose
+                                     ,@(reduce #'append custom-options :key #'option-perform-arguments))
+                    chains-succeed-on-error)
                 0
                 1)))))))
 
