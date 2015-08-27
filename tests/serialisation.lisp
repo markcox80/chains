@@ -32,3 +32,28 @@
 (define-test task-string/no-slots
   (let ((object (make-instance 'task-with-no-slots)))
     (assert-equal "task-with-no-slots" (task-string object))))
+
+(defclass readable-object ()
+  ((value :initarg :value
+          :reader readable-object-value))
+  (:default-initargs
+   :value nil))
+
+(defmethod print-object ((object readable-object) stream)
+  (cond
+    (*print-readably*
+     (format stream "#.~W" `(make-instance 'readable-object :value ,(readable-object-value object))))
+    (t
+     (print-unreadable-object (object stream :type t :identity t)
+       (write (readable-object-value object) :stream stream)))))
+
+(define-test serialisation-of-readable-objects
+  (let* ((original (make-instance 'readable-object :value 1))
+         (string (with-output-to-string (out)
+                   (serialise-object out original)))
+         (object (read-from-string string)))    
+    (assert-true (typep object 'readable-object))
+    (assert-false (eql object original))
+    (assert-equal 1 (readable-object-value object))
+    (assert-equal (format nil "#.~W" `(make-instance 'readable-object :value ,(readable-object-value object)))
+                  string)))

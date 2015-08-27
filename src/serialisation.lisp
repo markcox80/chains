@@ -36,8 +36,12 @@
 
 (defun serialise-object (stream object)
   (pprint-logical-block (stream nil)
-    (write-string "#." stream)
-    (write (object-sexp object) :stream stream :pretty t :readably t)))
+    (let ((code (object-sexp object)))
+      (cond
+        ((atom code)
+         (write code :stream stream :pretty t :readably t))
+        (t
+         (format stream "#.~W" code))))))
 
 (defun serialise-task (stream task)
   (declare (type task task))
