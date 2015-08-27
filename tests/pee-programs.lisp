@@ -40,6 +40,7 @@ Options:
   --force                       Overwrite any existing output.
   --chains-verbose              Output information about which leaf is being
                                 executed.
+  --chains-succeed-on-error     Return success if an error occurs.
   --chains-group-size <size>    Execute <size> leaves starting at <leaf>*<size>.
   
 Custom Options:
@@ -106,6 +107,7 @@ Options:
   --force                       Overwrite any existing output.
   --chains-verbose              Output information about which leaf is being
                                 executed.
+  --chains-succeed-on-error     Return success if an error occurs.
   --chains-group-size <size>    Execute <size> leaves starting at <leaf>*<size>.
   
 <data> Information needed to execute a tree of tasks.
