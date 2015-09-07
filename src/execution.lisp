@@ -190,4 +190,15 @@
       (serialise-object out value))))
 
 (defmethod task-completed-p* ((area prepared-directory) chain)
-  (probe-file (prepared-directory-task-value-pathname area chain)))
+  (cond
+    ((null chain)
+     t)
+    ((null (rest chain))
+     (probe-file (prepared-directory-task-value-pathname area chain)))
+    (t
+     (let* ((current-pathname (prepared-directory-task-value-pathname area chain))
+            (previous-pathname (prepared-directory-task-value-pathname area (butlast chain))))
+       (and (probe-file current-pathname)
+            (probe-file previous-pathname)
+            (>= (file-write-date current-pathname)
+                (file-write-date previous-pathname)))))))

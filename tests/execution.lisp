@@ -247,3 +247,20 @@
 	(perform area chain :iterations 0)
 	(assert-equal 0 (task-value 'task-complete-p-t2 chain area))))))
 
+
+;;;; Rerunning tests that have been touched.
+
+(define-test touched-tests
+  (flet ((touch-file (pathname)
+           (with-open-file (out pathname :direction :output :if-exists :append)
+             (write-string " " out))))
+    (with-temporary-directory (dir)
+      (let ((area (prepare-directory dir))
+            (chain (first (compute-chains (generate 'execution-design)))))
+        (perform area chain)
+        (assert-true (chain-completed-p area chain))
+        (sleep 1.1) ; Need to sleep as the resolution of file time stamps is not great.
+        (touch-file (chains::prepared-directory-task-value-pathname area (subseq chain 0 1)))
+        (assert-false (chain-completed-p area chain))
+        (perform area chain)
+        (assert-true (chain-completed-p area chain))))))
