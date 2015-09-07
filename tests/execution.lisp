@@ -1,4 +1,40 @@
 (in-package "CHAINS.TESTS")
+
+;;;; Helpers
+
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defun ensure-temporary-directory ()
+    (labels ((random-directory-name ()
+	       (merge-pathnames (make-pathname :directory (list :relative
+								(concatenate 'string
+									     "chains-"
+									     (cl-fad::generate-random-string))))
+				(translate-logical-pathname (logical-pathname "TEMPORARY-FILES:"))))
+	     (trial ()
+	       (multiple-value-bind (pathspec created?)
+		   (ensure-directories-exist (random-directory-name))
+		 (when created?
+		   pathspec))))
+      (loop
+	 :for directory := (trial)
+	 :for attempt :from 0 :below 100
+	 :until directory
+	 :finally (progn
+		    (unless directory
+		      (error "Unable to create temporary directory."))
+		    (return (truename directory))))))
+
+  (defun do-with-temporary-directory (function)
+    (let ((tmp-directory (ensure-temporary-directory)))
+      (unwind-protect
+	   (funcall function tmp-directory)
+	(cl-fad:delete-directory-and-files tmp-directory))))
+
+  (defmacro with-temporary-directory ((var) &body body)
+    `(do-with-temporary-directory #'(lambda (,var)
+				      ,@body))))
+
+;;;; Executing designs
 
 (define-task execution-task-1 ()
   ((sigma
@@ -41,38 +77,6 @@
   ((execution-task-1 (:sigma 1 2 3 4 5)))
   ((execution-task-2 (:rho -1 -2 -3 -4 -5)))
   ((execution-task-3 (:gamma 11 12 13 14 15))))
-
-(eval-when (:compile-toplevel :load-toplevel :execute)
-  (defun ensure-temporary-directory ()
-    (labels ((random-directory-name ()
-	       (merge-pathnames (make-pathname :directory (list :relative
-								(concatenate 'string
-									     "chains-"
-									     (cl-fad::generate-random-string))))
-				(translate-logical-pathname (logical-pathname "TEMPORARY-FILES:"))))
-	     (trial ()
-	       (multiple-value-bind (pathspec created?)
-		   (ensure-directories-exist (random-directory-name))
-		 (when created?
-		   pathspec))))
-      (loop
-	 :for directory := (trial)
-	 :for attempt :from 0 :below 100
-	 :until directory
-	 :finally (progn
-		    (unless directory
-		      (error "Unable to create temporary directory."))
-		    (return (truename directory))))))
-
-  (defun do-with-temporary-directory (function)
-    (let ((tmp-directory (ensure-temporary-directory)))
-      (unwind-protect
-	   (funcall function tmp-directory)
-	(cl-fad:delete-directory-and-files tmp-directory))))
-
-  (defmacro with-temporary-directory ((var) &body body)
-    `(do-with-temporary-directory #'(lambda (,var)
-				      ,@body))))
 
 (define-test compute-chains
   (let ((chains (compute-chains (generate 'execution-design))))
@@ -173,7 +177,6 @@
       (assert-false (chain-completed-p area (list task-1 task-2 task-3) :text "dog")))))
 
 (define-test perform
-
   (with-temporary-directory (dir)
     (let ((*area* (prepare-directory dir))
 	  (*chain* nil)
@@ -194,6 +197,8 @@
 	(assert-equal "hello-world" (task-value 'execution-task-2))
 	(assert-equal "laughing-at-nothing" (task-value 'execution-task-3))))))
 
+
+;;;; Execution parameters
 
 (define-task task-complete-p-t1 ()
   ())
@@ -241,3 +246,4 @@
 
 	(perform area chain :iterations 0)
 	(assert-equal 0 (task-value 'task-complete-p-t2 chain area))))))
+
